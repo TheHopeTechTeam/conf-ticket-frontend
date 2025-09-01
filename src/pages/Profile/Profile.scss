@@ -1,0 +1,83 @@
+.profile-container {
+  max-width: 386px;
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+
+  .profile-header {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    color: #000;
+
+    h1 {
+      text-align: center;
+      font-size: 30px;
+      font-weight: 600;
+    }
+
+    p {
+      text-align: left;
+      font-size: 16px;
+    }
+  }
+
+  .profile-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+
+    .form-item {
+      .form-label {
+        display: flex;
+        justify-content: space-between;
+        padding: 0 4px;
+        margin-bottom: 8px;
+      }
+    }
+  }
+
+  .profile-checkbox-button {
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+    .profile-checkbox {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      padding-left: 3px;
+      div {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+
+        a,
+        .link-button {
+          color: #3c5464;
+          font-weight: 600;
+          text-decoration: underline;
+          background: none;
+          border: none;
+          padding: 0;
+          cursor: pointer;
+          font-family: inherit;
+          font-size: inherit;
+        }
+
+        .link-button:hover {
+          color: #2a3e4a;
+        }
+      }
+    }
+
+    .profile-button {
+      margin: 0 auto;
+    }
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .profile-container {
+    max-width: 353px;
+  }
+}

@@ -1,0 +1,35 @@
+{
+    "docs": [
+        {
+            "id": "member-001",
+            "email": "john.wang@example.com",
+            "name": "王志明",
+            "gender": "male",
+            "tel": "0912-345-678",
+            "role": "pastor",
+            "location": "台北真理教會",
+            "consentedAt": "2025-08-15T10:30:00.000Z",
+            "updatedBy": {
+                "id": "admin-001",
+                "name": "系統管理員",
+                "email": "admin@thehope.co",
+                "role": "admin",
+                "createdAt": "2024-01-01T00:00:00.000Z",
+                "updatedAt": "2024-01-01T00:00:00.000Z"
+            },
+            "deletedAt": null,
+            "deletedBy": null,
+            "updatedAt": "2025-08-20T14:25:30.000Z",
+            "createdAt": "2025-07-10T09:15:20.000Z"
+        }
+    ],
+    "totalDocs": 5,
+    "limit": 10,
+    "totalPages": 1,
+    "page": 1,
+    "pagingCounter": 1,
+    "hasPrevPage": false,
+    "hasNextPage": false,
+    "prevPage": null,
+    "nextPage": null
+}

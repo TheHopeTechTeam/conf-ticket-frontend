@@ -1,0 +1,25 @@
+.layout {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+
+  .main {
+    flex: 1;
+    padding: 160px 0 100px;
+
+    &.with-breadcrumbs {
+      padding: 60px 0 100px;
+    }
+  }
+}
+@media screen and (max-width: 768px) {
+  .layout {
+    .main {
+      padding: 120px 12px 100px 12px;
+
+      &.with-breadcrumbs {
+        padding: 40px 12px 100px 12px;
+      }
+    }
+  }
+}

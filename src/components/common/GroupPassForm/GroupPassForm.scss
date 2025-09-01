@@ -1,0 +1,159 @@
+.group-pass-form {
+  .group-pass-form-title {
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 28px;
+    margin-bottom: 16px;
+    color: #3c5464;
+  }
+
+  .group-pass-form-record-title {
+    margin-top: 36px;
+  }
+
+  .group-pass-form-details {
+    border-radius: 12px;
+    background-color: #eceef0;
+    padding: 12px 20px 12px 20px;
+    gap: 12px;
+    margin-bottom: 16px;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  /* 預設顯示上箭頭，隱藏下箭頭 */
+  .icon.arrow-up {
+    display: block;
+  }
+
+  .icon.arrow-down {
+    display: none;
+  }
+
+  /* 當 details 開啟時，顯示下箭頭，隱藏上箭頭 */
+  details[open] .icon.arrow-up {
+    display: none;
+  }
+
+  details[open] .icon.arrow-down {
+    display: block;
+  }
+
+  /* 隱藏預設的三角形箭頭 */
+  summary::-webkit-details-marker {
+    display: none;
+  }
+
+  summary::marker {
+    display: none;
+  }
+
+  summary {
+    list-style: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: all 0.3s ease;
+    gap: 4px;
+
+    .title {
+      font-size: 16px;
+      font-style: normal;
+      font-weight: 600;
+      line-height: 24px;
+    }
+
+    .record-title {
+      color: #3C5464;
+    }
+
+    &::-webkit-details-marker {
+      display: none;
+    }
+  }
+
+  .group-pass-form-content {
+    display: flex;
+    gap: 24px;
+    margin: 12px 0;
+
+    .group-pass-form-input {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      flex: 1;
+
+      .form-item {
+        position: relative;
+
+        .form-label {
+          margin-bottom: 6px;
+
+          label {
+            font-size: 14px;
+          }
+        }
+
+        .form-record-item {
+          font-size: 18px;
+        }
+
+        .p-l-6 {
+          padding-left: 6px;
+        }
+
+        .form-record-label {
+          color: #A5A9AB;
+          padding-left: 0px;
+        }
+
+        .form-input {
+          width: 100%;
+          padding: 12px 16px;
+          border: 1px solid #ddd;
+          border-radius: 6px;
+          font-size: 14px;
+          line-height: 20px;
+          transition: border-color 0.3s ease;
+
+          &:focus {
+            outline: none;
+            border-color: #3c5464;
+          }
+
+          &.error {
+            border-color: #ee1b0a;
+          }
+
+          &::placeholder {
+            color: #a5a9ab;
+          }
+        }
+      }
+    }
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .group-pass-form {
+    .group-pass-form-record-title {
+      margin-top: 24px;
+    }
+
+    .group-pass-form-content {
+      flex-direction: column;
+
+      .group-pass-form-input {
+        .form-item {
+          .form-label {
+            padding-left: 0px;
+          }
+        }
+      }
+    }
+  }
+}

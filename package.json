@@ -1,0 +1,47 @@
+{
+  "name": "conf-ticket",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "lint": "eslint .",
+    "preview": "vite preview",
+    "mock-server": "node mock-server/server.js",
+    "mock-server:watch": "nodemon mock-server/server.js",
+    "mock-server:dev": "nodemon --watch mock-server --ext js,json mock-server/server.js",
+    "dev-with-api": "concurrently \"pnpm run dev\" \"pnpm run mock-server:dev\"",
+    "dev-with-api-watch": "concurrently \"pnpm run dev\" \"pnpm run mock-server:watch\"",
+    "generate-client": "java -jar openapi-generator-cli-7.9.0.jar generate -i https://localhost:3000/api/v1/docs/openapi.json -g typescript-fetch -o ./generated-client --skip-validate-spec --additional-properties=typescriptThreePlus=true,supportsES6=true,npmName=api-client,npmVersion=1.0.0",
+    "start": "pnpm run dev-with-api"
+  },
+  "dependencies": {
+    "lucide-react": "^0.525.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "react-hook-form": "^7.54.2",
+    "react-router-dom": "^7.1.5",
+    "sass": "^1.85.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.19.0",
+    "@types/react": "^19.0.8",
+    "@types/react-dom": "^19.0.3",
+    "@vitejs/plugin-react": "^4.3.4",
+    "concurrently": "^9.2.0",
+    "cors": "^2.8.5",
+    "eslint": "^9.19.0",
+    "eslint-plugin-react-hooks": "^5.0.0",
+    "eslint-plugin-react-refresh": "^0.4.18",
+    "express": "^5.1.0",
+    "fs-extra": "^11.3.0",
+    "globals": "^15.14.0",
+    "nodemon": "^3.1.10",
+    "prettier": "^3.6.2",
+    "typescript": "~5.7.2",
+    "typescript-eslint": "^8.22.0",
+    "vite": "^6.1.0",
+    "vite-plugin-environment": "1.1.3"
+  }
+}

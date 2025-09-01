@@ -1,0 +1,137 @@
+.distribution-container {
+  max-width: 386px;
+  padding: 28px 32px 40px 32px !important;
+
+  .distribution-header {
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+
+    .distribution-header-content {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      margin-bottom: 40px;
+
+      .distribution-header-content-title {
+        font-size: 18px;
+        font-weight: 600;
+        line-height: 28px;
+      }
+
+      .distribution-header-content-info {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+
+        .distribution-header-content-info-item {
+          display: flex;
+          gap: 16px;
+
+          .distribution-header-content-info-item-label {
+            font-size: 16px;
+            line-height: 24px;
+            color: #000;
+          }
+
+          .distribution-header-content-info-item-content {
+            color: #ee1b0a;
+            font-size: 16px;
+            font-weight: 600;
+            line-height: 24px;
+          }
+        }
+      }
+    }
+  }
+
+  .distribution-form {
+    display: flex;
+    flex-direction: column;
+    gap: 27px;
+    margin-bottom: 60px;
+
+    .distribution-form-title {
+      color: #000;
+      font-size: 18px;
+      font-weight: 600;
+      line-height: 28px;
+    }
+
+    .distribution-form-item {
+      display: flex;
+      gap: 8px;
+
+      .email-checkbox {
+        margin: 4px;
+      }
+
+      .distribution-form-item-content {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        width: 100%;
+
+        .error-text {
+          color: #ee1b0a;
+          font-size: 14px;
+          line-height: 20px;
+          margin-top: 4px;
+        }
+      }
+    }
+  }
+
+  .distribution-footer {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin: 0 auto;
+  }
+}
+
+.ticket-distribution-dialog {
+  .dialog-header {
+    padding: 20px 0 40px 0;
+  }
+
+  .distribution-dialog-content {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+
+    .distribution-dialog-header {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 40px;
+
+      .dialog-icon {
+        margin: 0 auto;
+      }
+    }
+
+    .distribution-dialog-info {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      align-items: center;
+
+      .distribution-dialog-info-item {
+        display: flex;
+        gap: 12px;
+
+        .distribution-dialog-info-item-content {
+          color: #ee1b0a;
+          font-weight: 600;
+        }
+      }
+    }
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .distribution-container {
+    padding: 28px 20px 40px 20px !important;
+  }
+}

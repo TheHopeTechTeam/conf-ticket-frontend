@@ -1,0 +1,106 @@
+.refund-container {
+  max-width: 386px;
+  background-color: #fff;
+  padding: 28px 32px 40px 32px !important;
+
+  .refund-header {
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+    margin-bottom: 60px;
+
+    .refund-header-content {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      color: #000;
+
+      .refund-header-content-title {
+        font-size: 18px;
+        font-weight: 600;
+        line-height: 28px;
+      }
+
+      .refund-header-content-list {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+
+        li {
+          display: flex;
+          gap: 3px;
+        }
+      }
+    }
+  }
+
+  .refund-content {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-bottom: 40px;
+
+    .refund-content-title {
+      font-size: 18px;
+      font-weight: 600;
+      line-height: 28px;
+    }
+
+    .refund-content-info {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+
+      .refund-content-info-item {
+        display: flex;
+        gap: 16px;
+
+        .refund-content-info-item-label {
+          font-size: 16px;
+          line-height: 24px;
+          color: #000;
+        }
+
+        .refund-content-info-item-content {
+          color: #ee1b0a;
+          font-size: 16px;
+          font-weight: 600;
+          line-height: 24px;
+        }
+      }
+    }
+  }
+
+  .refund-checkbox-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 28px;
+
+    .refund-checkbox {
+      margin-right: 4px;
+    }
+
+    .refund-terms-link {
+      margin-left: 2px;
+      color: #3c5464;
+      font-size: 16px;
+      font-weight: 600;
+      line-height: 24px;
+      text-decoration: underline;
+    }
+  }
+
+  .refund-button {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin: 0 auto;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .refund-container {
+    padding: 28px 20px 40px 20px !important;
+  }
+}

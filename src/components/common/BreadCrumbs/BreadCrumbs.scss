@@ -1,0 +1,19 @@
+.bread-crumbs {
+    display: flex;
+    align-items: center;
+    font-size: 16px;
+    color: #3C5464;
+    font-weight: 500;
+    padding-top: 72px;
+    padding-left: 40px;
+
+    .bread-crumbs-text {
+        cursor: pointer;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .bread-crumbs {
+        padding-left: 20px;
+    }
+}

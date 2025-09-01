@@ -1,0 +1,35 @@
+.invaild-text {
+  color: #ee1b0a;
+  margin-top: 4px;
+  padding-left: 2px;
+}
+
+.label-invaild-text {
+  color: #ee1b0a;
+  padding-left: 2px;
+}
+
+.no-invalid-text {
+  color: #777f82;
+  padding-left: 2px;
+}
+
+.form-label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 2px;
+  margin-bottom: 8px;
+}
+
+.form-container {
+  width: 100%;
+  margin: 0 auto;
+  border-radius: 12px;
+  background: #fff;
+  padding: 28px 32px 40px 32px;
+
+  @media screen and (max-width: 768px) {
+    padding: 28px 20px 40px 20px;
+  }
+}

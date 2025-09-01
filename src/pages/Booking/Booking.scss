@@ -1,0 +1,51 @@
+.booking-container {
+  max-width: 834px;
+  padding: 36px 40px 52px 40px !important;
+
+  h1 {
+    margin-bottom: 48px;
+  }
+
+  .booking-content {
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+
+    .booking-group-pass-item {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+  }
+
+  .booking-button {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin: 80px auto 0;
+
+    .btn.send-btn.disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+
+      &:hover {
+        background-color: inherit;
+      }
+    }
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .booking-container {
+    max-width: 353px;
+    padding: 28px 16px 40px 16px !important;
+
+    h1 {
+      margin-bottom: 24px;
+    }
+
+    .booking-button {
+      margin: 60px auto 0;
+    }
+  }
+}

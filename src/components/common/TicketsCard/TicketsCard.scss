@@ -1,0 +1,388 @@
+.ticket-card-container {
+  border-radius: 12px;
+  max-width: 590px;
+  width: 100%;
+  box-shadow: 2px 2px 16px 0 rgba(0, 0, 0, 0.12);
+
+  .ticket-card-title {
+    background: #ffcc32;
+    text-align: center;
+    color: #000;
+    font-family: Inter;
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 21px;
+    padding: 7px 0;
+    border-radius: 12px 12px 0 0;
+  }
+
+  .ticket-card-content {
+    display: flex;
+
+    .ticket-card-pic {
+      width: 237px;
+      height: 140px;
+    }
+
+    .ticket-card-info {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+
+      .ticket-card-info-time {
+        display: flex;
+        padding: 10px 16px;
+        align-items: center;
+        justify-content: space-between;
+        background-color: #ECEEF0;
+
+        .ticket-card-info-start {
+          display: flex;
+          flex-direction: column;
+          gap: 4px;
+
+          .year {
+            color: #000;
+            font-family: Inter;
+            font-size: 11px;
+            font-style: normal;
+            font-weight: 600;
+            line-height: 11px;
+          }
+
+          .ticket-card-info-date {
+            display: flex;
+            gap: 7px;
+
+            .date {
+              color: #000;
+              font-family: Inter;
+              font-size: 30px;
+              font-style: normal;
+              font-weight: 600;
+              line-height: 31px;
+              padding: 1px;
+            }
+
+            .ticket-card-info-day {
+              display: flex;
+              flex-direction: column;
+
+              p {
+                color: #000;
+                font-family: Inter;
+                font-size: 13px;
+                font-style: normal;
+                font-weight: 600;
+                line-height: 13px;
+                margin-bottom: 6px;
+              }
+            }
+          }
+        }
+
+        .ticket-card-info-line {
+          width: 40px;
+          height: 1px;
+          background: #000;
+        }
+      }
+
+      .ticket-card-info-quantity-order {
+        padding: 20px 16px 22px 16px;
+        background-color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex: 1;
+
+        .ticket-card-info-quantity-item {
+          display: flex;
+          gap: 6px;
+
+          .quantity {
+            color: #777f82;
+            font-family: 'Noto Sans TC';
+            font-size: 14px;
+            font-style: normal;
+            font-weight: 400;
+            line-height: 20px;
+          }
+
+          .number {
+            color: #000;
+            font-family: Inter;
+            font-size: 24px;
+            font-style: normal;
+            font-weight: 600;
+            line-height: 21px;
+          }
+        }
+
+        .ticket-card-info-oreder-number-item {
+          display: flex;
+          gap: 10px;
+
+          .order-number {
+            color: #777f82;
+            font-family: 'Noto Sans TC';
+            font-size: 14px;
+            font-style: normal;
+            font-weight: 400;
+            line-height: 20px;
+          }
+
+          .number {
+            color: #000;
+            font-family: Inter;
+            font-size: 16px;
+            font-style: normal;
+            font-weight: 600;
+            line-height: 21px;
+          }
+        }
+      }
+    }
+  }
+
+  .ticket-card-btns {
+    display: flex;
+
+    .distribution {
+      padding: 8px 32px;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: #1d292e;
+      gap: 8px;
+      flex: 4;
+      cursor: pointer;
+    }
+
+    .refund {
+      padding: 8px 32px;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: #3c5464;
+      gap: 8px;
+      flex: 1;
+      cursor: pointer;
+    }
+
+    .text {
+      color: #fff;
+    }
+
+    .arrow {
+      padding-top: 2px;
+    }
+  }
+
+  .ticket-card-refund {
+    text-align: center;
+    padding: 12px 0;
+    color: #000;
+    background-color: #fff;
+  }
+
+  .ticket-card-details {
+    border: none;
+    background-color: #c5ccd1;
+    border-radius: 0 0 12px 12px;
+
+    /* 當開啟時改變背景顏色 */
+    &[open] {
+      background-color: #F2F2F2;
+    }
+
+    /* 預設顯示加號，隱藏減號 */
+    .icon.plus {
+      display: block;
+    }
+
+    /* 當開啟時改變 title 和 icon 顏色 */
+    &[open] summary {
+      .title {
+        color: #000;
+      }
+
+      .icon {
+        color: #000;
+      }
+    }
+
+    .icon.minus {
+      display: none;
+    }
+
+    /* 當 details 開啟時，顯示減號，隱藏加號 */
+    &[open] .icon.plus {
+      display: none;
+    }
+
+    &[open] .icon.minus {
+      display: block;
+    }
+
+    /* 隱藏預設的三角形箭頭 */
+    summary::-webkit-details-marker {
+      display: none;
+    }
+
+    summary::marker {
+      display: none;
+    }
+
+    summary {
+      list-style: none;
+      cursor: pointer;
+      padding: 10px 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+      gap: 4px;
+
+      &::-webkit-details-marker {
+        display: none;
+      }
+
+      .title {
+        font-size: 16px;
+        font-weight: 600;
+        color: #3C5464;
+      }
+
+      .icon {
+        width: 20px;
+        height: 20px;
+        transition: transform 0.3s ease;
+        color: #3C5464;
+        padding-top: 1px;
+      }
+    }
+
+    .details-content {
+      padding: 0px 12px 18px 12px;
+      animation: slideDown 0.3s ease;
+
+      .detail-item {
+        display: flex;
+        align-items: center;
+
+        &::before {
+          content: '•';
+          color: #778793;
+          font-weight: bold;
+          margin-right: 8px;
+          margin-top: 2px;
+        }
+
+        .text {
+          font-size: 14px;
+          color: #182228;
+          line-height: 1.5;
+        }
+      }
+    }
+  }
+}
+
+.ticket-refund-card-container {
+  .ticket-card-title {
+    background: #D2D4D5 !important;
+    color: #777F82 !important;
+  }
+
+  .ticket-card-content {
+    .ticket-card-info {
+      .ticket-card-info-time {
+        background-color: #E8EAEA !important;
+
+        .ticket-card-info-start {
+          .year {
+            color: #777F82 !important;
+          }
+
+          .ticket-card-info-date {
+            .date {
+              color: #777F82 !important;
+            }
+
+            .ticket-card-info-day {
+              p {
+                color: #777F82 !important;
+              }
+            }
+          }
+        }
+
+        .ticket-card-info-line {
+          background: #777F82 !important;
+        }
+      }
+
+      .ticket-card-info-quantity-order {
+        background-color: #F2F2F2;
+
+        .ticket-card-info-quantity-item {
+          .quantity {
+            color: #777F82;
+          }
+
+          .number {
+            color: #777F82;
+          }
+        }
+
+        .ticket-card-info-oreder-number-item {
+          .order-number {
+            color: #777f82;
+          }
+
+          .number {
+            color: #777F82;
+          }
+        }
+      }
+    }
+  }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    max-height: 0;
+  }
+
+  to {
+    opacity: 1;
+    max-height: 200px;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .ticket-card-container {
+    .ticket-card-content {
+      flex-direction: column;
+
+      .ticket-card-pic {
+        width: 100%;
+      }
+    }
+
+    .ticket-card-btns {
+      .distribution {
+        flex: 1;
+      }
+
+      .refund {
+        flex: 1;
+        padding: 8px 0px;
+      }
+    }
+  }
+}

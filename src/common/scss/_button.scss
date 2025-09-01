@@ -1,0 +1,44 @@
+.btn {
+  width: 224px;
+  padding: 10px 24px 10px 24px;
+  border-radius: 44px;
+  background: #ffcc32;
+  color: #090c0e;
+  text-align: center;
+  cursor: pointer;
+  text-align: center;
+  font-size: 16px;
+  font-weight: 500;
+  box-sizing: border-box;
+  margin: 0 auto;
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    background-color: #e5e7eb !important;
+    color: #9ca3af !important;
+  }
+}
+
+.send-btn {
+  background: #ffcc32;
+  color: #000;
+
+  &.disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    background-color: #e5e7eb !important;
+    color: #9ca3af !important;
+  }
+}
+
+.cancel-btn {
+  background: #3c5464;
+  color: #fff;
+}
+
+@media screen and (max-width: 768px) {
+  .btn {
+    width: 224px;
+  }
+}
