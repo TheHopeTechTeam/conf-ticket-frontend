@@ -35,7 +35,7 @@ export const SuccessOrError: React.FC<SuccessOrErrorProps> = ({
     <div className="success-error-container">
       <div className="success-error-content-container">
         <img
-          src={`${type === STATUS.SUCCESS ? '/src/assets/images/success.svg' : '/src/assets/images/error.svg'}`}
+          src={`${type === STATUS.SUCCESS ? '/images/success.svg' : '/images/error.svg'}`}
           alt=""
           className="success-error-icon"
         />

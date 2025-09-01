@@ -37,21 +37,21 @@ export const Main: React.FC = () => {
             onClick={() => navigate(ROUTES.BOOKING)}
           >
             <p>購買票券</p>
-            <img src="/src/assets/images/black-arrow-right-icon.svg" alt="" />
+            <img src="/images/black-arrow-right-icon.svg" alt="" />
           </div>
           <div
             className="button-block"
             onClick={() => navigate(ROUTES.TICKETS)}
           >
             <p>我的票券</p>
-            <img src="/src/assets/images/black-arrow-right-icon.svg" alt="" />
+            <img src="/images/black-arrow-right-icon.svg" alt="" />
           </div>
           <div
             className="button-block"
             onClick={() => navigate(ROUTES.PROFILE)}
           >
             <p>個人檔案</p>
-            <img src="/src/assets/images/black-arrow-right-icon.svg" alt="" />
+            <img src="/images/black-arrow-right-icon.svg" alt="" />
           </div>
         </div>
       </div>

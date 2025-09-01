@@ -12,11 +12,7 @@ export const Footer: React.FC = () => {
     <>
       <footer className="footer">
         <div className="footer-content">
-          <img
-            src="/src/assets/images/footer-logo.svg"
-            alt=""
-            className="footer-logo"
-          />
+          <img src="/images/footer-logo.svg" alt="" className="footer-logo" />
           <div className="contact-info">
             <div className="contact-method">
               <p>聯繫我們</p>
@@ -25,11 +21,11 @@ export const Footer: React.FC = () => {
             <div className="contact-method">
               <p>追蹤我們</p>
               <div>
-                <img src="/src/assets/images/ig-icon.svg" alt="" />
-                <img src="/src/assets/images/threads-icon.svg" alt="" />
-                <img src="/src/assets/images/fb-icon.svg" alt="" />
-                <img src="/src/assets/images/youtube-icon.png" alt="" />
-                <img src="/src/assets/images/tiktok-icon.png" alt="" />
+                <img src="/images/ig-icon.svg" alt="" />
+                <img src="/images/threads-icon.svg" alt="" />
+                <img src="/images/fb-icon.svg" alt="" />
+                <img src="/images/youtube-icon.png" alt="" />
+                <img src="/images/tiktok-icon.png" alt="" />
               </div>
             </div>
           </div>

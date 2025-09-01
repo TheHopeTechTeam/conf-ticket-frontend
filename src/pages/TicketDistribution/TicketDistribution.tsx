@@ -322,11 +322,7 @@ export const TicketDistribution: React.FC<TicketDistributionProps> = ({
       >
         <div className="distribution-dialog-content">
           <div className="distribution-dialog-header">
-            <img
-              className="dialog-icon"
-              src="/src/assets/images/warn.svg"
-              alt=""
-            />
+            <img className="dialog-icon" src="/images/warn.svg" alt="" />
             <h1>確認取票者資訊</h1>
             <p>票券一旦分出，將歸戶至取票者的帳戶，無法再次分票或申請退票</p>
           </div>

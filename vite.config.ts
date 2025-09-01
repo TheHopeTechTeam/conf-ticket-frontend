@@ -11,7 +11,7 @@ export default defineConfig({
         VITE_TAPPAY_APP_KEY: '',
         VITE_TAPPAY_APP_ID: '',
         VITE_APPLE_MERCHANT_ID: '',
-        VITE_GOOGLE_MERCHANT_ID: '',
+        // VITE_GOOGLE_MERCHANT_ID: '',
       },
       { defineOn: 'import.meta.env' }
     ),

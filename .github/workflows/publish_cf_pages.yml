@@ -14,7 +14,7 @@ jobs:
       VITE_TAPPAY_APP_KEY: ${{ secrets.VITE_TAPPAY_APP_KEY }}
       VITE_TAPPAY_APP_ID: ${{ secrets.VITE_TAPPAY_APP_ID }}
       VITE_APPLE_MERCHANT_ID: ${{ secrets.VITE_APPLE_MERCHANT_ID }}
-      VITE_GOOGLE_MERCHANT_ID: ${{ secrets.VITE_GOOGLE_MERCHANT_ID }}
+      # VITE_GOOGLE_MERCHANT_ID: ${{ secrets.VITE_GOOGLE_MERCHANT_ID }}
 
     steps:
       - name: Checkout repository

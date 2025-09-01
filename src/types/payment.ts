@@ -40,6 +40,6 @@ export interface PaymentReadyState {
 export interface TapPayEnvironment {
   appId: number;
   appKey: string;
-  appleMerchantId: string;
-  googleMerchantId: string;
+  appleMerchantId?: string;
+  googleMerchantId?: string;
 }

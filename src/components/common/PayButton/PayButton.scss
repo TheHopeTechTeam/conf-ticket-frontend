@@ -1,7 +1,7 @@
 #apple-pay-button-container div {
   min-height: 30px;
   border: 1px solid black;
-  background-image: url('../../../assets/images/apple-pay-icon.webp') !important;
+  background-image: url('/images/apple-pay-icon.webp') !important;
   background-size: contain;
   background-repeat: no-repeat;
   background-color: black;
@@ -24,14 +24,14 @@
 }
 
 .apple-pay-button {
-  background-image: url('../../../assets/images/apple-pay-icon.webp');
+  background-image: url('/images/apple-pay-icon.webp');
 }
 
 .google-pay-button {
-  background-image: url('../../../assets/images/google-pay-icon.webp');
+  background-image: url('/images/google-pay-icon.webp');
 }
 
 .samsung-pay-button {
   background-size: 55% !important;
-  background-image: url('../../../assets/images/samsung-pay-icon.png');
+  background-image: url('/images/samsung-pay-icon.png');
 }
