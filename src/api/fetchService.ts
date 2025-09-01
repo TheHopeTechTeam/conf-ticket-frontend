@@ -158,7 +158,7 @@ class FetchService {
   }
 }
 
-const fetchClient = new FetchService('/api');
+const fetchClient = new FetchService('http://ticket.thehope.co/api');
 const EMAIL_KEY = 'loginEmail';
 
 //  API 服務定義
