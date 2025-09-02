@@ -30,11 +30,13 @@ export const TicketsCard: React.FC<TicketProps> = ({
   const navigate = useNavigate();
 
   return (
-    <div className={`ticket-card-container ${status === TICKET_STATUS.REFUNDED ? 'ticket-refund-card-container' : ''}`}>
+    <div
+      className={`ticket-card-container ${status === TICKET_STATUS.REFUNDED ? 'ticket-refund-card-container' : ''}`}
+    >
       <div className="ticket-card-title">{title}</div>
       <div className="ticket-card-content">
         <img
-          src="/src/assets/images/ticket-sample.png"
+          src="/images/ticket-sample.png"
           alt=""
           className="ticket-card-pic"
         />
@@ -76,18 +78,23 @@ export const TicketsCard: React.FC<TicketProps> = ({
       </div>
       {status === TICKET_STATUS.PURCHASED && (
         <div className="ticket-card-btns">
-          <div className="distribution" onClick={() => navigate(ROUTES.TICKET_DISTRIBUTION)}>
+          <div
+            className="distribution"
+            onClick={() => navigate(ROUTES.TICKET_DISTRIBUTION)}
+          >
             <p className="text">前往分票</p>
             <img
-              src="/src/assets/images/white-arrow-right-icon.svg"
+              src="/images/white-arrow-right-icon.svg"
               alt=""
               className="arrow"
             />
           </div>
           <div className="refund">
-            <p className="text" onClick={() => navigate(ROUTES.REFUND)}>申請退票</p>
+            <p className="text" onClick={() => navigate(ROUTES.REFUND)}>
+              申請退票
+            </p>
             <img
-              src="/src/assets/images/white-arrow-right-icon.svg"
+              src="/images/white-arrow-right-icon.svg"
               alt=""
               className="arrow"
             />
@@ -134,4 +141,3 @@ export const TicketsCard: React.FC<TicketProps> = ({
     </div>
   );
 };
-

@@ -13,11 +13,7 @@ export const Footer: React.FC = () => {
     <>
       <footer className="footer">
         <div className="footer-content">
-          <img
-            src="/src/assets/images/footer-logo.svg"
-            alt=""
-            className="footer-logo"
-          />
+          <img src="/images/footer-logo.svg" alt="" className="footer-logo" />
           <div className="contact-info">
             <div className="contact-method">
               <p>聯繫我們</p>
@@ -27,19 +23,19 @@ export const Footer: React.FC = () => {
               <p>追蹤我們</p>
               <div>
                 <img
-                  src="/src/assets/images/ig-icon.svg"
+                  src="/images/ig-icon.svg"
                   alt="instagram"
                   onClick={() => window.open(EXTRA_ROUTES.INSTAGRAM, '_blank')}
                   className="cursor-pointer"
                 />
                 <img
-                  src="/src/assets/images/fb-icon.svg"
+                  src="/images/fb-icon.svg"
                   alt="facebook"
                   onClick={() => window.open(EXTRA_ROUTES.FACEBOOK, '_blank')}
                   className="cursor-pointer"
                 />
                 <img
-                  src="/src/assets/images/youtube-icon.png"
+                  src="/images/youtube-icon.png"
                   alt="youtube"
                   onClick={() => window.open(EXTRA_ROUTES.YOUTUBE, '_blank')}
                   className="cursor-pointer"
