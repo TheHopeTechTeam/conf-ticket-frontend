@@ -11,7 +11,7 @@ export default defineConfig({
         VITE_TAPPAY_APP_KEY: '',
         VITE_TAPPAY_APP_ID: '',
         VITE_APPLE_MERCHANT_ID: '',
-        // VITE_GOOGLE_MERCHANT_ID: '',
+        VITE_GOOGLE_MERCHANT_ID: '',
       },
       { defineOn: 'import.meta.env' }
     ),
@@ -27,10 +27,12 @@ export default defineConfig({
     allowedHosts: ['localhost', '127.0.0.1'],
     proxy: {
       '/api': {
-        target: 'hrtp://localhost:3001',
-        // target: 'http://ticket.thehope.co',
+        target: 'http://ticket.thehope.co',
         changeOrigin: true,
-        rewrite: path => path.replace(/^\/api/, ''),
+        headers: {
+          Origin: 'http://ticket.thehope.co',
+          Referer: 'http://ticket.thehope.co',
+        },
       },
     },
   },

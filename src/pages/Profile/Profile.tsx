@@ -7,6 +7,7 @@ import {
 } from '../../components/common/Dialog';
 import { NotificationMessage } from '../../components/common/Notification/Notification';
 import { Select } from '../../components/common/Select/Select';
+import { STATUS } from '../../constants/common';
 import {
   CHURCH_IDENTITY_OPTIONS,
   CHURCH_OPTIONS,
@@ -16,7 +17,6 @@ import {
 import { ROUTES } from '../../constants/routes';
 import { useAuthContext } from '../../contexts/AuthContext';
 import './Profile.scss';
-import { STATUS } from '../../constants/common';
 
 export const Profile: React.FC = () => {
   const [showNotification, setShowNotification] = useState('');
@@ -126,6 +126,7 @@ export const Profile: React.FC = () => {
           gender: fields.gender,
           tel: fields.tel,
           role: fields.churchIdentity,
+          consentedAt: new Date().toISOString(),
           location:
             fields.church === ValidChurchType.OTHER
               ? fields.churchName

@@ -19,10 +19,10 @@ import { usePaymentState } from '../../hooks/usePaymentState';
 import { useTapPay } from '../../hooks/useTapPay';
 
 import { apiService } from '../../api/fetchService';
+import { MODE, STATUS } from '../../constants/common';
 import { ROUTES } from '../../constants/routes';
 import { useAuthContext } from '../../contexts/AuthContext';
 import './Payment.scss';
-import { MODE, STATUS } from '../../constants/common';
 
 export const Payment: React.FC = () => {
   const { user } = useAuthContext();
@@ -49,7 +49,8 @@ export const Payment: React.FC = () => {
     paymentData!,
     updatePaymentReady,
     setPaymentStatus,
-    user
+    user,
+    navigate
   );
 
   const {
@@ -82,7 +83,13 @@ export const Payment: React.FC = () => {
 
   const handleCreditCardPayment = () => {
     if (!paymentData || !user) {
-      setPaymentStatus('error');
+      setPaymentStatus(STATUS.ERROR);
+      return;
+    }
+
+    // 檢查用戶是否有完整資料，如果沒有先導向 profile 頁面
+    if (!user.name) {
+      navigate(ROUTES.PROFILE);
       return;
     }
 
@@ -101,7 +108,7 @@ export const Payment: React.FC = () => {
     TPDirect.card.getPrime(async (result: any) => {
       if (result.status !== 0) {
         alert('信用卡資訊驗證失敗，請重新檢查');
-        setPaymentStatus('error');
+        setPaymentStatus(STATUS.ERROR);
         return;
       }
 
@@ -117,25 +124,25 @@ export const Payment: React.FC = () => {
         setPaymentStatus(STATUS.SUCCESS);
       } catch (error) {
         console.error('Payment failed:', error);
-        setPaymentStatus('error');
+        setPaymentStatus(STATUS.ERROR);
       }
     });
   };
 
   // Computed values
-  const { groupPassTicket, groupPassQuantity } = useMemo(() => {
-    console.log(groupPassTicket);
+  const { groupPassTicket: _groupPassTicket, groupPassQuantity } =
+    useMemo(() => {
+      if (!paymentData) return { groupPassTicket: null, groupPassQuantity: 0 };
 
-    if (!paymentData) return { groupPassTicket: null, groupPassQuantity: 0 };
+      const ticket = paymentData.tickets.find(
+        ticket => TICKET_TYPES.find(t => t.id === ticket.id)?.isGroupPass
+      );
 
-    const ticket = paymentData.tickets.find(
-      ticket => TICKET_TYPES.find(t => t.id === ticket.id)?.isGroupPass
-    );
-    return {
-      groupPassTicket: ticket || null,
-      groupPassQuantity: ticket?.selectedQuantity || 0,
-    };
-  }, [paymentData]);
+      return {
+        groupPassTicket: ticket || null,
+        groupPassQuantity: ticket?.selectedQuantity || 0,
+      };
+    }, [paymentData]);
 
   if (!paymentData) {
     return <div className="loading">載入中...</div>;

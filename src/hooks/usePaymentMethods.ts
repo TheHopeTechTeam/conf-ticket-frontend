@@ -1,8 +1,8 @@
 import { useCallback } from 'react';
 import { apiService } from '../api/fetchService';
+import { STATUS } from '../constants/common';
 import { PAYMENT_TYPES, SUPPORTED_NETWORKS } from '../constants/payment';
 import { PaymentData, PaymentReadyState } from '../types/payment';
-import { STATUS } from '../constants/common';
 
 declare global {
   interface Window {
@@ -14,10 +14,17 @@ export const usePaymentMethods = (
   paymentData: PaymentData,
   updatePaymentReady: (updates: Partial<PaymentReadyState>) => void,
   setPaymentStatus: (status: 'form' | 'success' | 'error') => void,
-  user: any
+  user: any,
+  navigate: (route: string) => void
 ) => {
   const processPayment = useCallback(
     async (prime: string) => {
+      // 檢查用戶是否有完整資料，如果沒有先導向 profile 頁面
+      if (!user?.name) {
+        navigate('/profile');
+        return;
+      }
+
       try {
         await apiService.payments.postPayments({
           prime: prime,
@@ -30,10 +37,10 @@ export const usePaymentMethods = (
         setPaymentStatus(STATUS.SUCCESS);
       } catch (error) {
         console.error('Payment failed:', error);
-        setPaymentStatus('error');
+        setPaymentStatus(STATUS.ERROR);
       }
     },
-    [setPaymentStatus, paymentData, user]
+    [setPaymentStatus, paymentData, user, navigate]
   );
 
   const setupGooglePay = useCallback(() => {
@@ -60,7 +67,7 @@ export const usePaymentMethods = (
             if (err) {
               console.error('Google Pay getPrime error:', err);
               alert('此裝置不支援 Google Pay');
-              setPaymentStatus('error');
+              setPaymentStatus(STATUS.ERROR);
               return;
             }
             processPayment(prime).catch(error => {
@@ -157,7 +164,7 @@ export const usePaymentMethods = (
       if (result.status !== 0) {
         console.error('Samsung Pay error:', result);
         alert('此裝置不支援 Samsung Pay');
-        setPaymentStatus('error');
+        setPaymentStatus(STATUS.ERROR);
         return;
       }
 

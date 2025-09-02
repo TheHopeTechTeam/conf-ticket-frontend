@@ -4,8 +4,9 @@ import Dialog from './Dialog';
 interface UserTermsDialogProps {
   isOpen: boolean;
   onClose: () => void;
-  onConfirm: () => void;
-  onCancel: () => void;
+  onConfirm?: () => void;
+  onCancel?: () => void;
+  isShowButton?: boolean;
 }
 
 export const UserTermsDialog: React.FC<UserTermsDialogProps> = ({
@@ -13,6 +14,7 @@ export const UserTermsDialog: React.FC<UserTermsDialogProps> = ({
   onClose,
   onConfirm,
   onCancel,
+  isShowButton = true,
 }) => {
   return (
     <Dialog
@@ -25,6 +27,7 @@ export const UserTermsDialog: React.FC<UserTermsDialogProps> = ({
       onConfirm={onConfirm}
       onCancel={onCancel}
       requireScrollToBottom={true}
+      isShowButton={isShowButton}
     >
       <div>
         <p className="font-size18 mb-4 font-weight600">

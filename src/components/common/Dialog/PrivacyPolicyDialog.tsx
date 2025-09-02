@@ -4,8 +4,9 @@ import Dialog from './Dialog';
 interface PrivacyPolicyDialogProps {
   isOpen: boolean;
   onClose: () => void;
-  onConfirm: () => void;
-  onCancel: () => void;
+  onConfirm?: () => void;
+  onCancel?: () => void;
+  isShowButton?: boolean;
 }
 
 export const PrivacyPolicyDialog: React.FC<PrivacyPolicyDialogProps> = ({
@@ -13,6 +14,7 @@ export const PrivacyPolicyDialog: React.FC<PrivacyPolicyDialogProps> = ({
   onClose,
   onConfirm,
   onCancel,
+  isShowButton = true,
 }) => {
   return (
     <Dialog
@@ -24,6 +26,7 @@ export const PrivacyPolicyDialog: React.FC<PrivacyPolicyDialogProps> = ({
       onConfirm={onConfirm}
       onCancel={onCancel}
       requireScrollToBottom={true}
+      isShowButton={isShowButton}
     >
       <div>
         <p>The Hope 教會個人資料使用與隱私政策同意條款</p>

@@ -158,7 +158,7 @@ class FetchService {
   }
 }
 
-const fetchClient = new FetchService('http://ticket.thehope.co/api');
+const fetchClient = new FetchService('/api');
 const EMAIL_KEY = 'loginEmail';
 
 //  API 服務定義
@@ -186,6 +186,7 @@ export const apiService = {
         tel: string;
         role: string;
         location: string;
+        consentedAt: string;
       }
     ) => {
       const response = await fetchClient.patch(`/v1/members/${id}`, data);
@@ -206,6 +207,7 @@ export const apiService = {
       return response;
     },
   },
+  tickets: {},
 };
 
 export { fetchClient };

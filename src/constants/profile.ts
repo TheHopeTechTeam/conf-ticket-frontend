@@ -8,6 +8,7 @@ export enum ValidChurchType {
 export const GENDER_OPTIONS = [
   { id: 'male', label: '男' },
   { id: 'female', label: '女' },
+  { id: 'unknown', label: '其他' },
 ];
 
 export const CHURCH_OPTIONS = [
@@ -21,7 +22,7 @@ export const CHURCH_IDENTITY_OPTIONS = [
   { id: 'senior-pastor', label: '主任牧師' },
   { id: 'pastor', label: '牧師' },
   { id: 'minister', label: '傳道' },
-  { id: 'seminary-student', label: '神學生' },
+  { id: 'seminarian', label: '神學生' },
   { id: 'staff', label: '全職同工' },
-  { id: 'member', label: '一般參加者' },
+  { id: 'default', label: '一般參加者' },
 ];
