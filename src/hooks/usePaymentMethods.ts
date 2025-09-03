@@ -3,6 +3,7 @@ import { apiService } from '../api/fetchService';
 import { STATUS } from '../constants/common';
 import { PAYMENT_TYPES, SUPPORTED_NETWORKS } from '../constants/payment';
 import { PaymentData, PaymentReadyState } from '../types/payment';
+import { ROUTES } from '../constants/routes';
 
 declare global {
   interface Window {
@@ -21,7 +22,7 @@ export const usePaymentMethods = (
     async (prime: string) => {
       // 檢查用戶是否有完整資料，如果沒有先導向 profile 頁面
       if (!user?.name) {
-        navigate('/profile');
+        navigate(ROUTES.PROFILE);
         return;
       }
 

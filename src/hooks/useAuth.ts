@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { apiService } from '../api/fetchService';
 import { ROUTES } from '../constants/routes';
 
@@ -20,14 +20,32 @@ export const useAuth = () => {
     error: null,
   });
   const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     checkAuth();
-  }, []);
+  }, [location.pathname]);
 
   const checkAuth = async () => {
     try {
       setAuthState(prev => ({ ...prev, isLoading: true, error: null }));
+
+      // 只對 conf-ticket 路徑執行認證檢查
+      const protectedRoutes = Object.values(ROUTES);
+      const currentPath = location.pathname;
+      const needsAuth = protectedRoutes.includes(currentPath as any) && currentPath !== ROUTES.LOGIN;
+      
+      if (!needsAuth) {
+        // 不需要認證的路徑，直接設為已驗證狀態
+        setAuthState({
+          isLoading: false,
+          isAuthenticated: true,
+          user: null,
+          memberData: null,
+          error: null,
+        });
+        return;
+      }
 
       // 檢查是否有 token
       const token = localStorage.getItem('auth_token');

@@ -1,18 +1,19 @@
 // 路由常數
 export const ROUTES = {
-  HOME: '/',
-  LOGIN: '/login',
-  PROFILE: '/profile',
-  MAIN: '/main',
-  BOOKING: '/booking',
-  TICKETS: '/tickets',
-  PAYMENT: '/payment',
-  REFUND: '/refund',
-  TICKET_DISTRIBUTION: '/ticket-distribution',
+  HOME: '/conf-ticket',
+  LOGIN: '/conf-ticket/login',
+  PROFILE: '/conf-ticket/profile',
+  MAIN: '/conf-ticket/main',
+  BOOKING: '/conf-ticket/booking',
+  TICKETS: '/conf-ticket/tickets',
+  PAYMENT: '/conf-ticket/payment',
+  REFUND: '/conf-ticket/refund',
+  TICKET_DISTRIBUTION: '/conf-ticket/ticket-distribution',
 } as const;
 
 // 路由常數
 export const EXTRA_ROUTES = {
+  MAIN_SITE: 'https://thehope.co/',
   FACEBOOK: 'https://www.facebook.com/insideTheHope',
   INSTAGRAM: 'https://www.instagram.com/thehope.co/',
   YOUTUBE: 'https://www.youtube.com/c/TheHopeTV',

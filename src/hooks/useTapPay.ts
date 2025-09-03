@@ -16,7 +16,7 @@ export const useTapPay = (
       appId: Number(import.meta.env.VITE_TAPPAY_APP_ID) || 0,
       appKey: import.meta.env.VITE_TAPPAY_APP_KEY || '',
       appleMerchantId: import.meta.env.VITE_APPLE_MERCHANT_ID || '',
-      // googleMerchantId: import.meta.env.VITE_GOOGLE_MERCHANT_ID || '',
+      googleMerchantId: import.meta.env.VITE_GOOGLE_MERCHANT_ID || '',
     };
 
     if (!config.appId || !config.appKey) {
