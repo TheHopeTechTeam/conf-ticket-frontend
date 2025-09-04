@@ -90,6 +90,8 @@ export const Tickets = () => {
     },
   ];
 
+  console.log(fallbackTickets);
+
   // 根據當前狀態過濾票券
   const tickets = allTickets.filter(
     (ticket: any) => ticket.status === activeStatus
