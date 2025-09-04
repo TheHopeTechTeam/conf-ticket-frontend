@@ -207,7 +207,14 @@ export const apiService = {
       return response;
     },
   },
-  tickets: {},
+  tickets: {
+    getTickets: async (id: string) => {
+      const response = await fetchClient.get(
+        `/v1/tickets?page=1&limit=100&sort=-createdAt&where[owner][equals]=${id}`
+      );
+      return response;
+    },
+  },
 };
 
 export { fetchClient };

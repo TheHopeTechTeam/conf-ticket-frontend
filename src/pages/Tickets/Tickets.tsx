@@ -1,13 +1,14 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { apiService } from '../../api/fetchService';
 import { TicketsCard } from '../../components/common/TicketsCard/TicketsCard';
-import { useAuthContext } from '../../contexts/AuthContext';
 import { ROUTES } from '../../constants/routes';
 import {
   TICKET_ALERT_MESSAGES,
   TICKET_STATUS,
   TicketStatusType,
 } from '../../constants/tickets';
+import { useAuthContext } from '../../contexts/AuthContext';
 import './Tickets.scss';
 
 export const Tickets = () => {
@@ -16,12 +17,37 @@ export const Tickets = () => {
   const [activeStatus, setActiveStatus] = useState<TicketStatusType>(
     TICKET_STATUS.COLLECTED
   );
+  const [allTickets, setAllTickets] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   // 現在您可以使用 memberData 中的所有資料
   console.log('Member Data:', memberData);
   console.log('User Info:', user);
 
-  const allTickets: any = [
+  // 初始化時調用 getTickets API
+  useEffect(() => {
+    const fetchTickets = async () => {
+      if (user?.id) {
+        try {
+          setIsLoading(true);
+          const response = await apiService.tickets.getTickets(user.id);
+          setAllTickets(response.docs || []);
+          console.log('Fetched Tickets:', allTickets);
+        } catch (error) {
+          console.error('Failed to fetch tickets:', error);
+          setAllTickets([]);
+        } finally {
+          setIsLoading(false);
+        }
+      }
+    };
+
+    fetchTickets();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user?.id]);
+
+  // 備用的靜態數據（當 API 失敗時使用）
+  const fallbackTickets: any = [
     {
       id: 1,
       title: 'SPECIAL A PASS',
@@ -154,7 +180,11 @@ export const Tickets = () => {
           <div className="ticket-alert-content">{getAlertContent()}</div>
         </div>
         <div className="tickets-content-container">
-          {tickets.length === 0 ? (
+          {isLoading ? (
+            <div style={{ textAlign: 'center', padding: '2rem' }}>
+              <p>載入中...</p>
+            </div>
+          ) : tickets.length === 0 ? (
             <>
               <img
                 src="/images/ticket-sample.png"
