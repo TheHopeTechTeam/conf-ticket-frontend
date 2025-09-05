@@ -1,0 +1,5 @@
+# Redirect Cloudflare Pages traffic
+# https://developers.cloudflare.com/pages/configuration/redirects
+
+# Preserve all path structure and querystrings in requesting /api/*
+/api/* http://thehope.app/:splat 200

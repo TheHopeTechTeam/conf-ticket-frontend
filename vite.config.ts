@@ -27,11 +27,15 @@ export default defineConfig({
     allowedHosts: ['localhost', '127.0.0.1'],
     proxy: {
       '/api': {
-        target: 'http://ticket.thehope.co',
         changeOrigin: true,
+
+        // NOTE: 本機開發時，正式環境的 API 網域
+        target: 'http://thehope.app',
+
+        // NOTE: 本機開發時，設定 headers 以解決後端設定的 CORS 問題
         headers: {
-          Origin: 'http://ticket.thehope.co',
-          Referer: 'http://ticket.thehope.co',
+          Origin: 'http://thehope.app',
+          Referer: 'http://thehope.app',
         },
       },
     },
