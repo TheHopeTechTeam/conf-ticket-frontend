@@ -75,6 +75,9 @@ export const usePaymentMethods = (
   const setupGooglePay = useCallback(() => {
     if (!paymentData) return;
 
+    // 立即滾動到頂部
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+
     window.TPDirect.googlePay.getPrime(function (err: any, prime: any) {
       if (err) {
         console.error('Google Pay getPrime error:', err);
@@ -148,6 +151,9 @@ export const usePaymentMethods = (
   const setupApplePay = useCallback(() => {
     if (!paymentData) return;
 
+    // 立即滾動到頂部
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+
     // 只有在用戶點擊時才獲取 prime 並處理付款
     window.TPDirect.paymentRequestApi.getPrime((result: any) => {
       if (result.status === 0) {
@@ -187,6 +193,9 @@ export const usePaymentMethods = (
 
   const setupSamsungPay = useCallback(() => {
     if (!paymentData) return;
+
+    // 立即滾動到頂部
+    window.scrollTo({ top: 0, behavior: 'smooth' });
 
     window.TPDirect.samsungPay.getPrime(function (result: any) {
       if (result.status !== 0) {

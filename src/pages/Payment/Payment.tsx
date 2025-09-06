@@ -30,6 +30,11 @@ export const Payment: React.FC = () => {
   const [paymentStatus, setPaymentStatus] = useState<
     'form' | 'success' | 'error'
   >('form');
+
+  // 滾動至頂部
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
   const [creditCardStatus, setCreditCardStatus] = useState<CreditCardStatus>({
     number: '',
     expiry: '',
@@ -105,6 +110,9 @@ export const Payment: React.FC = () => {
   }, [navigate]);
 
   const handleCreditCardPayment = () => {
+    // 立即滾動到頂部
+    scrollToTop();
+    
     if (!paymentData || !user) {
       setPaymentStatus(STATUS.ERROR);
       return;
