@@ -44,10 +44,8 @@ export const usePaymentMethods = (
     [setPaymentStatus, paymentData, user, navigate]
   );
 
-  const setupGooglePay = useCallback(() => {
+  const checkGooglePayAvailability = useCallback(() => {
     if (!paymentData) return;
-
-    updatePaymentReady({ isGooglePayReady: true });
 
     const paymentRequest = {
       allowedNetworks: SUPPORTED_NETWORKS.COMMON,
@@ -60,31 +58,54 @@ export const usePaymentMethods = (
       function (err: any, result: any) {
         if (err) {
           console.error('Google Pay setup error:', err);
+          updatePaymentReady({ isGooglePayReady: false });
           return;
         }
 
         if (result.canUseGooglePay) {
-          window.TPDirect.googlePay.getPrime(function (err: any, prime: any) {
-            if (err) {
-              console.error('Google Pay getPrime error:', err);
-              alert('此裝置不支援 Google Pay');
-              setPaymentStatus(STATUS.ERROR);
-              return;
-            }
-            processPayment(prime).catch(error => {
-              console.error('Google Pay processPayment error:', error);
-            });
-          });
+          updatePaymentReady({ isGooglePayReady: true });
+        } else {
+          updatePaymentReady({ isGooglePayReady: false });
+          alert('此裝置不支援 Google Pay');
         }
       }
     );
-  }, [paymentData, updatePaymentReady, processPayment, setPaymentStatus]);
+  }, [paymentData, updatePaymentReady]);
 
-  const setupApplePay = useCallback(async () => {
+  const setupGooglePay = useCallback(() => {
     if (!paymentData) return;
 
-    updatePaymentReady({ isApplePayReady: true });
+    window.TPDirect.googlePay.getPrime(function (err: any, prime: any) {
+      if (err) {
+        console.error('Google Pay getPrime error:', err);
+        alert('此裝置不支援 Google Pay');
+        setPaymentStatus(STATUS.ERROR);
+        return;
+      }
+      processPayment(prime).catch(error => {
+        console.error('Google Pay processPayment error:', error);
+      });
+    });
+  }, [paymentData, processPayment, setPaymentStatus]);
 
+  const checkApplePayAvailability = useCallback(() => {
+    if (!paymentData) return;
+
+    // 首先檢查瀏覽器和設備支援度
+    const isAvailable = window.TPDirect.paymentRequestApi.checkAvailability();
+    
+    if (!isAvailable) {
+      updatePaymentReady({ isApplePayReady: false });
+      return;
+    }
+
+    // 設定 Apple Pay 基本配置
+    window.TPDirect.paymentRequestApi.setupApplePay({
+      merchantIdentifier: 'merchant.your.app.id', // 需要替換為實際的 merchant ID
+      countryCode: 'TW'
+    });
+
+    // 設定付款請求但不立即觸發
     const paymentRequest = {
       supportedNetworks: SUPPORTED_NETWORKS.COMMON,
       supportedMethods: ['apple_pay'],
@@ -106,48 +127,42 @@ export const usePaymentMethods = (
       },
     };
 
-    const result: {
-      browserSupportPaymentRequest: boolean;
-      canMakePaymentWithActiveCard: boolean;
-    } = await new Promise(resolve => {
-      window.TPDirect.paymentRequestApi.setupPaymentRequest(
-        paymentRequest,
-        resolve
-      );
-    });
-
-    if (!result.browserSupportPaymentRequest) {
-      updatePaymentReady({ isApplePayReady: false });
-      alert('此裝置不支援 Apple Pay');
-      return;
-    }
-
-    if (!result.canMakePaymentWithActiveCard) {
-      updatePaymentReady({ isApplePayReady: false });
-      alert('此裝置沒有支援的卡片可以付款');
-      return;
-    }
-
-    setTimeout(() => {
-      const button = document.querySelector('#apple-pay-button-container');
-      if (button) {
-        button.innerHTML = '';
-        window.TPDirect.paymentRequestApi.setupTappayPaymentButton(
-          '#apple-pay-button-container',
-          (getPrimeResult: any) => {
-            processPayment(getPrimeResult.prime).catch(error => {
-              console.error('Apple Pay processPayment error:', error);
-            });
+    // 驗證付款能力
+    window.TPDirect.paymentRequestApi.setupPaymentRequest(
+      paymentRequest,
+      (result: any) => {
+        if (result.browserSupportPaymentRequest && result.canMakePaymentWithActiveCard) {
+          updatePaymentReady({ isApplePayReady: true });
+        } else {
+          updatePaymentReady({ isApplePayReady: false });
+          if (!result.browserSupportPaymentRequest) {
+            alert('此裝置不支援 Apple Pay');
+          } else if (!result.canMakePaymentWithActiveCard) {
+            alert('此裝置沒有支援的卡片可以付款');
           }
-        );
+        }
       }
-    }, 100);
-  }, [paymentData, updatePaymentReady, processPayment, setPaymentStatus]);
+    );
+  }, [paymentData, updatePaymentReady]);
 
-  const setupSamsungPay = useCallback(() => {
+  const setupApplePay = useCallback(() => {
     if (!paymentData) return;
 
-    updatePaymentReady({ isSamsungPayReady: true });
+    // 只有在用戶點擊時才獲取 prime 並處理付款
+    window.TPDirect.paymentRequestApi.getPrime((result: any) => {
+      if (result.status === 0) {
+        processPayment(result.prime).catch(error => {
+          console.error('Apple Pay processPayment error:', error);
+        });
+      } else {
+        console.error('Apple Pay getPrime error:', result);
+        setPaymentStatus('error');
+      }
+    });
+  }, [paymentData, processPayment, setPaymentStatus]);
+
+  const checkSamsungPayAvailability = useCallback(() => {
+    if (!paymentData) return;
 
     const paymentRequest = {
       supportedNetworks: SUPPORTED_NETWORKS.SAMSUNG_LIMITED,
@@ -160,7 +175,19 @@ export const usePaymentMethods = (
       },
     };
 
-    window.TPDirect.samsungPay.setupPaymentRequest(paymentRequest);
+    try {
+      window.TPDirect.samsungPay.setupPaymentRequest(paymentRequest);
+      updatePaymentReady({ isSamsungPayReady: true });
+    } catch (error) {
+      console.error('Samsung Pay setup error:', error);
+      updatePaymentReady({ isSamsungPayReady: false });
+      alert('此裝置不支援 Samsung Pay');
+    }
+  }, [paymentData, updatePaymentReady]);
+
+  const setupSamsungPay = useCallback(() => {
+    if (!paymentData) return;
+
     window.TPDirect.samsungPay.getPrime(function (result: any) {
       if (result.status !== 0) {
         console.error('Samsung Pay error:', result);
@@ -173,11 +200,14 @@ export const usePaymentMethods = (
         console.error('Samsung Pay processPayment error:', error);
       });
     });
-  }, [paymentData, updatePaymentReady, processPayment, setPaymentStatus]);
+  }, [paymentData, processPayment, setPaymentStatus]);
 
   return {
     setupGooglePay,
     setupApplePay,
     setupSamsungPay,
+    checkApplePayAvailability,
+    checkGooglePayAvailability,
+    checkSamsungPayAvailability,
   };
 };

@@ -22,6 +22,7 @@ export default defineConfig({
     assetsDir: '.',
   },
   server: {
+    // https: {}, // 啟用 HTTPS
     host: true, // 讓 Vite 綁定 0.0.0.0，允許內網訪問
     port: 5173, // 可選，設定開發伺服器端口
     allowedHosts: ['localhost', '127.0.0.1'],
@@ -32,15 +33,15 @@ export default defineConfig({
         // NOTE: 本機開發時，正式環境的 API 網域
         // NOTE: 本機開發時，設定 headers 以解決後端設定的 CORS 問題
 
-        // target: 'http://thehope.app',
+        target: 'http://thehope.app',
         headers: {
           Origin: 'http://thehope.app',
           Referer: 'http://thehope.app',
         },
 
         // NOTE: 本機開發時，若有 mock server，則改為指向 mock server
-        target: 'http://localhost:3001',
-        rewrite: path => path.replace(/^\/api/, ''),
+        // target: 'http://localhost:3001',
+        // rewrite: path => path.replace(/^\/api/, ''),
       },
     },
   },

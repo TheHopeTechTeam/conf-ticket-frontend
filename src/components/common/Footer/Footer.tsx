@@ -17,7 +17,7 @@ export const Footer: React.FC = () => {
           <div className="contact-info">
             <div className="contact-method">
               <p>聯繫我們</p>
-              <p>info@thehope.co</p>
+              <p>conference@thehope.co</p>
             </div>
             <div className="contact-method">
               <p>追蹤我們</p>

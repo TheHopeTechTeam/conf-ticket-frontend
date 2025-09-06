@@ -1,17 +1,3 @@
-#apple-pay-button-container div {
-  min-height: 30px;
-  border: 1px solid black;
-  background-image: url('/images/apple-pay-icon.webp') !important;
-  background-size: contain;
-  background-repeat: no-repeat;
-  background-color: black;
-  background-position: 50% 50%;
-  border-radius: 5px;
-  padding: 10px;
-  margin: 10px auto;
-  transition: background-color 0.15s;
-  appearance: none !important;
-}
 
 .pay-button {
   background-size: contain;
@@ -25,6 +11,12 @@
 
 .apple-pay-button {
   background-image: url('/images/apple-pay-icon.webp');
+  
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    background-color: #666;
+  }
 }
 
 .google-pay-button {

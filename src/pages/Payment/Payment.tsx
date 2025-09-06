@@ -44,13 +44,37 @@ export const Payment: React.FC = () => {
     updatePaymentReady,
   } = usePaymentState();
   useTapPay(setCreditCardStatus);
-  const { setupGooglePay, setupApplePay, setupSamsungPay } = usePaymentMethods(
+  const { 
+    setupGooglePay, 
+    setupApplePay, 
+    setupSamsungPay, 
+    checkApplePayAvailability,
+    checkGooglePayAvailability,
+    checkSamsungPayAvailability 
+  } = usePaymentMethods(
     paymentData!,
     updatePaymentReady,
     setPaymentStatus,
     user,
     navigate
   );
+
+  // 當付款方式改變時，檢查相應付款方法的可用性
+  useEffect(() => {
+    if (!paymentData) return;
+
+    switch (paymentType) {
+      case PAYMENT_TYPES.APPLE_PAY:
+        checkApplePayAvailability();
+        break;
+      case PAYMENT_TYPES.GOOGLE_PAY:
+        checkGooglePayAvailability();
+        break;
+      case PAYMENT_TYPES.SAMSUNG_PAY:
+        checkSamsungPayAvailability();
+        break;
+    }
+  }, [paymentType, paymentData, checkApplePayAvailability, checkGooglePayAvailability, checkSamsungPayAvailability]);
 
   const {
     register,

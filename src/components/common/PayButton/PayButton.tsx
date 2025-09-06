@@ -29,13 +29,12 @@ const PayButton: React.FC<PayButtonProps> = ({
   const renderPaymentButton = () => {
     switch (paymentType) {
       case PAYMENT_TYPES.APPLE_PAY:
-        return isApplePayReady ? (
-          <div id="apple-pay-button-container" onClick={setupApplePay} />
-        ) : (
+        return (
           <button
             type="button"
             className="pay-button apple-pay-button"
-            disabled
+            onClick={isApplePayReady ? setupApplePay : undefined}
+            disabled={!isApplePayReady}
           />
         );
 
