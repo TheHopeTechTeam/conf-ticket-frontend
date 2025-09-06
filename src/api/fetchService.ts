@@ -2,7 +2,7 @@ import { ROUTES } from '../constants/routes';
 
 class FetchService {
   private baseURL: string;
-  private readonly TOKEN_KEY = 'auth_token';
+  private readonly TOKEN_KEY = 'token';
 
   constructor(baseURL: string) {
     this.baseURL = baseURL;
@@ -207,6 +207,14 @@ export const apiService = {
       return response;
     },
   },
+  ticketsTypes: {
+    getTicketsTypes: async () => {
+      const response = await fetchClient.get(
+        '/v1/ticketTypes?page=1&limit=20&sort=-createdAt'
+      );
+      return response;
+    },
+  },
   tickets: {
     getTickets: async (id: string) => {
       const response = await fetchClient.get(
@@ -218,3 +226,4 @@ export const apiService = {
 };
 
 export { fetchClient };
+

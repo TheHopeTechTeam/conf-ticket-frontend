@@ -9,7 +9,6 @@ import { TicketItem } from '../../components/common/TicketItem/TicketItem';
 
 // Constants and types
 import { PAYMENT_TYPES } from '../../constants/payment';
-import { TICKET_TYPES } from '../../constants/tickets';
 import { CreditCardStatus, PaymentData } from '../../types/payment';
 
 // Custom hooks
@@ -130,12 +129,12 @@ export const Payment: React.FC = () => {
   };
 
   // Computed values
-  const { groupPassTicket: _groupPassTicket, groupPassQuantity } =
+  const { groupPassTicket: _groupPassTicket } =
     useMemo(() => {
       if (!paymentData) return { groupPassTicket: null, groupPassQuantity: 0 };
 
       const ticket = paymentData.tickets.find(
-        ticket => TICKET_TYPES.find(t => t.id === ticket.id)?.isGroupPass
+        ticket => ticket.isMemberInfoRequired
       );
 
       return {
@@ -160,22 +159,20 @@ export const Payment: React.FC = () => {
               <h2>請確認您選購的票券類型與數量</h2>
               <div className="ticket-list">
                 {paymentData.tickets.map(ticket => {
-                  const ticketInfo = TICKET_TYPES.find(t => t.id === ticket.id);
-                  if (!ticketInfo) return null;
-
-                  if (ticketInfo.isGroupPass) {
+                  if (ticket.isMemberInfoRequired) {
+                    const ticketFormData = paymentData.groupPassFormData[ticket.id] || [];
                     return (
                       <div key={ticket.id} className="booking-group-pass-item">
                         <TicketItem
                           mode={MODE.VIEW}
-                          ticket={ticketInfo}
+                          ticket={ticket}
                           quantity={ticket.selectedQuantity}
                         />
-                        {paymentData.groupPassFormData.length > 0 && (
+                        {ticketFormData.length > 0 && (
                           <GroupPassForm
                             mode={MODE.VIEW}
-                            quantity={groupPassQuantity}
-                            formData={paymentData.groupPassFormData}
+                            quantity={ticket.selectedQuantity}
+                            formData={ticketFormData}
                           />
                         )}
                       </div>
@@ -186,7 +183,7 @@ export const Payment: React.FC = () => {
                     <TicketItem
                       key={ticket.id}
                       mode="view"
-                      ticket={ticketInfo}
+                      ticket={ticket}
                       quantity={ticket.selectedQuantity}
                     />
                   );
@@ -275,3 +272,4 @@ export const Payment: React.FC = () => {
     </>
   );
 };
+

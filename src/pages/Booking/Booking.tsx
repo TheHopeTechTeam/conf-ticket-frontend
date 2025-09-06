@@ -1,9 +1,11 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { apiService } from '../../api/fetchService';
 import { GroupPassForm } from '../../components/common/GroupPassForm/GroupPassForm';
 import { TicketItem } from '../../components/common/TicketItem/TicketItem';
+import { MODE } from '../../constants/common';
 import { ROUTES } from '../../constants/routes';
-import { TICKET_TYPES } from '../../constants/tickets';
+import { TicketInfo } from '../../constants/tickets';
 import './Booking.scss';
 interface TicketQuantities {
   [key: string]: number;
@@ -16,8 +18,41 @@ interface GroupPassFormData {
   phone: string;
 }
 
+interface TicketFormData {
+  [ticketId: string]: GroupPassFormData[];
+}
+
+interface TicketValidationState {
+  [ticketId: string]: boolean;
+}
+
 export const Booking: React.FC = () => {
   const navigate = useNavigate();
+  const [ticketTypes, setTicketTypes] = useState<TicketInfo[]>([]);
+
+  // 載入票券類型
+  useEffect(() => {
+    const loadTicketTypes = async () => {
+      try {
+        const { docs } = await apiService.ticketsTypes.getTicketsTypes();
+
+        setTicketTypes(docs.map((ticket: TicketInfo) => ({
+          id: ticket.id,
+          name: ticket.name,
+          price: ticket.price,
+          image: ticket.image,
+          caption: ticket.caption || '',
+          description: ticket.description || [],
+          isMemberInfoRequired: Boolean(ticket.isMemberInfoRequired),
+        })));
+
+      } catch (error) {
+        console.error('載入票券類型失敗:', error);
+      }
+    };
+
+    loadTicketTypes();
+  }, []);
 
   // 初始化時檢查是否有儲存的資料（從 sessionStorage）
   const initializeFromStorage = () => {
@@ -26,15 +61,25 @@ export const Booking: React.FC = () => {
       try {
         const data = JSON.parse(storedData);
         const quantities: TicketQuantities = {};
+        const formData: TicketFormData = {};
 
         // 從儲存的票券資料重建數量狀態
         data.tickets.forEach((ticket: any) => {
           quantities[ticket.id] = ticket.selectedQuantity;
         });
 
+        // 還原表單資料（如果存在且是對象格式）
+        if (data.groupPassFormData && typeof data.groupPassFormData === 'object') {
+          Object.keys(data.groupPassFormData).forEach(ticketId => {
+            if (Array.isArray(data.groupPassFormData[ticketId])) {
+              formData[ticketId] = data.groupPassFormData[ticketId];
+            }
+          });
+        }
+
         return {
           quantities,
-          formData: data.groupPassFormData || [],
+          formData,
         };
       } catch (error) {
         console.error('解析儲存資料失敗:', error);
@@ -43,11 +88,8 @@ export const Booking: React.FC = () => {
 
     // 預設值
     return {
-      quantities: TICKET_TYPES.reduce((acc, ticket) => {
-        acc[ticket.id] = 0;
-        return acc;
-      }, {} as TicketQuantities),
-      formData: [],
+      quantities: {},
+      formData: {},
     };
   };
 
@@ -57,16 +99,15 @@ export const Booking: React.FC = () => {
     initialData.quantities
   );
 
-  const [groupPassFormData, setGroupPassFormData] = useState<
-    GroupPassFormData[]
-  >(initialData.formData);
+  const [ticketFormData, setTicketFormData] = useState<TicketFormData>(
+    initialData.formData
+  );
+  const [ticketValidationStates, setTicketValidationStates] = useState<TicketValidationState>({});
 
-  const [isGroupFormValid, setIsGroupFormValid] = useState(false);
-
-  // 監控群組表單有效性
+  // 監控表單有效性
   React.useEffect(() => {
-    console.log('群組表單是否有效:', isGroupFormValid);
-  }, [isGroupFormValid]);
+    // console.log('表單驗證狀態:', ticketValidationStates);
+  }, [ticketValidationStates]);
 
   const handleQuantityChange = (ticketId: string, quantity: number) => {
     setTicketQuantities(prev => ({
@@ -75,16 +116,49 @@ export const Booking: React.FC = () => {
     }));
   };
 
-  const handleGroupPassFormChange = useCallback(
-    (index: number, formData: GroupPassFormData) => {
-      setGroupPassFormData(prev => {
-        const updated = [...prev];
-        updated[index] = formData;
-        return updated;
-      });
-    },
-    []
-  );
+  const handleFormDataChange = useCallback((ticketId: string, index: number, formData: GroupPassFormData) => {
+    setTicketFormData(prev => {
+      const currentTicketData = prev[ticketId] || [];
+      const updatedData = [...currentTicketData];
+      updatedData[index] = formData;
+
+      return {
+        ...prev,
+        [ticketId]: updatedData
+      };
+    });
+  }, []);
+
+  const handleValidationChange = useCallback((ticketId: string, isValid: boolean) => {
+    setTicketValidationStates(prev => ({
+      ...prev,
+      [ticketId]: isValid
+    }));
+  }, []);
+
+  // 為每個票券創建穩定的回調函數
+  const ticketHandlers = useMemo(() => {
+    const handlers: {
+      [ticketId: string]: {
+        onFormDataChange: (index: number, formData: GroupPassFormData) => void;
+        onValidationChange: (isValid: boolean) => void;
+      }
+    } = {};
+
+    ticketTypes.forEach(ticket => {
+      if (ticket.isMemberInfoRequired) {
+        handlers[ticket.id] = {
+          onFormDataChange: (index: number, formData: GroupPassFormData) =>
+            handleFormDataChange(ticket.id, index, formData),
+          onValidationChange: (isValid: boolean) =>
+            handleValidationChange(ticket.id, isValid)
+        };
+      }
+    });
+
+    return handlers;
+  }, [ticketTypes, handleFormDataChange, handleValidationChange]);
+
 
   const getTotalQuantity = () => {
     return Object.values(ticketQuantities).reduce(
@@ -97,7 +171,7 @@ export const Booking: React.FC = () => {
     const selectedTickets = Object.entries(ticketQuantities)
       .filter(([, quantity]) => quantity > 0)
       .map(([ticketId, quantity]) => {
-        const ticket = TICKET_TYPES.find(t => t.id === ticketId);
+        const ticket = ticketTypes.find(t => t.id === ticketId);
         return {
           ...ticket,
           selectedQuantity: quantity,
@@ -114,12 +188,29 @@ export const Booking: React.FC = () => {
       0
     );
 
+    // 收集所有票券的表單資料，按票券 ID 分組
+    const groupedFormData: { [ticketId: string]: GroupPassFormData[] } = {};
+    ticketTypes.forEach(ticket => {
+      if (ticket.isMemberInfoRequired) {
+        const quantity = ticketQuantities[ticket.id] || 0;
+        const formData = ticketFormData[ticket.id] || [];
+        const validFormData: GroupPassFormData[] = [];
+
+        for (let i = 0; i < quantity; i++) {
+          if (formData[i]) {
+            validFormData.push(formData[i]);
+          }
+        }
+
+        if (validFormData.length > 0) {
+          groupedFormData[ticket.id] = validFormData;
+        }
+      }
+    });
+
     return {
       tickets: selectedTickets,
-      groupPassFormData:
-        groupPassQuantity > 0
-          ? groupPassFormData.slice(0, groupPassQuantity)
-          : [],
+      groupPassFormData: groupedFormData,
       summary: {
         totalAmount,
         totalQuantity,
@@ -136,41 +227,52 @@ export const Booking: React.FC = () => {
     navigate(ROUTES.PAYMENT);
   };
 
-  const groupPassQuantity = ticketQuantities['group'] || 0;
+  // 檢查所有需要會員資訊的票券的表單是否都有效
+  const areAllFormsValid = () => {
+    const memberInfoRequiredTickets = ticketTypes.filter(ticket => ticket.isMemberInfoRequired);
+    return memberInfoRequiredTickets.every(ticket => {
+      const quantity = ticketQuantities[ticket.id] || 0;
+      if (quantity === 0) return true; // 沒有選擇的票券不需要驗證
+      return ticketValidationStates[ticket.id] === true;
+    });
+  };
 
   // 下一步按鈕禁用條件：
   // 1. 沒有選擇任何票券
-  // 2. 有選擇群組票券但群組表單無效
-  const isNextButtonDisabled =
-    getTotalQuantity() === 0 || (groupPassQuantity > 0 && !isGroupFormValid);
+  // 2. 有選擇需要會員資訊的票券但表單無效
+  const isNextButtonDisabled = getTotalQuantity() === 0 || !areAllFormsValid();
+
   return (
     <div className="form-container booking-container">
       <h1>選擇票券類型與數量</h1>
       <div className="booking-content">
-        {TICKET_TYPES.map(ticket => {
-          if (ticket.isGroupPass) {
+        {ticketTypes.map(ticket => {
+          if (ticket.isMemberInfoRequired) {
+            const currentTicketQuantity = ticketQuantities[ticket.id] || 0;
             return (
               <div key={ticket.id} className="booking-group-pass-item">
                 <TicketItem
-                  mode="edit"
+                  mode={MODE.EDIT}
                   ticket={ticket}
-                  quantity={ticketQuantities[ticket.id] || 0}
+                  quantity={currentTicketQuantity}
                   onQuantityChange={handleQuantityChange}
                 />
-                <GroupPassForm
-                  mode="edit"
-                  quantity={groupPassQuantity}
-                  formData={groupPassFormData}
-                  onFormDataChange={handleGroupPassFormChange}
-                  onValidationChange={setIsGroupFormValid}
-                />
+                {currentTicketQuantity > 0 && ticketHandlers[ticket.id] && (
+                  <GroupPassForm
+                    mode={MODE.EDIT}
+                    quantity={currentTicketQuantity}
+                    formData={ticketFormData[ticket.id] || []}
+                    onFormDataChange={ticketHandlers[ticket.id].onFormDataChange}
+                    onValidationChange={ticketHandlers[ticket.id].onValidationChange}
+                  />
+                )}
               </div>
             );
           }
 
           return (
             <TicketItem
-              mode="edit"
+              mode={MODE.EDIT}
               key={ticket.id}
               ticket={ticket}
               quantity={ticketQuantities[ticket.id] || 0}
@@ -197,3 +299,4 @@ export const Booking: React.FC = () => {
     </div>
   );
 };
+

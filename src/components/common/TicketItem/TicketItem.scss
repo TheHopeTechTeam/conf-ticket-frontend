@@ -22,6 +22,8 @@
       display: flex;
       flex-direction: column;
       gap: 12px;
+      max-width: 460px;
+      width: 100%;
 
       .ticket-info-title {
         span {

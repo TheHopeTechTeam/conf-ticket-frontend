@@ -1,3 +1,4 @@
+
 export interface SelectedTicket {
   id: string;
   name: string;
@@ -17,8 +18,8 @@ export interface GroupPassFormData {
 }
 
 export interface PaymentData {
-  tickets: SelectedTicket[];
-  groupPassFormData: GroupPassFormData[];
+  tickets: any[];
+  groupPassFormData: { [ticketId: string]: GroupPassFormData[] };
   summary: {
     totalAmount: number;
     totalQuantity: number;
@@ -43,3 +44,4 @@ export interface TapPayEnvironment {
   appleMerchantId?: string;
   googleMerchantId?: string;
 }
+

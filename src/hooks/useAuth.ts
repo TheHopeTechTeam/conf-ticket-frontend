@@ -34,7 +34,7 @@ export const useAuth = () => {
       const protectedRoutes = Object.values(ROUTES);
       const currentPath = location.pathname;
       const needsAuth = protectedRoutes.includes(currentPath as any) && currentPath !== ROUTES.LOGIN;
-      
+
       if (!needsAuth) {
         // 不需要認證的路徑，直接設為已驗證狀態
         setAuthState({
@@ -48,7 +48,7 @@ export const useAuth = () => {
       }
 
       // 檢查是否有 token
-      const token = localStorage.getItem('auth_token');
+      const token = localStorage.getItem('token');
       if (!token) {
         // 沒有 token，直接導向登入頁
         navigate(ROUTES.LOGIN);
@@ -69,14 +69,14 @@ export const useAuth = () => {
         });
       } else {
         // API 回應無效，清除 token 並導向登入
-        localStorage.removeItem('auth_token');
+        localStorage.removeItem('token');
         navigate(ROUTES.LOGIN);
       }
     } catch (error) {
       console.error('Auth check failed:', error);
 
       // API 錯誤，清除 token 並導向登入
-      localStorage.removeItem('auth_token');
+      localStorage.removeItem('token');
       setAuthState({
         isLoading: false,
         isAuthenticated: false,
@@ -89,7 +89,7 @@ export const useAuth = () => {
   };
 
   const logout = () => {
-    localStorage.removeItem('auth_token');
+    localStorage.removeItem('token');
     setAuthState({
       isLoading: false,
       isAuthenticated: false,

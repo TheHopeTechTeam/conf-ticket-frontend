@@ -4,13 +4,13 @@ import './Header.scss';
 
 export const Header = () => {
   const navigate = useNavigate();
-  // local storage 裡是否有 auth_token
-  const token = localStorage.getItem('auth_token');
+  // local storage 裡是否有 token
+  const token = localStorage.getItem('token');
 
   const handleClick = () => {
     if (token) {
       // 登出：移除 token 並導向登入頁面
-      localStorage.removeItem('auth_token');
+      localStorage.removeItem('token');
       navigate(ROUTES.LOGIN);
     } else {
       // 前往票券系統：導向 main 頁面

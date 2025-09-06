@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
-import './GroupPassForm.scss';
 import { MODE } from '../../../constants/common';
+import './GroupPassForm.scss';
 
 export interface GroupPassFormData {
   name: string;
@@ -103,6 +103,7 @@ export const GroupPassForm: React.FC<GroupPassFormProps> = ({
         trigger(); // 觸發整個表單驗證
       }, 100);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); // 只在組件初始化時執行一次
 
   // 監控表單有效性變化
@@ -132,7 +133,7 @@ export const GroupPassForm: React.FC<GroupPassFormProps> = ({
       }
     };
 
-    // 設定定時器來定期檢查表單變化（因為 watch 不可靠）
+    // 設定定時器來定期檢查表單變化
     const interval = setInterval(handleFormChange, 500); // 每500ms檢查一次
 
     return () => clearInterval(interval);
@@ -144,12 +145,6 @@ export const GroupPassForm: React.FC<GroupPassFormProps> = ({
   ) => {
     await trigger(`users.${index}.${field}` as any);
   };
-
-  // 調試：手動檢查表單值的函數
-  // const debugFormValues = () => {
-  //   const values = getValues();
-  //   console.log('手動檢查表單值:', values);
-  // };
 
   if (quantity === 0) {
     return null;
@@ -333,3 +328,4 @@ export const GroupPassForm: React.FC<GroupPassFormProps> = ({
     </div>
   );
 };
+

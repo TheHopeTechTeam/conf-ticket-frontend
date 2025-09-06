@@ -1,8 +1,8 @@
 import React from 'react';
+import { MODE } from '../../../constants/common';
 import { TicketInfo } from '../../../constants/tickets';
 import { QuantitySelector } from '../QuantitySelector/QuantitySelector';
 import './TicketItem.scss';
-import { MODE } from '../../../constants/common';
 
 interface TicketItemProps {
   ticket: TicketInfo;
@@ -46,12 +46,12 @@ export const TicketItem: React.FC<TicketItemProps> = ({
               >
                 ${ticket.price.toLocaleString()}
               </span>
-              {ticket.remark && (
-                <p className="ticket-info-remark">{ticket.remark}</p>
+              {ticket.caption && (
+                <p className="ticket-info-remark">{ticket.caption}</p>
               )}
             </div>
             <ul className="ticket-info-list">
-              {ticket.features.map((feature, index) => (
+              {ticket.description.map((feature, index) => (
                 <li key={index} className="ticket-info-content">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -68,14 +68,7 @@ export const TicketItem: React.FC<TicketItemProps> = ({
                     />
                   </svg>
                   <p>
-                    {feature.text.split('\n').map((line, lineIndex) => (
-                      <React.Fragment key={lineIndex}>
-                        {line}
-                        {lineIndex < feature.text.split('\n').length - 1 && (
-                          <br />
-                        )}
-                      </React.Fragment>
-                    ))}
+                    {feature}
                   </p>
                 </li>
               ))}
@@ -97,7 +90,7 @@ export const TicketItem: React.FC<TicketItemProps> = ({
         </div>
       </div>
       <ul className="ticket-info-list-mobile">
-        {ticket.features.map((feature, index) => (
+        {ticket.description.map((feature, index) => (
           <li key={index} className="ticket-info-content">
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -109,12 +102,7 @@ export const TicketItem: React.FC<TicketItemProps> = ({
               <circle cx="10.0003" cy="9.99935" r="3.33333" fill="#778793" />
             </svg>
             <p>
-              {feature.text.split('\n').map((line, lineIndex) => (
-                <React.Fragment key={lineIndex}>
-                  {line}
-                  {lineIndex < feature.text.split('\n').length - 1 && <br />}
-                </React.Fragment>
-              ))}
+              {feature}
             </p>
           </li>
         ))}
@@ -122,3 +110,4 @@ export const TicketItem: React.FC<TicketItemProps> = ({
     </div>
   );
 };
+

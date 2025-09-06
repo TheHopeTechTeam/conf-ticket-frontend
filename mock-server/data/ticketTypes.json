@@ -1,0 +1,98 @@
+{
+    "docs": [
+        {
+            "id": "0179faef-6de3-4594-ae64-43d69ca71cc9",
+            "name": "Simultaneous Interpretation Device",
+            "isMemberInfoRequired": null,
+            "price": 500,
+            "image": "/images/ticket-sample.png",
+            "caption": "注意事項注意事項",
+            "description": [
+                "特會全場次 & WORKSHOP & 特會影片（一個月線上觀看權限）",
+                "5/3 與 Pastors 午餐及 Live QA 與談牧者：萬力豪牧師、周巽正牧師、柳子駿牧師、葉豪軒牧師"
+            ],
+            "updatedBy": "7257303d-a1b9-4a7c-9932-19b52a3d27ac",
+            "deletedAt": null,
+            "deletedBy": null,
+            "updatedAt": "2025-09-04T07:31:54.158Z",
+            "createdAt": "2025-09-04T07:24:41.234Z"
+        },
+        {
+            "id": "1c1e107a-059d-4cdc-8b45-0808725ab548",
+            "name": "leadership",
+            "isMemberInfoRequired": null,
+            "price": 3400,
+            "image": "/images/ticket-sample.png",
+            "caption": "注意事項注意事項",
+            "description": [
+                "特會全場次 & WORKSHOP & 特會影片（一個月線上觀看權限）",
+                "5/3 與 Pastors 午餐及 Live QA 與談牧者：萬力豪牧師、周巽正牧師、柳子駿牧師、葉豪軒牧師"
+            ],
+            "updatedBy": "1d7f13b9-d367-4234-a0d5-428e8133e8ed",
+            "deletedAt": null,
+            "deletedBy": null,
+            "updatedAt": "2025-09-02T05:32:05.646Z",
+            "createdAt": "2025-09-02T05:32:05.646Z"
+        },
+        {
+            "id": "41150d56-e6fc-44fe-8b3a-0dfec4116af1",
+            "name": "regular",
+            "isMemberInfoRequired": null,
+            "price": 2800,
+            "image": "/images/ticket-sample.png",
+            "caption": "",
+            "description": [
+                "特會全場次 & WORKSHOP & 特會影片（一個月線上觀看權限）",
+                "5/3 與 Pastors 午餐及 Live QA 與談牧者：萬力豪牧師、周巽正牧師、柳子駿牧師、葉豪軒牧師"
+            ],
+            "updatedBy": "1d7f13b9-d367-4234-a0d5-428e8133e8ed",
+            "deletedAt": null,
+            "deletedBy": null,
+            "updatedAt": "2025-09-02T05:19:56.555Z",
+            "createdAt": "2025-09-02T05:19:56.553Z"
+        },
+        {
+            "id": "group-pass-001",
+            "name": "group pass",
+            "isMemberInfoRequired": true,
+            "image": "/images/ticket-sample.png",
+            "caption": "",
+            "description": [
+                "特會全場次 & WORKSHOP & 特會影片（一個月線上觀看權限）",
+                "5/3 與 Pastors 午餐及 Live QA 與談牧者：萬力豪牧師、周巽正牧師、柳子駿牧師、葉豪軒牧師"
+            ],
+            "price": 3000,
+            "updatedBy": "1d7f13b9-d367-4234-a0d5-428e8133e8ed",
+            "deletedAt": null,
+            "deletedBy": null,
+            "updatedAt": "2025-09-02T05:19:56.555Z",
+            "createdAt": "2025-09-02T05:19:56.553Z"
+        },
+        {
+            "id": "group-pass-002",
+            "name": "group pass2",
+            "isMemberInfoRequired": false,
+            "image": "/images/ticket-sample.png",
+            "caption": "",
+            "description": [
+                "特會全場次 & WORKSHOP & 特會影片（一個月線上觀看權限）",
+                "5/3 與 Pastors 午餐及 Live QA 與談牧者：萬力豪牧師、周巽正牧師、柳子駿牧師、葉豪軒牧師"
+            ],
+            "price": 3000,
+            "updatedBy": "1d7f13b9-d367-4234-a0d5-428e8133e8ed",
+            "deletedAt": null,
+            "deletedBy": null,
+            "updatedAt": "2025-09-02T05:19:56.555Z",
+            "createdAt": "2025-09-02T05:19:56.553Z"
+        }
+    ],
+    "hasNextPage": false,
+    "hasPrevPage": false,
+    "limit": 10,
+    "nextPage": null,
+    "page": 1,
+    "pagingCounter": 1,
+    "prevPage": null,
+    "totalDocs": 3,
+    "totalPages": 1
+}

@@ -53,6 +53,11 @@ app.patch('/v1/members/:memberId', (req, res) => {
   res.json(login);
 });
 
+app.get('/v1/ticketTypes', (req, res) => {
+  const login = readDB('ticketTypes.json');
+  res.json(login);
+});
+
 app.post('/v1/payments', (req, res) => {
   const login = readDB('postPayments.json');
   res.json(login);
