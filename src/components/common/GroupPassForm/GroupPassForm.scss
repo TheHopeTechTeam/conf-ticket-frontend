@@ -9,6 +9,7 @@
   }
 
   .group-pass-form-record-title {
+    text-align: center;
     margin-top: 36px;
   }
 
@@ -68,7 +69,7 @@
     }
 
     .record-title {
-      color: #3C5464;
+      color: #3c5464;
     }
 
     &::-webkit-details-marker {
@@ -107,7 +108,7 @@
         }
 
         .form-record-label {
-          color: #A5A9AB;
+          color: #a5a9ab;
           padding-left: 0px;
         }
 
@@ -140,8 +141,15 @@
 
 @media screen and (max-width: 768px) {
   .group-pass-form {
+    .group-pass-form-title {
+      padding-left: 4px;
+      color: #000;
+    }
+
     .group-pass-form-record-title {
       margin-top: 24px;
+      text-align: left;
+      color: #3c5464 !important;
     }
 
     .group-pass-form-content {

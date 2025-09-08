@@ -29,7 +29,7 @@ export const Payment: React.FC = () => {
   const [paymentData, setPaymentData] = useState<PaymentData | null>(null);
   const [paymentStatus, setPaymentStatus] = useState<
     'form' | 'success' | 'error'
-  >('form');
+  >(STATUS.FORM);
 
   // 滾動至頂部
   const scrollToTop = () => {
@@ -49,13 +49,13 @@ export const Payment: React.FC = () => {
     updatePaymentReady,
   } = usePaymentState();
   useTapPay(setCreditCardStatus);
-  const { 
-    setupGooglePay, 
-    setupApplePay, 
-    setupSamsungPay, 
+  const {
+    setupGooglePay,
+    setupApplePay,
+    setupSamsungPay,
     checkApplePayAvailability,
     checkGooglePayAvailability,
-    checkSamsungPayAvailability 
+    checkSamsungPayAvailability,
   } = usePaymentMethods(
     paymentData!,
     updatePaymentReady,
@@ -79,7 +79,13 @@ export const Payment: React.FC = () => {
         checkSamsungPayAvailability();
         break;
     }
-  }, [paymentType, paymentData, checkApplePayAvailability, checkGooglePayAvailability, checkSamsungPayAvailability]);
+  }, [
+    paymentType,
+    paymentData,
+    checkApplePayAvailability,
+    checkGooglePayAvailability,
+    checkSamsungPayAvailability,
+  ]);
 
   const {
     register,
@@ -112,7 +118,7 @@ export const Payment: React.FC = () => {
   const handleCreditCardPayment = () => {
     // 立即滾動到頂部
     scrollToTop();
-    
+
     if (!paymentData || !user) {
       setPaymentStatus(STATUS.ERROR);
       return;
@@ -161,19 +167,18 @@ export const Payment: React.FC = () => {
   };
 
   // Computed values
-  const { groupPassTicket: _groupPassTicket } =
-    useMemo(() => {
-      if (!paymentData) return { groupPassTicket: null, groupPassQuantity: 0 };
+  const { groupPassTicket: _groupPassTicket } = useMemo(() => {
+    if (!paymentData) return { groupPassTicket: null, groupPassQuantity: 0 };
 
-      const ticket = paymentData.tickets.find(
-        ticket => ticket.isMemberInfoRequired
-      );
+    const ticket = paymentData.tickets.find(
+      ticket => ticket.isMemberInfoRequired
+    );
 
-      return {
-        groupPassTicket: ticket || null,
-        groupPassQuantity: ticket?.selectedQuantity || 0,
-      };
-    }, [paymentData]);
+    return {
+      groupPassTicket: ticket || null,
+      groupPassQuantity: ticket?.selectedQuantity || 0,
+    };
+  }, [paymentData]);
 
   if (!paymentData) {
     return <div className="loading">載入中...</div>;
@@ -181,7 +186,7 @@ export const Payment: React.FC = () => {
 
   return (
     <>
-      {paymentStatus === 'form' && (
+      {paymentStatus === STATUS.FORM && (
         <div className="form-container payment-container">
           <h1>確認訂單</h1>
 
@@ -192,7 +197,8 @@ export const Payment: React.FC = () => {
               <div className="ticket-list">
                 {paymentData.tickets.map(ticket => {
                   if (ticket.isMemberInfoRequired) {
-                    const ticketFormData = paymentData.groupPassFormData[ticket.id] || [];
+                    const ticketFormData =
+                      paymentData.groupPassFormData[ticket.id] || [];
                     return (
                       <div key={ticket.id} className="booking-group-pass-item">
                         <TicketItem
@@ -214,7 +220,7 @@ export const Payment: React.FC = () => {
                   return (
                     <TicketItem
                       key={ticket.id}
-                      mode="view"
+                      mode={MODE.VIEW}
                       ticket={ticket}
                       quantity={ticket.selectedQuantity}
                     />
@@ -297,11 +303,10 @@ export const Payment: React.FC = () => {
           errorText="失敗"
           retryButtonText="前往購買票券"
           backButtonText="返回票券系統"
-          onRetryClick={() => setPaymentStatus('form')}
+          onRetryClick={() => setPaymentStatus(STATUS.FORM)}
           onBackClick={() => navigate(ROUTES.HOME)}
         />
       )}
     </>
   );
 };
-

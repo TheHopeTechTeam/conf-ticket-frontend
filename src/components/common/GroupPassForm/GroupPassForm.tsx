@@ -153,7 +153,7 @@ export const GroupPassForm: React.FC<GroupPassFormProps> = ({
   return (
     <div className="group-pass-form">
       <p
-        className={`group-pass-form-title ${mode !== 'edit' && 'group-pass-form-record-title'}`}
+        className={`group-pass-form-title ${mode !== MODE.EDIT && 'group-pass-form-record-title'}`}
       >
         {' '}
         {mode === MODE.EDIT
@@ -163,7 +163,7 @@ export const GroupPassForm: React.FC<GroupPassFormProps> = ({
       {fields.map((field, index) => (
         <details key={field.id} className="group-pass-form-details">
           <summary>
-            <span className={`title ${mode !== 'edit' && 'record-title'}`}>
+            <span className={`title ${mode !== MODE.EDIT && 'record-title'}`}>
               使用者{index + 1}
             </span>
             <svg
@@ -328,4 +328,3 @@ export const GroupPassForm: React.FC<GroupPassFormProps> = ({
     </div>
   );
 };
-

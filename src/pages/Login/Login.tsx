@@ -165,7 +165,8 @@ export const Login: React.FC = () => {
           <div className="form-block">
             <h1 className="mb-16">登入/註冊帳戶</h1>
             <p className="form-description">
-              請輸入您的電子郵件地址，並按下「發送電子郵件」，您將收到來自noreply@thehope.co寄送的一次性密碼。
+              系統已將登入連結寄至 <span className="email">{email}</span>
+              ，請前往您填寫的信箱，點擊信件中的連結登入票券系統。
             </p>
             <div className="form-label">
               <label htmlFor="email">電子郵件</label>

@@ -14,7 +14,7 @@ export const Refund: React.FC = () => {
   const [isCheckboxChecked, setIsCheckboxChecked] = React.useState(false);
   const [refundStatus, setRefundStatus] = useState<
     'form' | 'success' | 'error'
-  >('form');
+  >(STATUS.FORM);
 
   const handleRefundConfirm = () => {
     setRefundDialogOpen(false);
@@ -37,7 +37,7 @@ export const Refund: React.FC = () => {
   // 組件邏輯
   return (
     <>
-      {refundStatus === 'form' && (
+      {refundStatus === STATUS.FORM && (
         <div className="form-container refund-container">
           <div className="refund-header">
             <h1>確認退票資訊</h1>
@@ -233,7 +233,7 @@ export const Refund: React.FC = () => {
           errorText="失敗"
           retryButtonText="再試一次"
           backButtonText="返回票券系統"
-          onRetryClick={() => setRefundStatus('form')}
+          onRetryClick={() => setRefundStatus(STATUS.FORM)}
           onBackClick={() => navigate(ROUTES.MAIN)}
         />
       )}
