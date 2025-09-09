@@ -1,9 +1,9 @@
 import { useCallback } from 'react';
 import { apiService } from '../api/fetchService';
 import { STATUS } from '../constants/common';
-import { PAYMENT_TYPES, SUPPORTED_NETWORKS } from '../constants/payment';
-import { PaymentData, PaymentReadyState } from '../types/payment';
+import { SUPPORTED_NETWORKS } from '../constants/payment';
 import { ROUTES } from '../constants/routes';
+import { PaymentData, PaymentReadyState } from '../types/payment';
 
 declare global {
   interface Window {
@@ -27,13 +27,13 @@ export const usePaymentMethods = (
       }
 
       try {
-        await apiService.payments.postPayments({
+        await apiService.orders.postOrderCreate({
+          memberId: user.id,
           prime: prime,
-          amount: paymentData.summary.totalAmount,
-          name: user.name,
-          email: user.email,
-          telNumber: user.tel,
-          paymentType: PAYMENT_TYPES.CREDIT_CARD,
+          items: paymentData.tickets.map(ticket => ({
+            ticketTypeId: ticket.id,
+            quantity: ticket.selectedQuantity,
+          })),
         });
         setPaymentStatus(STATUS.SUCCESS);
       } catch (error) {
@@ -96,7 +96,7 @@ export const usePaymentMethods = (
 
     // 首先檢查瀏覽器和設備支援度
     const isAvailable = window.TPDirect.paymentRequestApi.checkAvailability();
-    
+
     if (!isAvailable) {
       updatePaymentReady({ isApplePayReady: false });
       return;
@@ -105,7 +105,7 @@ export const usePaymentMethods = (
     // 設定 Apple Pay 基本配置
     window.TPDirect.paymentRequestApi.setupApplePay({
       merchantIdentifier: 'merchant.your.app.id', // 需要替換為實際的 merchant ID
-      countryCode: 'TW'
+      countryCode: 'TW',
     });
 
     // 設定付款請求但不立即觸發
@@ -134,7 +134,10 @@ export const usePaymentMethods = (
     window.TPDirect.paymentRequestApi.setupPaymentRequest(
       paymentRequest,
       (result: any) => {
-        if (result.browserSupportPaymentRequest && result.canMakePaymentWithActiveCard) {
+        if (
+          result.browserSupportPaymentRequest &&
+          result.canMakePaymentWithActiveCard
+        ) {
           updatePaymentReady({ isApplePayReady: true });
         } else {
           updatePaymentReady({ isApplePayReady: false });

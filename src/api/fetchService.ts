@@ -1,4 +1,5 @@
 import { ROUTES } from '../constants/routes';
+import { PostOrderCreateRequest } from '../types/payment';
 
 class FetchService {
   private baseURL: string;
@@ -82,8 +83,6 @@ class FetchService {
           } else if (!errorData.success) {
             // 處理一般錯誤格式
             alert(errorData.message);
-          } else {
-            alert(`請求失敗: ${response.status} ${response.statusText}`);
           }
 
           const error = new Error(
@@ -193,25 +192,17 @@ export const apiService = {
       return response;
     },
   },
-  payments: {
-    postPayments: async (data: {
-      prime: string;
-      amount: number;
-      name: string;
-      email: string;
-      telCountryCode?: string;
-      telNumber: string;
-      paymentType: string;
-    }) => {
-      const response = await fetchClient.post('/v1/payments', data);
-      return response;
-    },
-  },
   ticketsTypes: {
     getTicketsTypes: async () => {
       const response = await fetchClient.get(
         '/v1/ticketTypes?page=1&limit=20&sort=-createdAt'
       );
+      return response;
+    },
+  },
+  orders: {
+    postOrderCreate: async (data: PostOrderCreateRequest) => {
+      const response = await fetchClient.post('/v1/orders/create', data);
       return response;
     },
   },
@@ -226,4 +217,3 @@ export const apiService = {
 };
 
 export { fetchClient };
-

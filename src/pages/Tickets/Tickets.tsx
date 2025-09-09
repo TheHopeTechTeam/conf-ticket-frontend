@@ -13,7 +13,7 @@ import './Tickets.scss';
 
 export const Tickets = () => {
   const navigate = useNavigate();
-  const { user, memberData } = useAuthContext(); // 取得用戶資料和完整的 API response
+  const { user } = useAuthContext(); // 取得用戶資料和完整的 API response
   const [activeStatus, setActiveStatus] = useState<TicketStatusType>(
     TICKET_STATUS.COLLECTED
   );
@@ -21,8 +21,38 @@ export const Tickets = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   // 現在您可以使用 memberData 中的所有資料
-  console.log('Member Data:', memberData);
-  console.log('User Info:', user);
+  // console.log('Member Data:', memberData);
+  // console.log('User Info:', user);
+
+  // 根據狀態過濾票券的函數
+  const getFilteredTickets = (tickets: any[], status: TicketStatusType) => {
+    return tickets.filter((ticket: any) => {
+      switch (status) {
+        case TICKET_STATUS.PURCHASED:
+          return !ticket.isRedeemed && !ticket.isRefunded;
+        case TICKET_STATUS.COLLECTED:
+          return ticket.isRedeemed && !ticket.isRefunded;
+        case TICKET_STATUS.REFUNDED:
+          return ticket.isRefunded;
+        default:
+          return false;
+      }
+    });
+  };
+
+  // 根據 order.id 分組票券的函數
+  const groupTicketsByOrder = (tickets: any[]): any[][] => {
+    const grouped = tickets.reduce((groups: any, ticket: any) => {
+      const orderId = ticket.order?.id || 'unknown';
+      if (!groups[orderId]) {
+        groups[orderId] = [];
+      }
+      groups[orderId].push(ticket);
+      return groups;
+    }, {});
+
+    return Object.values(grouped) as any[][];
+  };
 
   // 初始化時調用 getTickets API
   useEffect(() => {
@@ -31,8 +61,20 @@ export const Tickets = () => {
         try {
           setIsLoading(true);
           const response = await apiService.tickets.getTickets(user.id);
-          setAllTickets(response.docs || []);
-          console.log('Fetched Tickets:', allTickets);
+          const tickets = response.docs || [];
+          setAllTickets(tickets);
+          console.log('Fetched Tickets:', tickets);
+
+          // 設定預設 Tab：若已購買有票券則跳到已購買，否則跳到已取票
+          const purchasedTickets = getFilteredTickets(
+            tickets,
+            TICKET_STATUS.PURCHASED
+          );
+          if (purchasedTickets.length > 0) {
+            setActiveStatus(TICKET_STATUS.PURCHASED);
+          } else {
+            setActiveStatus(TICKET_STATUS.COLLECTED);
+          }
         } catch (error) {
           console.error('Failed to fetch tickets:', error);
           setAllTickets([]);
@@ -46,76 +88,22 @@ export const Tickets = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user?.id]);
 
-  // 備用的靜態數據（當 API 失敗時使用）
-  const fallbackTickets: any = [
-    {
-      id: 1,
-      title: 'SPECIAL A PASS',
-      startDate: '05.01',
-      endDate: '05.03',
-      startTime: '18:00',
-      endTime: '21:30',
-      quantity: 1,
-      orderNumber: '1139475023',
-      status: TICKET_STATUS.PURCHASED,
-      details: [
-        '特會全場次＆WORKSHOP＆特會影片（一個月線上觀看權限）',
-        '5/2 與 Wade Joye 牧師午餐及 Live QA',
-        '5/3 與 Pastors 午餐及 Live QA（與談牧者：高力豪牧師、周學正牧師、柳子駿牧師、葉豐軒牧師）',
-      ],
-    },
-    {
-      id: 2,
-      title: 'VIP PASS',
-      startDate: '05.02',
-      endDate: '05.03',
-      startTime: '19:00',
-      endTime: '22:00',
-      quantity: 2,
-      orderNumber: '1139475024',
-      status: TICKET_STATUS.COLLECTED,
-      details: ['特會全場次入場權限', 'VIP 座位區域', '專屬休息區使用權'],
-    },
-    {
-      id: 3,
-      title: 'GENERAL PASS',
-      startDate: '05.03',
-      endDate: '05.03',
-      startTime: '20:00',
-      endTime: '21:30',
-      quantity: 1,
-      orderNumber: '1139475025',
-      status: TICKET_STATUS.REFUNDED,
-      details: ['特會當日入場權限', '一般座位區域'],
-    },
-  ];
-
-  console.log(fallbackTickets);
-
-  // 根據當前狀態過濾票券
-  const tickets = allTickets.filter(
-    (ticket: any) => ticket.status === activeStatus
-  );
-
   // 票券狀態數據
   const ticketStatuses = [
     {
       key: TICKET_STATUS.PURCHASED,
       title: '已購買',
-      count: allTickets.filter((t: any) => t.status === TICKET_STATUS.PURCHASED)
-        .length,
+      count: getFilteredTickets(allTickets, TICKET_STATUS.PURCHASED).length,
     },
     {
       key: TICKET_STATUS.COLLECTED,
       title: '已取票',
-      count: allTickets.filter((t: any) => t.status === TICKET_STATUS.COLLECTED)
-        .length,
+      count: getFilteredTickets(allTickets, TICKET_STATUS.COLLECTED).length,
     },
     {
       key: TICKET_STATUS.REFUNDED,
       title: '退票紀錄',
-      count: allTickets.filter((t: any) => t.status === TICKET_STATUS.REFUNDED)
-        .length,
+      count: getFilteredTickets(allTickets, TICKET_STATUS.REFUNDED).length,
     },
   ];
 
@@ -186,57 +174,86 @@ export const Tickets = () => {
             <div style={{ textAlign: 'center', padding: '2rem' }}>
               <p>載入中...</p>
             </div>
-          ) : tickets.length === 0 ? (
-            <>
-              <img
-                src="/images/ticket-sample.png"
-                alt=""
-                className="ticket-pic"
-              />
-              <p>{noTicketText()}</p>
-            </>
           ) : (
-            <>
-              {tickets.map((ticket: any) => (
-                <TicketsCard
-                  key={ticket.id}
-                  title={ticket.title}
-                  startDate={ticket.startDate}
-                  endDate={ticket.endDate}
-                  startTime={ticket.startTime}
-                  endTime={ticket.endTime}
-                  quantity={ticket.quantity}
-                  orderNumber={ticket.orderNumber}
-                  details={ticket.details}
-                  status={ticket.status}
-                />
-              ))}
-            </>
+            (() => {
+              const filteredTickets = getFilteredTickets(
+                allTickets,
+                activeStatus
+              );
+              const groupedTickets = groupTicketsByOrder(filteredTickets);
+
+              console.log('Filtered Tickets:', filteredTickets);
+              console.log('Grouped Tickets:', groupedTickets);
+
+              return filteredTickets.length === 0 ? (
+                <>
+                  <img
+                    src="/images/ticket-sample.png"
+                    alt=""
+                    className="ticket-pic"
+                  />
+                  <p>{noTicketText()}</p>
+                </>
+              ) : (
+                <>
+                  {groupedTickets.map(
+                    (orderGroup: any[], groupIndex: number) => {
+                      // 取得該訂單的基本資訊（從第一張票券取得）
+                      const firstTicket = orderGroup[0];
+                      const orderItems = firstTicket.order?.items || [];
+                      const totalQuantity = orderItems.reduce(
+                        (sum: number, item: any) => sum + (item.quantity || 0),
+                        0
+                      );
+
+                      return (
+                        <TicketsCard
+                          key={`${firstTicket.order?.id}-${groupIndex}`}
+                          title={firstTicket.type?.name || '票券'}
+                          quantity={totalQuantity}
+                          orderNumber={
+                            firstTicket.order?.id?.slice(-8) || 'N/A'
+                          }
+                          details={[]}
+                          status={activeStatus}
+                        />
+                      );
+                    }
+                  )}
+                </>
+              );
+            })()
           )}
         </div>
-        {tickets.length === 0 &&
-          (activeStatus === TICKET_STATUS.PURCHASED ||
-            activeStatus === TICKET_STATUS.COLLECTED) && (
-            <div className="tickets-btn-container">
-              {(activeStatus === TICKET_STATUS.PURCHASED ||
-                activeStatus === TICKET_STATUS.COLLECTED) && (
-                <button
-                  className="btn send-btn"
-                  onClick={() => navigate(ROUTES.BOOKING)}
-                >
-                  前往購票
-                </button>
-              )}
-              {activeStatus === TICKET_STATUS.COLLECTED && (
-                <button
-                  className="btn cancel-btn"
-                  onClick={() => navigate(ROUTES.MAIN)}
-                >
-                  返回票券系統
-                </button>
-              )}
-            </div>
-          )}
+        {(() => {
+          const filteredTickets = getFilteredTickets(allTickets, activeStatus);
+
+          return (
+            filteredTickets.length === 0 &&
+            (activeStatus === TICKET_STATUS.PURCHASED ||
+              activeStatus === TICKET_STATUS.COLLECTED)
+          );
+        })() && (
+          <div className="tickets-btn-container">
+            {(activeStatus === TICKET_STATUS.PURCHASED ||
+              activeStatus === TICKET_STATUS.COLLECTED) && (
+              <button
+                className="btn send-btn"
+                onClick={() => navigate(ROUTES.BOOKING)}
+              >
+                前往購票
+              </button>
+            )}
+            {activeStatus === TICKET_STATUS.COLLECTED && (
+              <button
+                className="btn cancel-btn"
+                onClick={() => navigate(ROUTES.MAIN)}
+              >
+                返回票券系統
+              </button>
+            )}
+          </div>
+        )}
       </div>
     </>
   );

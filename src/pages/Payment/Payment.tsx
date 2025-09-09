@@ -150,13 +150,13 @@ export const Payment: React.FC = () => {
       }
 
       try {
-        await apiService.payments.postPayments({
+        await apiService.orders.postOrderCreate({
+          memberId: user.id,
           prime: result.card.prime,
-          amount: paymentData.summary.totalAmount,
-          name: user.name,
-          email: user.email,
-          telNumber: user.tel,
-          paymentType: PAYMENT_TYPES.CREDIT_CARD,
+          items: paymentData.tickets.map(ticket => ({
+            ticketTypeId: ticket.id,
+            quantity: ticket.selectedQuantity,
+          })),
         });
         setPaymentStatus(STATUS.SUCCESS);
       } catch (error) {

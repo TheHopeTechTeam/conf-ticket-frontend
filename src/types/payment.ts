@@ -1,4 +1,3 @@
-
 export interface SelectedTicket {
   id: string;
   name: string;
@@ -45,3 +44,15 @@ export interface TapPayEnvironment {
   googleMerchantId?: string;
 }
 
+// 訂單項目介面
+export interface OrderItem {
+  ticketTypeId: string;
+  quantity: number;
+}
+
+// 建立訂單請求介面
+export interface PostOrderCreateRequest {
+  memberId: string;
+  prime: string;
+  items: OrderItem[];
+}

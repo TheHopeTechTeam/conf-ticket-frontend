@@ -7,9 +7,9 @@ import {
   TicketDistributionProps,
   TicketInfo,
 } from '../../components/interface/TicketDistribution';
+import { STATUS } from '../../constants/common';
 import { ROUTES } from '../../constants/routes';
 import './TicketDistribution.scss';
-import { STATUS } from '../../constants/common';
 
 export const TicketDistribution: React.FC<TicketDistributionProps> = ({
   ticketInfo,
@@ -18,23 +18,16 @@ export const TicketDistribution: React.FC<TicketDistributionProps> = ({
   const location = useLocation();
   const [distributionStatus, setDistributionStatus] = useState<
     'form' | 'success' | 'error'
-  >('form');
+  >(STATUS.FORM);
 
   // 從路由狀態或 props 獲取票券資訊
   const currentTicketInfo: TicketInfo = useMemo(() => {
-    return (
-      ticketInfo ||
-      location.state?.ticketInfo || {
-        ticketType: 'CREATIVE PASS',
-        ticketCount: 2,
-        useDate: '2026.05.01-2026.05.03',
-      }
-    );
+    return ticketInfo || location.state?.ticketInfo;
   }, [ticketInfo, location.state]);
 
   // 動態生成取票者狀態
   const [recipients, setRecipients] = useState<RecipientInfo[]>(() =>
-    Array.from({ length: currentTicketInfo.ticketCount }, (_, index) => ({
+    Array.from({ length: currentTicketInfo?.ticketCount || 0 }, (_, index) => ({
       id: `recipient-${index + 1}`,
       email: '',
       isSelected: false,
@@ -48,6 +41,12 @@ export const TicketDistribution: React.FC<TicketDistributionProps> = ({
 
   // 表單錯誤狀態
   const [formError, setFormError] = useState('');
+
+  // 如果沒有票券資訊，導回票券頁面
+  if (!currentTicketInfo) {
+    navigate(ROUTES.TICKETS);
+    return null;
+  }
 
   // 郵件驗證函式
   const validateEmail = (email: string): boolean => {
@@ -163,7 +162,7 @@ export const TicketDistribution: React.FC<TicketDistributionProps> = ({
 
   return (
     <>
-      {distributionStatus === 'form' && (
+      {distributionStatus === STATUS.FORM && (
         <form
           className="form-container distribution-container"
           onSubmit={onSubmit}
@@ -306,7 +305,7 @@ export const TicketDistribution: React.FC<TicketDistributionProps> = ({
           errorText="失敗"
           retryButtonText="再試一次"
           backButtonText="返回票券系統"
-          onRetryClick={() => setDistributionStatus('form')}
+          onRetryClick={() => setDistributionStatus(STATUS.FORM)}
           onBackClick={() => navigate(ROUTES.HOME)}
         />
       )}

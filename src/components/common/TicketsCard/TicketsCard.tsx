@@ -6,10 +6,6 @@ import './TicketsCard.scss';
 
 interface TicketProps {
   title: string;
-  startDate: string;
-  endDate: string;
-  startTime: string;
-  endTime: string;
   quantity: number;
   orderNumber: string;
   details: string[];
@@ -18,10 +14,6 @@ interface TicketProps {
 
 export const TicketsCard: React.FC<TicketProps> = ({
   title,
-  startDate,
-  endDate,
-  startTime,
-  endTime,
   quantity,
   orderNumber,
   details,
@@ -45,10 +37,10 @@ export const TicketsCard: React.FC<TicketProps> = ({
             <div className="ticket-card-info-start">
               <p className="year">2026</p>
               <div className="ticket-card-info-date">
-                <p className="date">{startDate}</p>
+                <p className="date">05.01</p>
                 <div className="ticket-card-info-day">
                   <p>五</p>
-                  <p>{startTime}</p>
+                  <p>18:00</p>
                 </div>
               </div>
             </div>
@@ -56,10 +48,10 @@ export const TicketsCard: React.FC<TicketProps> = ({
             <div className="ticket-card-info-start">
               <p className="year">2026</p>
               <div className="ticket-card-info-date">
-                <p className="date">{endDate}</p>
+                <p className="date">05.03</p>
                 <div className="ticket-card-info-day">
                   <p>日</p>
-                  <p>{endTime}</p>
+                  <p>21:30</p>
                 </div>
               </div>
             </div>
@@ -80,7 +72,20 @@ export const TicketsCard: React.FC<TicketProps> = ({
         <div className="ticket-card-btns">
           <div
             className="distribution"
-            onClick={() => navigate(ROUTES.TICKET_DISTRIBUTION)}
+            onClick={() =>
+              navigate(ROUTES.TICKET_DISTRIBUTION, {
+                state: {
+                  ticketInfo: {
+                    ticketType: title,
+                    ticketCount: quantity,
+                    orderNumber: orderNumber,
+                    details: details,
+                    status: status,
+                    useDate: '2026.05.01-2026.05.03',
+                  },
+                },
+              })
+            }
           >
             <p className="text">前往分票</p>
             <img
@@ -90,7 +95,23 @@ export const TicketsCard: React.FC<TicketProps> = ({
             />
           </div>
           <div className="refund">
-            <p className="text" onClick={() => navigate(ROUTES.REFUND)}>
+            <p
+              className="text"
+              onClick={() =>
+                navigate(ROUTES.REFUND, {
+                  state: {
+                    ticketInfo: {
+                      ticketType: title,
+                      ticketCount: quantity,
+                      orderNumber: orderNumber,
+                      details: details,
+                      status: status,
+                      useDate: '2026.05.01-2026.05.03',
+                    },
+                  },
+                })
+              }
+            >
               申請退票
             </p>
             <img
@@ -130,13 +151,13 @@ export const TicketsCard: React.FC<TicketProps> = ({
           </svg>
         </summary>
 
-        <div className="details-content">
+        {/* <div className="details-content">
           {details.map((detail, index) => (
             <div key={index} className="detail-item">
               <span className="text">{detail}</span>
             </div>
           ))}
-        </div>
+        </div> */}
       </details>
     </div>
   );

@@ -1,13 +1,15 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useMemo, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import Dialog from '../../components/common/Dialog/Dialog';
 import { SuccessOrError } from '../../components/common/SuccessOrError/SuccessOrError';
+import { STATUS } from '../../constants/common';
 import { ROUTES } from '../../constants/routes';
 import './Refund.scss';
-import { STATUS } from '../../constants/common';
 
 export const Refund: React.FC = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+
   const [isRefundDialogOpen, setRefundDialogOpen] = React.useState(false);
   const [isRefundCheckBoxDisabled, setRefundCheckBoxDisabled] =
     React.useState(true);
@@ -15,6 +17,17 @@ export const Refund: React.FC = () => {
   const [refundStatus, setRefundStatus] = useState<
     'form' | 'success' | 'error'
   >(STATUS.FORM);
+
+  // 從路由狀態獲取票券資訊
+  const currentTicketInfo = useMemo(() => {
+    return location.state?.ticketInfo;
+  }, [location.state]);
+
+  // 如果沒有票券資訊，導回票券頁面
+  if (!currentTicketInfo) {
+    navigate(ROUTES.TICKETS);
+    return null;
+  }
 
   const handleRefundConfirm = () => {
     setRefundDialogOpen(false);
@@ -74,21 +87,25 @@ export const Refund: React.FC = () => {
               <div className="refund-content-info-item">
                 <p className="refund-content-info-item-label">票券票種</p>
                 <p className="refund-content-info-item-content">
-                  CREATIVE PASS
+                  {currentTicketInfo.ticketType}
                 </p>
               </div>
               <div className="refund-content-info-item">
                 <p className="refund-content-info-item-label">票券張數</p>
-                <p className="refund-content-info-item-content">2</p>
+                <p className="refund-content-info-item-content">
+                  {currentTicketInfo.ticketCount}
+                </p>
               </div>
               <div className="refund-content-info-item">
                 <p className="refund-content-info-item-label">訂單編號</p>
-                <p className="refund-content-info-item-content">1139475023</p>
+                <p className="refund-content-info-item-content">
+                  {currentTicketInfo.orderNumber}
+                </p>
               </div>
               <div className="refund-content-info-item">
                 <p className="refund-content-info-item-label">使用日期</p>
                 <p className="refund-content-info-item-content">
-                  2026.05.01-2026.05.03
+                  {currentTicketInfo.useDate}
                 </p>
               </div>
             </div>
@@ -118,7 +135,12 @@ export const Refund: React.FC = () => {
             >
               確定退票
             </button>
-            <button className="btn cancel-btn">取消</button>
+            <button
+              className="btn cancel-btn"
+              onClick={() => navigate(ROUTES.BOOKING)}
+            >
+              取消
+            </button>
           </div>
 
           <Dialog
@@ -217,8 +239,8 @@ export const Refund: React.FC = () => {
         <SuccessOrError
           type={STATUS.SUCCESS}
           useList={true}
-          message="• 取件資訊已寄至您填寫的信箱，請通知取票者查收信件並開通票券。<br/>• 完成後可至「購票系統」→「我的票券」→「已取票」查看。"
-          titlePrefix="分票"
+          message="退款金額將於 10 個工作天內退回至您的原付款方式，如需開立發票請寄信至conf@thehope.co"
+          titlePrefix="退票"
           successText="成功"
           successButtonText="返回我的票券"
           onSuccessClick={() => navigate(ROUTES.TICKETS)}
