@@ -4,7 +4,7 @@ import './Login.scss';
 
 const OTP_TIMER_KEY = 'otpTimerEndTime';
 const EMAIL_KEY = 'loginEmail';
-const TIMER_DURATION = 300; // 5分鐘
+const TIMER_DURATION = 60; // 1分鐘
 
 export const Login: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -108,7 +108,6 @@ export const Login: React.FC = () => {
 
       // 成功後切換到 OTP 輸入階段
       setIsEmailSubmitted(true);
-      localStorage.setItem(EMAIL_KEY, email);
       resetTimer();
     } catch (error: any) {
       console.error('發送 OTP 失敗:', error.message);
@@ -118,43 +117,12 @@ export const Login: React.FC = () => {
     }
   };
 
-  // 重新發送 email
-  const handleResendOTP = async () => {
-    if (timerSeconds > 0) return;
-    try {
-      setIsLoading(true);
-
-      const response = await apiService.memberAuthentication.postAuth({
-        email,
-      });
-      resetTimer();
-      console.log('OTP 發送成功：', response);
-    } catch (error: any) {
-      console.error('重新發送失敗:', error.message);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  // 格式化時間為 MM:SS
-  const formatTime = (seconds: number) => {
-    const minutes = Math.floor(seconds / 60);
-    const remainingSeconds = seconds % 60;
-    return `${minutes}分${remainingSeconds.toString().padStart(2, '0')}秒`;
-  };
-
   // 重置計時器
   const resetTimer = () => {
     const endTime = Date.now() + TIMER_DURATION * 1000;
     localStorage.setItem(OTP_TIMER_KEY, endTime.toString());
     setTimerSeconds(TIMER_DURATION);
   };
-
-  // 清除計時器（可在登入成功後調用）
-  // const clearTimer = () => {
-  //   localStorage.removeItem(OTP_TIMER_KEY);
-  //   setTimerSeconds(0);
-  // };
 
   // 根據狀態渲染不同的表單
   return (
@@ -165,8 +133,7 @@ export const Login: React.FC = () => {
           <div className="form-block">
             <h1 className="mb-16">登入/註冊帳戶</h1>
             <p className="form-description">
-              系統已將登入連結寄至 <span className="email">{email}</span>
-              ，請前往您填寫的信箱，點擊信件中的連結登入票券系統。
+              請輸入您的電子郵件地址，並按下「發送電子郵件」，您將收到來自noreply@thehope.co寄送的一次性密碼。
             </p>
             <div className="form-label">
               <label htmlFor="email">電子郵件</label>
@@ -199,22 +166,18 @@ export const Login: React.FC = () => {
         <>
           <div className="form-block">
             <h1 className="mb-16">登入連結已發送</h1>
-            <p className="form-description">
-              系統已將登入連結寄至 {email}
-              ，請前往您填寫的信箱，點擊信件中的連結登入票券系統。
-            </p>
-          </div>
-
-          <div className="otp-actions">
-            <p>沒有收到郵件？</p>
-            <p
-              className={`${timerSeconds > 0 ? 'disabled' : ''} resend-otp`}
-              onClick={handleResendOTP}
-            >
-              {timerSeconds > 0
-                ? `${formatTime(timerSeconds)}可重新發送`
-                : '重新發送'}
-            </p>
+            <div className="form-description-register">
+              <p>
+                系統已將登入連結寄至{' '}
+                <span className="important-text">{email}</span>
+                ，請前往您填寫的信箱，點擊信件中的連結登入票券系統。
+              </p>
+              <p>
+                若未收到郵件，系統將於
+                <span className="important-text">1分鐘</span>
+                後自動回到上一頁，您可重新發送登入連結至您的電子郵件。
+              </p>
+            </div>
           </div>
         </>
       )}

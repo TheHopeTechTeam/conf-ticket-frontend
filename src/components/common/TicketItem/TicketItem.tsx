@@ -47,7 +47,7 @@ export const TicketItem: React.FC<TicketItemProps> = ({
                 ${ticket.price.toLocaleString()}
               </span>
               {ticket.caption && (
-                <p className="ticket-info-remark">{ticket.caption}</p>
+                <p className="ticket-info-remark">※{ticket.caption}</p>
               )}
             </div>
             <ul className="ticket-info-list">
@@ -67,9 +67,7 @@ export const TicketItem: React.FC<TicketItemProps> = ({
                       fill="#778793"
                     />
                   </svg>
-                  <p>
-                    {feature}
-                  </p>
+                  <p>{feature.bulletpoint}</p>
                 </li>
               ))}
             </ul>
@@ -101,13 +99,10 @@ export const TicketItem: React.FC<TicketItemProps> = ({
             >
               <circle cx="10.0003" cy="9.99935" r="3.33333" fill="#778793" />
             </svg>
-            <p>
-              {feature}
-            </p>
+            <p>{feature.bulletpoint}</p>
           </li>
         ))}
       </ul>
     </div>
   );
 };
-

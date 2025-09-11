@@ -49,7 +49,7 @@ export interface TicketInfo {
   name: string;
   image?: string;
   caption?: string;
-  description: string[];
+  description: any[];
   isMemberInfoRequired: boolean;
   price: number;
   updatedBy: User;
@@ -71,4 +71,3 @@ export interface TicketTypesResponse {
   prevPage: number | null;
   nextPage: number | null;
 }
-
