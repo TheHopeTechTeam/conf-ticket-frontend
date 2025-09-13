@@ -26,8 +26,9 @@ export const TicketItem: React.FC<TicketItemProps> = ({
       <div className="booking-content-item">
         <div className="booking-content-item-left">
           <img
-            src={ticket.image}
-            alt={ticket.name}
+            // "url": "/api/v1/media/file/shibainu-2.png",
+            src={ticket.image?.url}
+            alt={ticket.image?.alt || 'Ticket Image'}
             className={
               mode === MODE.EDIT ? 'edit-ticket-pic' : 'record-ticket-pic'
             }

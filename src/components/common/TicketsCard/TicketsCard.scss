@@ -271,14 +271,13 @@
 
       .detail-item {
         display: flex;
-        align-items: center;
+        align-items: baseline;
 
         &::before {
           content: '•';
           color: #778793;
           font-weight: bold;
           margin-right: 8px;
-          margin-top: 2px;
         }
 
         .text {

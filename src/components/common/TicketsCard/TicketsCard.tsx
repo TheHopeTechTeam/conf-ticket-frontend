@@ -151,13 +151,13 @@ export const TicketsCard: React.FC<TicketProps> = ({
           </svg>
         </summary>
 
-        {/* <div className="details-content">
+        <div className="details-content">
           {details.map((detail, index) => (
             <div key={index} className="detail-item">
               <span className="text">{detail}</span>
             </div>
           ))}
-        </div> */}
+        </div>
       </details>
     </div>
   );

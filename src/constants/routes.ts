@@ -3,7 +3,6 @@ export const ROUTES = {
   HOME: '/conf-ticket',
   LOGIN: '/conf-ticket/login',
   PROFILE: '/conf-ticket/profile',
-  MAIN: '/conf-ticket/main',
   BOOKING: '/conf-ticket/booking',
   TICKETS: '/conf-ticket/tickets',
   PAYMENT: '/conf-ticket/payment',

@@ -13,8 +13,8 @@ export const Header = () => {
       localStorage.removeItem('token');
       navigate(ROUTES.LOGIN);
     } else {
-      // 前往票券系統：導向 main 頁面
-      navigate(ROUTES.MAIN);
+      // 前往票券系統：導向 Home 頁面
+      navigate(ROUTES.HOME);
     }
   };
 
@@ -24,7 +24,7 @@ export const Header = () => {
         <img
           src="/images/logo.png"
           alt=""
-          onClick={() => navigate(ROUTES.MAIN)}
+          onClick={() => navigate(ROUTES.HOME)}
           className="cursor-pointer"
         />
         <p onClick={handleClick} className="cursor-pointer">
@@ -34,3 +34,4 @@ export const Header = () => {
     </>
   );
 };
+

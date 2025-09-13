@@ -7,6 +7,7 @@ import { MODE } from '../../constants/common';
 import { ROUTES } from '../../constants/routes';
 import { TicketInfo } from '../../constants/tickets';
 import './Booking.scss';
+import { useLoading } from '../../contexts/LoadingContext';
 interface TicketQuantities {
   [key: string]: number;
 }
@@ -28,12 +29,14 @@ interface TicketValidationState {
 
 export const Booking: React.FC = () => {
   const navigate = useNavigate();
+  const { showLoading, hideLoading } = useLoading();
   const [ticketTypes, setTicketTypes] = useState<TicketInfo[]>([]);
 
   // 載入票券類型
   useEffect(() => {
     const loadTicketTypes = async () => {
       try {
+        showLoading('載入票券類型中...');
         const { docs } = await apiService.ticketsTypes.getTicketsTypes();
 
         setTicketTypes(docs.map((ticket: TicketInfo) => ({
@@ -45,8 +48,10 @@ export const Booking: React.FC = () => {
           description: ticket.description || [],
           isMemberInfoRequired: Boolean(ticket.isMemberInfoRequired),
         })));
+        hideLoading();
 
       } catch (error) {
+        hideLoading();
         console.error('載入票券類型失敗:', error);
       }
     };
@@ -218,8 +223,42 @@ export const Booking: React.FC = () => {
     };
   };
 
-  const handleNextStep = () => {
+  const handleNextStep = async () => {
     const ticketInfo = getSelectedTickets();
+
+    // 收集所有表單中的 email
+    const emailsToCheck: string[] = [];
+    Object.values(ticketInfo.groupPassFormData).forEach(formDataArray => {
+      formDataArray.forEach(formData => {
+        if (formData.email) {
+          emailsToCheck.push(formData.email);
+        }
+      });
+    });
+
+    // 如果有 email 需要檢查，先檢查是否有重複資料
+    if (emailsToCheck.length > 0) {
+      try {
+        showLoading('檢查會員資料中...');
+        const response = await apiService.members.getMembers(emailsToCheck);
+
+        if (response.docs && response.docs.length > 0) {
+          // 有重複資料，顯示重複的 email
+          const duplicateEmails = response.docs.map((member: any) => member.email).join(', ');
+          hideLoading();
+          alert(`以下 email 已存在重複資料：${duplicateEmails}`);
+          return; // 不繼續執行
+        }
+      } catch (error) {
+        hideLoading();
+        console.error('檢查會員資料失敗:', error);
+        alert('檢查會員資料時發生錯誤，請稍後再試');
+        return;
+      }
+    }
+
+    // 沒有重複資料，繼續執行原本的邏輯
+    hideLoading();
     // 將票券資訊存入 sessionStorage
     sessionStorage.setItem('ticketOrderData', JSON.stringify(ticketInfo));
 

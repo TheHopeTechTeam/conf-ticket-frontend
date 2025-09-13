@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { apiService } from '../../api/fetchService';
 import './Login.scss';
+import { useLoading } from '../../contexts/LoadingContext';
 
 const OTP_TIMER_KEY = 'otpTimerEndTime';
 const EMAIL_KEY = 'loginEmail';
@@ -10,8 +11,8 @@ export const Login: React.FC = () => {
   const [email, setEmail] = useState('');
   const [emailError, setEmailError] = useState('');
   const [isEmailSubmitted, setIsEmailSubmitted] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
   const [timerSeconds, setTimerSeconds] = useState(0);
+  const { showLoading, hideLoading } = useLoading();
 
   // 初始化計時器和 email
   useEffect(() => {
@@ -93,7 +94,6 @@ export const Login: React.FC = () => {
     e.preventDefault();
 
     try {
-      setIsLoading(true);
       setEmailError('');
 
       const errorMsg = validateEmail(email);
@@ -103,17 +103,20 @@ export const Login: React.FC = () => {
         return;
       }
 
+      showLoading('發送中...');
       // 調用發送 OTP 的 API
       await apiService.memberAuthentication.postAuth({ email });
+      hideLoading();
 
       // 成功後切換到 OTP 輸入階段
       setIsEmailSubmitted(true);
       resetTimer();
     } catch (error: any) {
+      hideLoading();
       console.error('發送 OTP 失敗:', error.message);
       setEmailError(error.message || '發送失敗，請稍後再試');
     } finally {
-      setIsLoading(false);
+      hideLoading();
     }
   };
 
@@ -147,7 +150,6 @@ export const Login: React.FC = () => {
               value={email}
               onChange={handleEmailChange}
               onBlur={handleEmailBlur}
-              disabled={isLoading}
               aria-label="請輸入電子郵件"
               aria-required
               required
@@ -156,7 +158,7 @@ export const Login: React.FC = () => {
           </div>
 
           <div className="btn-container">
-            <button className="btn send-btn" type="submit" disabled={isLoading}>
+            <button className="btn send-btn" type="submit">
               發送電子郵件
             </button>
           </div>

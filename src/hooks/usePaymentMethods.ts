@@ -4,6 +4,7 @@ import { STATUS } from '../constants/common';
 import { SUPPORTED_NETWORKS } from '../constants/payment';
 import { ROUTES } from '../constants/routes';
 import { PaymentData, PaymentReadyState } from '../types/payment';
+import { useLoading } from '../contexts/LoadingContext';
 
 declare global {
   interface Window {
@@ -18,6 +19,7 @@ export const usePaymentMethods = (
   user: any,
   navigate: (route: string) => void
 ) => {
+  const { showLoading, hideLoading } = useLoading();
   const processPayment = useCallback(
     async (prime: string) => {
       // 檢查用戶是否有完整資料，如果沒有先導向 profile 頁面
@@ -27,6 +29,7 @@ export const usePaymentMethods = (
       }
 
       try {
+        showLoading('處理付款中...');
         await apiService.orders.postOrderCreate({
           memberId: user.id,
           prime: prime,
@@ -35,8 +38,10 @@ export const usePaymentMethods = (
             quantity: ticket.selectedQuantity,
           })),
         });
+        hideLoading();
         setPaymentStatus(STATUS.SUCCESS);
       } catch (error) {
+        hideLoading();
         console.error('Payment failed:', error);
         setPaymentStatus(STATUS.ERROR);
       }
@@ -104,7 +109,7 @@ export const usePaymentMethods = (
 
     // 設定 Apple Pay 基本配置
     window.TPDirect.paymentRequestApi.setupApplePay({
-      merchantIdentifier: 'merchant.your.app.id', // 需要替換為實際的 merchant ID
+      merchantIdentifier: import.meta.env.VITE_APPLE_MERCHANT_ID || '',
       countryCode: 'TW',
     });
 
@@ -122,7 +127,7 @@ export const usePaymentMethods = (
         },
       ],
       total: {
-        label: '付給 TapPay',
+        label: 'The Hope 線上付款',
         amount: {
           currency: 'TWD',
           value: paymentData.summary.totalAmount.toString(),
@@ -223,3 +228,4 @@ export const usePaymentMethods = (
     checkSamsungPayAvailability,
   };
 };
+

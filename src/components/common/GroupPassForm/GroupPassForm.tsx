@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { MODE } from '../../../constants/common';
 import './GroupPassForm.scss';
@@ -58,6 +58,9 @@ export const GroupPassForm: React.FC<GroupPassFormProps> = ({
   });
 
   const watchedUsers = watch('users');
+
+  // 控制每個 details 的展開狀態
+  const [openStates, setOpenStates] = useState<{ [key: string]: boolean }>({});
 
   // 調試：直接監控 watchedUsers
   useEffect(() => {
@@ -146,6 +149,14 @@ export const GroupPassForm: React.FC<GroupPassFormProps> = ({
     await trigger(`users.${index}.${field}` as any);
   };
 
+  // 處理展開收合
+  const toggleOpen = (fieldId: string) => {
+    setOpenStates(prev => ({
+      ...prev,
+      [fieldId]: !prev[fieldId]
+    }));
+  };
+
   if (quantity === 0) {
     return null;
   }
@@ -161,31 +172,25 @@ export const GroupPassForm: React.FC<GroupPassFormProps> = ({
           : '請確認實際使用此票券者之資訊'}{' '}
       </p>
       {fields.map((field, index) => (
-        <details key={field.id} className="group-pass-form-details">
-          <summary>
+        <div key={field.id} className="group-pass-form-details">
+          <div
+            className="group-pass-form-summary"
+            onClick={() => toggleOpen(field.id)}
+          >
             <span className={`title ${mode !== MODE.EDIT && 'record-title'}`}>
               使用者{index + 1}
             </span>
             <svg
-              className="icon arrow-up"
+              className={`icon ${openStates[field.id] ? 'arrow-down' : 'arrow-up'}`}
               viewBox="0 0 24 24"
               fill="black"
               width="24"
               height="24"
             >
-              <path d="m7 14 5-5 5 5H7z" />
+              <path d={openStates[field.id] ? "m7 10 5 5 5-5H7z" : "m7 14 5-5 5 5H7z"} />
             </svg>
-            <svg
-              className="icon arrow-down"
-              viewBox="0 0 24 24"
-              fill="black"
-              width="24"
-              height="24"
-            >
-              <path d="m7 10 5 5 5-5H7z" />
-            </svg>
-          </summary>
-          <div className="group-pass-form-content">
+          </div>
+          <div className={`group-pass-form-content ${openStates[field.id] ? 'open' : ''}`}>
             <div className="group-pass-form-input">
               <div className="form-item">
                 <div
@@ -323,8 +328,9 @@ export const GroupPassForm: React.FC<GroupPassFormProps> = ({
               </div>
             </div>
           </div>
-        </details>
+        </div>
       ))}
     </div>
   );
 };
+

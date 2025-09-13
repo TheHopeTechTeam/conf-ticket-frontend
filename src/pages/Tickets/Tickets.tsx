@@ -10,6 +10,7 @@ import {
 } from '../../constants/tickets';
 import { useAuthContext } from '../../contexts/AuthContext';
 import './Tickets.scss';
+import { useLoading } from '../../contexts/LoadingContext';
 
 export const Tickets = () => {
   const navigate = useNavigate();
@@ -17,37 +18,49 @@ export const Tickets = () => {
   const [activeStatus, setActiveStatus] = useState<TicketStatusType>(
     TICKET_STATUS.COLLECTED
   );
-  const [allTickets, setAllTickets] = useState<any[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [allOrders, setAllOrders] = useState<any[]>([]);
+  const { showLoading, hideLoading } = useLoading();
 
   // 現在您可以使用 memberData 中的所有資料
   // console.log('Member Data:', memberData);
   // console.log('User Info:', user);
 
   // 根據狀態過濾票券的函數
-  const getFilteredTickets = (tickets: any[], status: TicketStatusType) => {
-    return tickets.filter((ticket: any) => {
+  const getFilteredTickets = (orders: any[], status: TicketStatusType) => {
+    // 從所有訂單中提取所有票券
+    const allTickets = orders.flatMap(order => order.tickets || []);
+
+    return allTickets.filter(ticket => {
       switch (status) {
         case TICKET_STATUS.PURCHASED:
-          return !ticket.isRedeemed && !ticket.isRefunded;
+          // 已購買：票券所屬訂單完成且票券未取票
+          return ticket.order?.status === 'completed' && !ticket.isRedeemed;
+
         case TICKET_STATUS.COLLECTED:
-          return ticket.isRedeemed && !ticket.isRefunded;
+          // 已取票：票券所屬訂單完成且票券已取票
+          return ticket.order?.status === 'completed' && ticket.isRedeemed;
+
         case TICKET_STATUS.REFUNDED:
-          return ticket.isRefunded;
+          // 退款記錄：票券所屬訂單退款
+          return ticket.order?.status === 'refunded';
+
         default:
           return false;
       }
     });
   };
 
-  // 根據 order.id 分組票券的函數
-  const groupTicketsByOrder = (tickets: any[]): any[][] => {
+  // 根據 order.id 和 ticket.type.id 分組票券的函數
+  const groupTicketsByOrderAndType = (tickets: any[]): any[][] => {
     const grouped = tickets.reduce((groups: any, ticket: any) => {
       const orderId = ticket.order?.id || 'unknown';
-      if (!groups[orderId]) {
-        groups[orderId] = [];
+      const typeId = ticket.type?.id || 'unknown';
+      const groupKey = `${orderId}-${typeId}`;
+
+      if (!groups[groupKey]) {
+        groups[groupKey] = [];
       }
-      groups[orderId].push(ticket);
+      groups[groupKey].push(ticket);
       return groups;
     }, {});
 
@@ -59,15 +72,16 @@ export const Tickets = () => {
     const fetchTickets = async () => {
       if (user?.id) {
         try {
-          setIsLoading(true);
-          const response = await apiService.tickets.getTickets(user.id);
-          const tickets = response.docs || [];
-          setAllTickets(tickets);
-          console.log('Fetched Tickets:', tickets);
+          showLoading('載入票券中...');
+          const response = await apiService.orders.getOrders(user.id);
+          hideLoading();
+          const orders = response.docs || [];
+          setAllOrders(orders);
+          console.log('Fetched Orders:', orders);
 
           // 設定預設 Tab：若已購買有票券則跳到已購買，否則跳到已取票
           const purchasedTickets = getFilteredTickets(
-            tickets,
+            orders,
             TICKET_STATUS.PURCHASED
           );
           if (purchasedTickets.length > 0) {
@@ -76,10 +90,9 @@ export const Tickets = () => {
             setActiveStatus(TICKET_STATUS.COLLECTED);
           }
         } catch (error) {
-          console.error('Failed to fetch tickets:', error);
-          setAllTickets([]);
-        } finally {
-          setIsLoading(false);
+          hideLoading();
+          console.error('Failed to fetch orders:', error);
+          setAllOrders([]);
         }
       }
     };
@@ -93,17 +106,17 @@ export const Tickets = () => {
     {
       key: TICKET_STATUS.PURCHASED,
       title: '已購買',
-      count: getFilteredTickets(allTickets, TICKET_STATUS.PURCHASED).length,
+      count: getFilteredTickets(allOrders, TICKET_STATUS.PURCHASED).length,
     },
     {
       key: TICKET_STATUS.COLLECTED,
       title: '已取票',
-      count: getFilteredTickets(allTickets, TICKET_STATUS.COLLECTED).length,
+      count: getFilteredTickets(allOrders, TICKET_STATUS.COLLECTED).length,
     },
     {
       key: TICKET_STATUS.REFUNDED,
       title: '退票紀錄',
-      count: getFilteredTickets(allTickets, TICKET_STATUS.REFUNDED).length,
+      count: getFilteredTickets(allOrders, TICKET_STATUS.REFUNDED).length,
     },
   ];
 
@@ -170,63 +183,60 @@ export const Tickets = () => {
           <div className="ticket-alert-content">{getAlertContent()}</div>
         </div>
         <div className="tickets-content-container">
-          {isLoading ? (
-            <div style={{ textAlign: 'center', padding: '2rem' }}>
-              <p>載入中...</p>
-            </div>
-          ) : (
-            (() => {
-              const filteredTickets = getFilteredTickets(
-                allTickets,
-                activeStatus
-              );
-              const groupedTickets = groupTicketsByOrder(filteredTickets);
+          {(() => {
+            const filteredTickets = getFilteredTickets(
+              allOrders,
+              activeStatus
+            );
+            const groupedTickets = groupTicketsByOrderAndType(filteredTickets);
 
-              console.log('Filtered Tickets:', filteredTickets);
-              console.log('Grouped Tickets:', groupedTickets);
+            console.log('Filtered Tickets:', filteredTickets);
+            console.log('Grouped Tickets:', groupedTickets);
 
-              return filteredTickets.length === 0 ? (
-                <>
-                  <img
-                    src="/images/ticket-sample.png"
-                    alt=""
-                    className="ticket-pic"
-                  />
-                  <p>{noTicketText()}</p>
-                </>
-              ) : (
-                <>
-                  {groupedTickets.map(
-                    (orderGroup: any[], groupIndex: number) => {
-                      // 取得該訂單的基本資訊（從第一張票券取得）
-                      const firstTicket = orderGroup[0];
-                      const orderItems = firstTicket.order?.items || [];
-                      const totalQuantity = orderItems.reduce(
-                        (sum: number, item: any) => sum + (item.quantity || 0),
-                        0
-                      );
+            return filteredTickets.length === 0 ? (
+              <>
+                <img
+                  src="/images/ticket-sample.png"
+                  alt=""
+                  className="ticket-pic"
+                />
+                <p>{noTicketText()}</p>
+              </>
+            ) : (
+              <>
+                {groupedTickets.map(
+                  (ticketGroup: any[], groupIndex: number) => {
+                    // 取得該票券組的基本資訊（從第一張票券取得）
+                    const firstTicket = ticketGroup[0];
+                    const order = firstTicket.order;
+                    const ticketType = firstTicket.type;
 
-                      return (
-                        <TicketsCard
-                          key={`${firstTicket.order?.id}-${groupIndex}`}
-                          title={firstTicket.type?.name || '票券'}
-                          quantity={totalQuantity}
-                          orderNumber={
-                            firstTicket.order?.id?.slice(-8) || 'N/A'
-                          }
-                          details={[]}
-                          status={activeStatus}
-                        />
-                      );
-                    }
-                  )}
-                </>
-              );
-            })()
-          )}
+                    // 計算該票種的數量
+                    const quantity = ticketGroup.length;
+
+                    // 取得票券的詳細描述
+                    const ticketDetails = ticketType?.description?.map(
+                      (desc: any) => desc.bulletpoint
+                    ) || [];
+
+                    return (
+                      <TicketsCard
+                        key={`${order?.id}-${ticketType?.id}-${groupIndex}`}
+                        title={ticketType?.name || '票券'}
+                        quantity={quantity}
+                        orderNumber={order?.id?.slice(-8) || 'N/A'}
+                        details={ticketDetails}
+                        status={activeStatus}
+                      />
+                    );
+                  }
+                )}
+              </>
+            );
+          })()}
         </div>
         {(() => {
-          const filteredTickets = getFilteredTickets(allTickets, activeStatus);
+          const filteredTickets = getFilteredTickets(allOrders, activeStatus);
 
           return (
             filteredTickets.length === 0 &&
@@ -234,27 +244,28 @@ export const Tickets = () => {
               activeStatus === TICKET_STATUS.COLLECTED)
           );
         })() && (
-          <div className="tickets-btn-container">
-            {(activeStatus === TICKET_STATUS.PURCHASED ||
-              activeStatus === TICKET_STATUS.COLLECTED) && (
-              <button
-                className="btn send-btn"
-                onClick={() => navigate(ROUTES.BOOKING)}
-              >
-                前往購票
-              </button>
-            )}
-            {activeStatus === TICKET_STATUS.COLLECTED && (
-              <button
-                className="btn cancel-btn"
-                onClick={() => navigate(ROUTES.MAIN)}
-              >
-                返回票券系統
-              </button>
-            )}
-          </div>
-        )}
+            <div className="tickets-btn-container">
+              {(activeStatus === TICKET_STATUS.PURCHASED ||
+                activeStatus === TICKET_STATUS.COLLECTED) && (
+                  <button
+                    className="btn send-btn"
+                    onClick={() => navigate(ROUTES.BOOKING)}
+                  >
+                    前往購票
+                  </button>
+                )}
+              {activeStatus === TICKET_STATUS.COLLECTED && (
+                <button
+                  className="btn cancel-btn"
+                  onClick={() => navigate(ROUTES.HOME)}
+                >
+                  返回票券系統
+                </button>
+              )}
+            </div>
+          )}
       </div>
     </>
   );
 };
+

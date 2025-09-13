@@ -63,9 +63,8 @@ class FetchService {
       // 攔截器：處理 401/403 錯誤
       if (response.status === 401 || response.status === 403) {
         this.clearToken();
-
-        // 重定向到登入頁面
         window.location.href = ROUTES.LOGIN;
+        return;
       }
 
       if (!response.ok) {
@@ -91,13 +90,8 @@ class FetchService {
           (error as any).response = errorData;
           (error as any).status = response.status;
           throw error;
-          // eslint-disable-next-line @typescript-eslint/no-unused-vars
         } catch (jsonError) {
-          // 如果無法解析 JSON，使用原始錯誤
-          alert(`請求失敗: ${response.status} ${response.statusText}`);
-          throw new Error(
-            `HTTP Error: ${response.status} ${response.statusText}`
-          );
+          console.log(jsonError);
         }
       }
 
@@ -170,7 +164,7 @@ export const apiService = {
     },
   },
   members: {
-    getMembers: async () => {
+    getMember: async () => {
       const response = await fetchClient.get(
         `/v1/members?page=1&limit=1&sort=-createdAt&where%5Bemail%5D%5Bequals%5D=${encodeURIComponent(localStorage.getItem(EMAIL_KEY) as string)}`
       );
@@ -191,6 +185,10 @@ export const apiService = {
       const response = await fetchClient.patch(`/v1/members/${id}`, data);
       return response;
     },
+    getMembers: async (mail: string[]) => {
+      const response = await fetchClient.get(`/v1/members?where[and][role][in]=paster,senior-paster&where[or][0][email][in]=${mail.join(',')}`);
+      return response;
+    },
   },
   ticketsTypes: {
     getTicketsTypes: async () => {
@@ -201,19 +199,18 @@ export const apiService = {
     },
   },
   orders: {
+    getOrders: async (id: string) => {
+      const response = await fetchClient.get(
+        `/v1/orders?page=1&limit=100&sort=-createdAt&where[member][equals]=${id}`
+      );
+      return response;
+    },
     postOrderCreate: async (data: PostOrderCreateRequest) => {
       const response = await fetchClient.post('/v1/orders/create', data);
       return response;
     },
-  },
-  tickets: {
-    getTickets: async (id: string) => {
-      const response = await fetchClient.get(
-        `/v1/tickets?page=1&limit=100&sort=-createdAt&where[owner][equals]=${id}`
-      );
-      return response;
-    },
-  },
+  }
 };
 
 export { fetchClient };
+

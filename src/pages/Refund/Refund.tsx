@@ -256,9 +256,10 @@ export const Refund: React.FC = () => {
           retryButtonText="再試一次"
           backButtonText="返回票券系統"
           onRetryClick={() => setRefundStatus(STATUS.FORM)}
-          onBackClick={() => navigate(ROUTES.MAIN)}
+          onBackClick={() => navigate(ROUTES.HOME)}
         />
       )}
     </>
   );
 };
+

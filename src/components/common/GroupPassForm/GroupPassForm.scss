@@ -19,46 +19,20 @@
     padding: 12px 20px 12px 20px;
     gap: 12px;
     margin-bottom: 16px;
+    overflow: hidden;
 
     &:last-child {
       margin-bottom: 0;
     }
   }
 
-  /* 預設顯示上箭頭，隱藏下箭頭 */
-  .icon.arrow-up {
-    display: block;
-  }
-
-  .icon.arrow-down {
-    display: none;
-  }
-
-  /* 當 details 開啟時，顯示下箭頭，隱藏上箭頭 */
-  details[open] .icon.arrow-up {
-    display: none;
-  }
-
-  details[open] .icon.arrow-down {
-    display: block;
-  }
-
-  /* 隱藏預設的三角形箭頭 */
-  summary::-webkit-details-marker {
-    display: none;
-  }
-
-  summary::marker {
-    display: none;
-  }
-
-  summary {
+  .group-pass-form-summary {
     list-style: none;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    transition: all 0.3s ease;
+    transition: all 0.2s ease;
     gap: 4px;
 
     .title {
@@ -71,68 +45,80 @@
     .record-title {
       color: #3c5464;
     }
+  }
 
-    &::-webkit-details-marker {
-      display: none;
-    }
+  .icon {
+    transition: transform 0.3s ease-in-out;
   }
 
   .group-pass-form-content {
     display: flex;
     gap: 24px;
-    margin: 12px 0;
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: all 0.2s ease-in-out;
+    padding: 0 2px;
 
-    .group-pass-form-input {
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-      flex: 1;
+    &.open {
+      margin: 12px 0;
+      max-height: 500px;
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
 
-      .form-item {
-        position: relative;
+  .group-pass-form-content .group-pass-form-input {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    flex: 1;
 
-        .form-label {
-          margin-bottom: 6px;
+    .form-item {
+      position: relative;
 
-          label {
-            font-size: 14px;
-          }
-        }
+      .form-label {
+        margin-bottom: 6px;
 
-        .form-record-item {
-          font-size: 18px;
-        }
-
-        .p-l-6 {
-          padding-left: 6px;
-        }
-
-        .form-record-label {
-          color: #a5a9ab;
-          padding-left: 0px;
-        }
-
-        .form-input {
-          width: 100%;
-          padding: 12px 16px;
-          border: 1px solid #ddd;
-          border-radius: 6px;
+        label {
           font-size: 14px;
-          line-height: 20px;
-          transition: border-color 0.3s ease;
+        }
+      }
 
-          &:focus {
-            outline: none;
-            border-color: #3c5464;
-          }
+      .form-record-item {
+        font-size: 18px;
+      }
 
-          &.error {
-            border-color: #ee1b0a;
-          }
+      .p-l-6 {
+        padding-left: 6px;
+      }
 
-          &::placeholder {
-            color: #a5a9ab;
-          }
+      .form-record-label {
+        color: #a5a9ab;
+        padding-left: 0px;
+      }
+
+      .form-input {
+        width: 100%;
+        padding: 12px 16px;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        font-size: 14px;
+        line-height: 20px;
+        transition: border-color 0.3s ease;
+
+        &:focus {
+          outline: none;
+          border-color: #3c5464;
+        }
+
+        &.error {
+          border-color: #ee1b0a;
+        }
+
+        &::placeholder {
+          color: #a5a9ab;
         }
       }
     }
@@ -154,14 +140,19 @@
 
     .group-pass-form-content {
       flex-direction: column;
+    }
 
-      .group-pass-form-input {
-        .form-item {
-          .form-label {
-            padding-left: 0px;
-          }
+    .group-pass-form-content .group-pass-form-input {
+      .form-item {
+        .form-label {
+          padding-left: 2px;
         }
       }
+    }
+
+    /* 手機版本調整動畫高度 */
+    .group-pass-form-content.open {
+      max-height: 800px;
     }
   }
 }

@@ -22,6 +22,7 @@ import { MODE, STATUS } from '../../constants/common';
 import { ROUTES } from '../../constants/routes';
 import { useAuthContext } from '../../contexts/AuthContext';
 import './Payment.scss';
+import { useLoading } from '../../contexts/LoadingContext';
 
 export const Payment: React.FC = () => {
   const { user } = useAuthContext();
@@ -30,6 +31,7 @@ export const Payment: React.FC = () => {
   const [paymentStatus, setPaymentStatus] = useState<
     'form' | 'success' | 'error'
   >(STATUS.FORM);
+  const { showLoading, hideLoading } = useLoading();
 
   // 滾動至頂部
   const scrollToTop = () => {
@@ -150,6 +152,7 @@ export const Payment: React.FC = () => {
       }
 
       try {
+        showLoading('處理付款中...');
         await apiService.orders.postOrderCreate({
           memberId: user.id,
           prime: result.card.prime,
@@ -158,8 +161,10 @@ export const Payment: React.FC = () => {
             quantity: ticket.selectedQuantity,
           })),
         });
+        hideLoading();
         setPaymentStatus(STATUS.SUCCESS);
       } catch (error) {
+        hideLoading();
         console.error('Payment failed:', error);
         setPaymentStatus(STATUS.ERROR);
       }
@@ -180,9 +185,6 @@ export const Payment: React.FC = () => {
     };
   }, [paymentData]);
 
-  if (!paymentData) {
-    return <div className="loading">載入中...</div>;
-  }
 
   return (
     <>
@@ -195,7 +197,7 @@ export const Payment: React.FC = () => {
             <div className="ticket-section">
               <h2>請確認您選購的票券類型與數量</h2>
               <div className="ticket-list">
-                {paymentData.tickets.map(ticket => {
+                {paymentData?.tickets.map(ticket => {
                   if (ticket.isMemberInfoRequired) {
                     const ticketFormData =
                       paymentData.groupPassFormData[ticket.id] || [];
@@ -231,8 +233,8 @@ export const Payment: React.FC = () => {
 
             <div className="order-summary">
               <p className="order-summary-title">
-                共{paymentData.summary.totalQuantity}張，總計
-                {paymentData.summary.totalAmount.toLocaleString()}元
+                共{paymentData?.summary.totalQuantity}張，總計
+                {paymentData?.summary.totalAmount.toLocaleString()}元
               </p>
             </div>
           </div>
@@ -310,3 +312,4 @@ export const Payment: React.FC = () => {
     </>
   );
 };
+

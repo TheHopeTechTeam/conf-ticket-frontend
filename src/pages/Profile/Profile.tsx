@@ -17,6 +17,7 @@ import {
 import { ROUTES } from '../../constants/routes';
 import { useAuthContext } from '../../contexts/AuthContext';
 import './Profile.scss';
+import { useLoading } from '../../contexts/LoadingContext';
 
 export const Profile: React.FC = () => {
   const [showNotification, setShowNotification] = useState('');
@@ -31,11 +32,8 @@ export const Profile: React.FC = () => {
   const [isUserTermsChecked, setUserTermsChecked] = React.useState(false);
   const [isPrivacyPolicyChecked, setPrivacyPolicyChecked] =
     React.useState(false);
-
+  const { showLoading, hideLoading } = useLoading();
   const { user } = useAuthContext();
-  if (user?.id) {
-    console.log('User Info:', user);
-  }
 
   useEffect(() => {
     if (user?.name) {
@@ -52,6 +50,8 @@ export const Profile: React.FC = () => {
         church: isValidChurch ? user.location : ValidChurchType.OTHER,
         churchName: isValidChurch ? '' : user.location,
       }));
+    } else {
+      setShowNotification('true');
     }
   }, [user]);
 
@@ -120,6 +120,7 @@ export const Profile: React.FC = () => {
 
     if (!hasErrors && !checkboxError) {
       try {
+        showLoading('儲存中...');
         await apiService.members.patchMembers(user.id, {
           email: user.email,
           name: fields.fullName,
@@ -132,10 +133,12 @@ export const Profile: React.FC = () => {
               ? fields.churchName
               : fields.church,
         });
-        // 儲存個人檔案成功後導向 main
+        hideLoading();
+        // 儲存個人檔案成功後導向 Home
         sessionStorage.setItem('fromProfile', 'true');
-        navigate(ROUTES.MAIN, { replace: true });
+        navigate(ROUTES.HOME, { replace: true });
       } catch (error) {
+        hideLoading();
         console.error('Save profile failed:', error);
       }
     } else if (checkboxError) {
@@ -162,16 +165,16 @@ export const Profile: React.FC = () => {
   // 通用輸入變更處理
   const handleFieldChange =
     (fieldName: keyof typeof fields) =>
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      const value = e.target.value;
-      setFields(prev => ({ ...prev, [fieldName]: value }));
+      (e: React.ChangeEvent<HTMLInputElement>) => {
+        const value = e.target.value;
+        setFields(prev => ({ ...prev, [fieldName]: value }));
 
-      // 即時驗證
-      if (errors[fieldName]) {
-        const requiredMsg = validateField(value, fieldName);
-        setErrors(prev => ({ ...prev, [fieldName]: requiredMsg }));
-      }
-    };
+        // 即時驗證
+        if (errors[fieldName]) {
+          const requiredMsg = validateField(value, fieldName);
+          setErrors(prev => ({ ...prev, [fieldName]: requiredMsg }));
+        }
+      };
 
   // 通用 blur 驗證
   const handleFieldBlur = (fieldName: keyof typeof fields) => () => {
@@ -391,3 +394,4 @@ export const Profile: React.FC = () => {
     </div>
   );
 };
+

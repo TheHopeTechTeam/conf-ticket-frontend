@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { apiService } from '../api/fetchService';
 import { ROUTES } from '../constants/routes';
+import { useLoading } from '../contexts/LoadingContext';
 
 interface AuthState {
   isLoading: boolean;
@@ -21,6 +22,7 @@ export const useAuth = () => {
   });
   const navigate = useNavigate();
   const location = useLocation();
+  const { showLoading, hideLoading } = useLoading();
 
   useEffect(() => {
     checkAuth();
@@ -55,10 +57,12 @@ export const useAuth = () => {
         return;
       }
 
-      // 有 token，打 getMembers API 驗證
-      const response = await apiService.members.getMembers();
+      showLoading();
+      // 有 token，打 getMember API 驗證
+      const response = await apiService.members.getMember();
 
       if (response && response.docs && response.docs.length > 0) {
+        hideLoading();
         // 驗證成功
         setAuthState({
           isLoading: false,
@@ -67,12 +71,9 @@ export const useAuth = () => {
           memberData: response, // 儲存完整的 API response
           error: null,
         });
-      } else {
-        // API 回應無效，清除 token 並導向登入
-        localStorage.removeItem('token');
-        navigate(ROUTES.LOGIN);
       }
     } catch (error) {
+      hideLoading();
       console.error('Auth check failed:', error);
 
       // API 錯誤，清除 token 並導向登入
@@ -106,3 +107,4 @@ export const useAuth = () => {
     logout,
   };
 };
+

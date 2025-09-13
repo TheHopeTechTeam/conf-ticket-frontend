@@ -47,7 +47,10 @@ export interface User {
 export interface TicketInfo {
   id: string;
   name: string;
-  image?: string;
+  image?: {
+    url: string;
+    alt: string;
+  };
   caption?: string;
   description: any[];
   isMemberInfoRequired: boolean;
