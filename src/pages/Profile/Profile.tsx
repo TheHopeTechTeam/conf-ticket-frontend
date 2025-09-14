@@ -50,6 +50,10 @@ export const Profile: React.FC = () => {
         church: isValidChurch ? user.location : ValidChurchType.OTHER,
         churchName: isValidChurch ? '' : user.location,
       }));
+      setPrivacyPolicyChecked(Boolean(user.consentedAt));
+      setUserTermsChecked(Boolean(user.consentedAt));
+      setPrivacyPolicyCheckBoxDisabled(Boolean(!user.consentedAt));
+      setUserTermsCheckBoxDisabled(Boolean(!user.consentedAt));
     } else {
       setShowNotification('true');
     }

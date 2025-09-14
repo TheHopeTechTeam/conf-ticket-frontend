@@ -75,7 +75,7 @@ const AppRouter = () => {
           <Route
             path={ROUTES.PROFILE}
             element={
-              <Layout>
+              <Layout showBreadCrumbs={true}>
                 <Profile />
               </Layout>
             }

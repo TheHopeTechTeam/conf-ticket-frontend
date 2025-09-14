@@ -113,6 +113,9 @@ export const usePaymentMethods = (
       countryCode: 'TW',
     });
 
+    console.log(import.meta.env.VITE_APPLE_MERCHANT_ID);
+
+
     // 設定付款請求但不立即觸發
     const paymentRequest = {
       supportedNetworks: SUPPORTED_NETWORKS.COMMON,
