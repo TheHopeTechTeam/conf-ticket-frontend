@@ -18,7 +18,7 @@ import { usePaymentState } from '../../hooks/usePaymentState';
 import { useTapPay } from '../../hooks/useTapPay';
 
 import { apiService } from '../../api/fetchService';
-import { MODE, STATUS } from '../../constants/common';
+import { MAIL, MODE, STATUS } from '../../constants/common';
 import { ROUTES } from '../../constants/routes';
 import { useAuthContext } from '../../contexts/AuthContext';
 import './Payment.scss';
@@ -159,8 +159,11 @@ export const Payment: React.FC = () => {
           items: paymentData.tickets.map(ticket => ({
             ticketTypeId: ticket.id,
             quantity: ticket.selectedQuantity,
+            members: paymentData.groupPassFormData[ticket.id] || [],
           })),
         });
+        console.log(paymentData);
+
         hideLoading();
         setPaymentStatus(STATUS.SUCCESS);
       } catch (error) {
@@ -289,7 +292,7 @@ export const Payment: React.FC = () => {
       {paymentStatus === STATUS.SUCCESS && (
         <SuccessOrError
           type={STATUS.SUCCESS}
-          message="票券已購買成功，請前往我的票券查看。<br/>如需開立發票請寄信至conf@thehope.co"
+          message={`票券已購買成功，請前往我的票券查看。<br/>如需開立發票請寄信至${MAIL.CONTACT_EMAIL}。`}
           titlePrefix="購買"
           successText="成功"
           successButtonText="前往我的票券"

@@ -2,6 +2,7 @@ import React from 'react';
 import { EXTRA_ROUTES } from '../../../constants/routes';
 import { PrivacyPolicyDialog, UserTermsDialog } from '../Dialog';
 import './Footer.scss';
+import { MAIL } from '../../../constants/common';
 
 export const Footer: React.FC = () => {
   const [isUserTermsDialogOpen, setUserTermsDialogOpen] = React.useState(false);
@@ -17,7 +18,7 @@ export const Footer: React.FC = () => {
           <div className="contact-info">
             <div className="contact-method">
               <p>聯繫我們</p>
-              <p>conference@thehope.co</p>
+              <p>{MAIL.CONTACT_EMAIL}</p>
             </div>
             <div className="contact-method">
               <p>追蹤我們</p>

@@ -36,6 +36,7 @@ export const usePaymentMethods = (
           items: paymentData.tickets.map(ticket => ({
             ticketTypeId: ticket.id,
             quantity: ticket.selectedQuantity,
+            members: paymentData.groupPassFormData[ticket.id] || [],
           })),
         });
         hideLoading();

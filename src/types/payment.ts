@@ -12,8 +12,9 @@ export interface SelectedTicket {
 export interface GroupPassFormData {
   name: string;
   email: string;
-  church: string;
-  phone: string;
+  role?: string;
+  location: string;
+  tel: string;
 }
 
 export interface PaymentData {
@@ -44,15 +45,145 @@ export interface TapPayEnvironment {
   googleMerchantId?: string;
 }
 
+// 會員資訊介面
+export interface Member {
+  name: string;
+  email: string;
+  role: string;
+  location: string;
+  tel: string;
+}
+
+// 票券類型介面
+export interface TicketType {
+  id: string;
+  name: string;
+  price: number;
+  image: number;
+  caption?: string;
+  description: Array<{
+    id: string;
+    bulletpoint: string;
+  }>;
+  isMemberInfoRequired?: boolean;
+  updatedBy?: string;
+  deletedAt?: string | null;
+  deletedBy?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+
 // 訂單項目介面
 export interface OrderItem {
-  ticketTypeId: string;
+  id: string;
+  order: {
+    id: string;
+    member: string;
+    status: string;
+    total: number;
+    tapPayTradeId?: string | null;
+    items: string[];
+    tickets: string[];
+    updatedBy?: string | null;
+    deletedAt?: string | null;
+    deletedBy?: string | null;
+    updatedAt: string;
+    createdAt: string;
+  };
+  ticketType: TicketType;
   quantity: number;
+  priceAtPurchase: number;
+  updatedBy?: string | null;
+  deletedAt?: string | null;
+  deletedBy?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+
+// 票券介面
+export interface Ticket {
+  id: string;
+  order: {
+    id: string;
+    member: string;
+    status: string;
+    total: number;
+    tapPayTradeId?: string | null;
+    items: string[];
+    tickets: string[];
+    updatedBy?: string | null;
+    deletedAt?: string | null;
+    deletedBy?: string | null;
+    updatedAt: string;
+    createdAt: string;
+  };
+  type: TicketType;
+  owner: {
+    id: string;
+    email: string;
+    name: string;
+    gender: string;
+    tel: string;
+    role: string;
+    location: string;
+    consentedAt: string;
+    loginTokenIssuedAt: number;
+    orders: any[];
+    updatedBy?: any;
+    deletedAt?: string | null;
+    deletedBy?: string | null;
+    updatedAt: string;
+    createdAt: string;
+  };
+  user?: any | null;
+  isRedeemed: boolean;
+  isCheckedIn: boolean;
+  updatedBy?: string | null;
+  deletedAt?: string | null;
+  deletedBy?: any | null;
+  updatedAt: string;
+  createdAt: string;
+}
+
+// 完整訂單介面
+export interface Order {
+  id: string;
+  member: {
+    id: string;
+    email: string;
+    name: string;
+    gender: string;
+    tel: string;
+    role: string;
+    location: string;
+    consentedAt: string;
+    loginTokenIssuedAt: number;
+    orders: any[];
+    updatedBy?: any;
+    deletedAt?: string | null;
+    deletedBy?: string | null;
+    updatedAt: string;
+    createdAt: string;
+  };
+  status: string;
+  total: number;
+  tapPayTradeId?: string | null;
+  items: OrderItem[];
+  tickets: Ticket[];
+  updatedBy?: string | null;
+  deletedAt?: string | null;
+  deletedBy?: string | null;
+  updatedAt: string;
+  createdAt: string;
 }
 
 // 建立訂單請求介面
 export interface PostOrderCreateRequest {
   memberId: string;
   prime: string;
-  items: OrderItem[];
+  items: {
+    ticketTypeId: string;
+    quantity: number;
+    members: GroupPassFormData[];
+  }[];
 }

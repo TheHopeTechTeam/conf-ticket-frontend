@@ -15,8 +15,9 @@ interface TicketQuantities {
 interface GroupPassFormData {
   name: string;
   email: string;
-  church: string;
-  phone: string;
+  role?: string;
+  location: string;
+  tel: string;
 }
 
 interface TicketFormData {

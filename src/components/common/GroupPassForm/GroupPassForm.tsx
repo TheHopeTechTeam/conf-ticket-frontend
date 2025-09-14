@@ -2,13 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { MODE } from '../../../constants/common';
 import './GroupPassForm.scss';
+import { GroupPassFormData } from '../../../types/payment';
 
-export interface GroupPassFormData {
-  name: string;
-  email: string;
-  church: string;
-  phone: string;
-}
 
 interface GroupPassFormProps {
   quantity: number;
@@ -45,8 +40,8 @@ export const GroupPassForm: React.FC<GroupPassFormProps> = ({
           formData?.[index] || {
             name: '',
             email: '',
-            church: '',
-            phone: '',
+            location: '',
+            tel: '',
           }
       ),
     },
@@ -82,8 +77,8 @@ export const GroupPassForm: React.FC<GroupPassFormProps> = ({
           append({
             name: '',
             email: '',
-            church: '',
-            phone: '',
+            location: '',
+            tel: '',
           });
         }
       } else if (quantity < currentLength) {
@@ -144,7 +139,7 @@ export const GroupPassForm: React.FC<GroupPassFormProps> = ({
 
   const handleBlur = async (
     index: number,
-    field: 'name' | 'email' | 'church' | 'phone'
+    field: 'name' | 'email' | 'location' | 'tel'
   ) => {
     await trigger(`users.${index}.${field}` as any);
   };
@@ -266,64 +261,64 @@ export const GroupPassForm: React.FC<GroupPassFormProps> = ({
                 <div
                   className={`form-label ${mode === MODE.EDIT ? 'p-l-6' : 'form-record-label'}`}
                 >
-                  <label htmlFor={`church-${index}`}>所屬教會名稱</label>
+                  <label htmlFor={`location-${index}`}>所屬教會名稱</label>
                 </div>
                 {mode === MODE.EDIT ? (
                   <>
                     <input
-                      id={`church-${index}`}
-                      className={`form-input ${errors.users?.[index]?.church ? 'error' : ''}`}
+                      id={`location-${index}`}
+                      className={`form-input ${errors.users?.[index]?.location ? 'error' : ''}`}
                       type="text"
                       placeholder="請輸入所屬教會名稱"
-                      {...register(`users.${index}.church`, {
+                      {...register(`users.${index}.location`, {
                         required: '請輸入所屬教會名稱',
                         validate: value =>
                           value?.trim() ? true : '請輸入所屬教會名稱',
                       })}
-                      onBlur={() => handleBlur(index, 'church')}
+                      onBlur={() => handleBlur(index, 'location')}
                       aria-label="請輸入所屬教會名稱"
                       aria-required
                     />
-                    {errors.users?.[index]?.church && (
+                    {errors.users?.[index]?.location && (
                       <span className="error-message">
-                        {errors.users[index].church?.message}
+                        {errors.users[index].location?.message}
                       </span>
                     )}
                   </>
                 ) : (
-                  <p>{watchedUsers?.[index]?.church}</p>
+                  <p>{watchedUsers?.[index]?.location}</p>
                 )}
               </div>
               <div className="form-item">
                 <div
                   className={`form-label ${mode === MODE.EDIT ? 'p-l-6' : 'form-record-label'}`}
                 >
-                  <label htmlFor={`phone-${index}`}>所屬教會電話</label>
+                  <label htmlFor={`tel-${index}`}>所屬教會電話</label>
                 </div>
                 {mode === MODE.EDIT ? (
                   <>
                     <input
-                      id={`phone-${index}`}
-                      className={`form-input ${errors.users?.[index]?.phone ? 'error' : ''}`}
+                      id={`tel-${index}`}
+                      className={`form-input ${errors.users?.[index]?.tel ? 'error' : ''}`}
                       type="tel"
                       placeholder="請輸入所屬教會電話"
-                      {...register(`users.${index}.phone`, {
+                      {...register(`users.${index}.tel`, {
                         required: '請輸入所屬教會電話',
                         validate: value =>
                           value?.trim() ? true : '請輸入所屬教會電話',
                       })}
-                      onBlur={() => handleBlur(index, 'phone')}
+                      onBlur={() => handleBlur(index, 'tel')}
                       aria-label="請輸入所屬教會電話"
                       aria-required
                     />
-                    {errors.users?.[index]?.phone && (
+                    {errors.users?.[index]?.tel && (
                       <span className="error-message">
-                        {errors.users[index].phone?.message}
+                        {errors.users[index].tel?.message}
                       </span>
                     )}
                   </>
                 ) : (
-                  <p>{watchedUsers?.[index]?.phone}</p>
+                  <p>{watchedUsers?.[index]?.tel}</p>
                 )}
               </div>
             </div>

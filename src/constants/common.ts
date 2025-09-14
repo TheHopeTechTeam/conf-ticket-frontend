@@ -10,3 +10,8 @@ export const STATUS = {
   INFO: 'info',
   FORM: 'form',
 } as const;
+
+export const MAIL = {
+  CONTACT_EMAIL: 'conference@thehope.co',
+  NOREPLAY_EMAIL: 'noreply@thehope.co'
+} as const;

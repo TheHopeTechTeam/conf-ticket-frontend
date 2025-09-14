@@ -2,7 +2,7 @@ import React, { useMemo, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import Dialog from '../../components/common/Dialog/Dialog';
 import { SuccessOrError } from '../../components/common/SuccessOrError/SuccessOrError';
-import { STATUS } from '../../constants/common';
+import { MAIL, STATUS } from '../../constants/common';
 import { ROUTES } from '../../constants/routes';
 import './Refund.scss';
 
@@ -75,7 +75,7 @@ export const Refund: React.FC = () => {
                   </li>
                   <li>
                     <span className="number">4.</span>
-                    若有疑問請來信 conference@thehope.co
+                    若有疑問請來信 {MAIL.CONTACT_EMAIL}
                   </li>
                 </ul>
               </div>
@@ -239,7 +239,7 @@ export const Refund: React.FC = () => {
         <SuccessOrError
           type={STATUS.SUCCESS}
           useList={true}
-          message="退款金額將於 10 個工作天內退回至您的原付款方式，如需開立發票請寄信至conf@thehope.co"
+          message={`退款金額將於 10 個工作天內退回至您的原付款方式，如需開立發票請寄信至${MAIL.CONTACT_EMAIL}`}
           titlePrefix="退票"
           successText="成功"
           successButtonText="返回我的票券"
