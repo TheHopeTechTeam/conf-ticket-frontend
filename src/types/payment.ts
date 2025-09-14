@@ -12,7 +12,7 @@ export interface SelectedTicket {
 export interface GroupPassFormData {
   name: string;
   email: string;
-  role?: string;
+  role?: 'senior-pastor' | 'pastor';
   location: string;
   tel: string;
 }

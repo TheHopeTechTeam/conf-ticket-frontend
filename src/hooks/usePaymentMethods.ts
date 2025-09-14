@@ -36,7 +36,10 @@ export const usePaymentMethods = (
           items: paymentData.tickets.map(ticket => ({
             ticketTypeId: ticket.id,
             quantity: ticket.selectedQuantity,
-            members: paymentData.groupPassFormData[ticket.id] || [],
+            members: (paymentData.groupPassFormData[ticket.id] || []).map(member => ({
+              ...member,
+              role: member.role || 'pastor',
+            })),
           })),
         });
         hideLoading();
