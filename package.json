@@ -13,7 +13,7 @@
     "mock-server:dev": "nodemon --watch mock-server --ext js,json mock-server/server.js",
     "dev-with-api": "concurrently \"pnpm run dev\" \"pnpm run mock-server:dev\"",
     "dev-with-api-watch": "concurrently \"pnpm run dev\" \"pnpm run mock-server:watch\"",
-    "generate-client": "java -jar openapi-generator-cli-7.9.0.jar generate -i https://localhost:3000/api/v1/docs/openapi.json -g typescript-fetch -o ./generated-client --skip-validate-spec --additional-properties=typescriptThreePlus=true,supportsES6=true,npmName=api-client,npmVersion=1.0.0",
+    "generate-client": "java -jar openapi-generator-cli-7.9.0.jar generate -i ./openapi.json -g typescript-fetch -o ./generated-client --skip-validate-spec --additional-properties=typescriptThreePlus=true,supportsES6=true,npmName=api-client,npmVersion=1.0.0",
     "start": "pnpm run dev-with-api"
   },
   "dependencies": {

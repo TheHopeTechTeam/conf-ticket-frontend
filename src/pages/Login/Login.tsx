@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { apiService } from '../../api/fetchService';
+import { apiService } from '../../api';
 import './Login.scss';
 import { useLoading } from '../../contexts/LoadingContext';
 import { MAIL } from '../../constants/common';

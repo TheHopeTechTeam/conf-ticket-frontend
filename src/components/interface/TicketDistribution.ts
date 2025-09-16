@@ -2,6 +2,13 @@ export interface TicketInfo {
   ticketType: string;
   ticketCount: number;
   useDate: string;
+  user?: Array<{
+    id: string;
+    email: string;
+    name: string;
+    gender: string | null;
+    tel: string;
+  }>;
 }
 
 export interface RecipientInfo {

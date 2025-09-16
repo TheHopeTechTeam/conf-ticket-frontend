@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { apiService } from '../api/fetchService';
 import { ROUTES } from '../constants/routes';
 import { useLoading } from '../contexts/LoadingContext';
+import { apiService } from '../api';
 
 interface AuthState {
   isLoading: boolean;
@@ -35,7 +35,9 @@ export const useAuth = () => {
       // 只對 conf-ticket 路徑執行認證檢查
       const protectedRoutes = Object.values(ROUTES);
       const currentPath = location.pathname;
-      const needsAuth = protectedRoutes.includes(currentPath as any) && currentPath !== ROUTES.LOGIN;
+      const needsAuth =
+        protectedRoutes.includes(currentPath as any) &&
+        currentPath !== ROUTES.LOGIN;
 
       if (!needsAuth) {
         // 不需要認證的路徑，直接設為已驗證狀態
@@ -107,4 +109,3 @@ export const useAuth = () => {
     logout,
   };
 };
-

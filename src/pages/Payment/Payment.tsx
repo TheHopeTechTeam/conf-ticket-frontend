@@ -17,7 +17,7 @@ import { usePaymentMethods } from '../../hooks/usePaymentMethods';
 import { usePaymentState } from '../../hooks/usePaymentState';
 import { useTapPay } from '../../hooks/useTapPay';
 
-import { apiService } from '../../api/fetchService';
+import { apiService } from '../../api';
 import { MAIL, MODE, STATUS } from '../../constants/common';
 import { ROUTES } from '../../constants/routes';
 import { useAuthContext } from '../../contexts/AuthContext';

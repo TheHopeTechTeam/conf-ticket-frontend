@@ -1,5 +1,4 @@
 import { ROUTES } from '../constants/routes';
-import { PostOrderCreateRequest } from '../types/payment';
 
 class FetchService {
   private baseURL: string;
@@ -107,7 +106,7 @@ class FetchService {
     }
   }
 
-  // API 方法保持不變
+  // HTTP 方法
   async get(endpoint: string, params?: Record<string, any>) {
     let url = endpoint;
     if (params) {
@@ -151,66 +150,4 @@ class FetchService {
   }
 }
 
-const fetchClient = new FetchService('/api');
-const EMAIL_KEY = 'loginEmail';
-
-//  API 服務定義
-export const apiService = {
-  // 認證相關 API
-  memberAuthentication: {
-    postAuth: async (email: { email: string }) => {
-      const response = await fetchClient.post('/v1/auth', email);
-      return response;
-    },
-  },
-  members: {
-    getMember: async () => {
-      const response = await fetchClient.get(
-        `/v1/members?page=1&limit=1&sort=-createdAt&where%5Bemail%5D%5Bequals%5D=${encodeURIComponent(localStorage.getItem(EMAIL_KEY) as string)}`
-      );
-      return response;
-    },
-    patchMembers: async (
-      id: string,
-      data: {
-        email: string;
-        name: string;
-        gender: string;
-        tel: string;
-        role: string;
-        location: string;
-        consentedAt: string;
-      }
-    ) => {
-      const response = await fetchClient.patch(`/v1/members/${id}`, data);
-      return response;
-    },
-    getMembers: async (mail: string[]) => {
-      const response = await fetchClient.get(`/v1/members?where[and][role][in]=paster,senior-paster&where[or][0][email][in]=${mail.join(',')}`);
-      return response;
-    },
-  },
-  ticketsTypes: {
-    getTicketsTypes: async () => {
-      const response = await fetchClient.get(
-        '/v1/ticketTypes?page=1&limit=20&sort=-createdAt'
-      );
-      return response;
-    },
-  },
-  orders: {
-    getOrders: async (id: string) => {
-      const response = await fetchClient.get(
-        `/v1/orders?page=1&limit=100&sort=-createdAt&where[member][equals]=${id}`
-      );
-      return response;
-    },
-    postOrderCreate: async (data: PostOrderCreateRequest) => {
-      const response = await fetchClient.post('/v1/orders/create', data);
-      return response;
-    },
-  }
-};
-
-export { fetchClient };
-
+export const httpClient = new FetchService('/api');

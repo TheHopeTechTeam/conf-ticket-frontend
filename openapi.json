@@ -1,0 +1,2483 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "特會 API",
+    "version": "1.0.0",
+    "description": "特會後端 API 文件",
+    "contact": {
+      "name": "API Support, Danny Han",
+      "email": "chenghsuan.han@gmail.com"
+    },
+    "license": { "name": "MIT", "url": "https://opensource.org/licenses/MIT" }
+  },
+  "servers": [{ "url": "https://thehope.app", "description": "API Server" }],
+  "paths": {
+    "/api/v1/users/login": {
+      "post": {
+        "tags": ["Users Authentication"],
+        "summary": "CMS 後台使用者登入",
+        "description": "以 CMS 後台使用者 user 進行登入",
+        "operationId": "loginUser",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/UserLoginRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "登入成功，返回 JWT token 和使用者資訊",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/UserLoginResponse" }
+              }
+            }
+          },
+          "400": {
+            "description": "資料驗證錯誤",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/AuthErrorResponse" }
+              }
+            }
+          },
+          "401": {
+            "description": "資料不正確",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/AuthErrorResponse" }
+              }
+            }
+          },
+          "500": {
+            "description": "伺服器錯誤",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/AuthErrorResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/users/logout": {
+      "post": {
+        "tags": ["Users Authentication"],
+        "summary": "CMS 後台使用者登出",
+        "description": "對 CMS 後台使用者 user 進行登出並使 JWT token 失效",
+        "operationId": "logoutUser",
+        "security": [{ "BearerAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "登出成功",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/LogoutResponse" }
+              }
+            }
+          },
+          "401": {
+            "description": "未授權或無效的 token",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/AuthErrorResponse" }
+              }
+            }
+          },
+          "500": {
+            "description": "伺服器錯誤",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/AuthErrorResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/users/refresh-token": {
+      "post": {
+        "tags": ["Users Authentication"],
+        "summary": "更新 JWT token",
+        "description": "使用仍有效的 JWT token 來換取新的 JWT token",
+        "operationId": "refreshUserToken",
+        "security": [{ "BearerAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "Token 更新成功",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/UserLoginResponse" }
+              }
+            }
+          },
+          "401": {
+            "description": "無效或過期的 token",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/AuthErrorResponse" }
+              }
+            }
+          },
+          "500": {
+            "description": "伺服器錯誤",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/AuthErrorResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth": {
+      "post": {
+        "tags": ["Member Authentication"],
+        "summary": "無密碼身份驗證",
+        "description": "前台使用者寄送一次性身份驗證超連結至所提供的 email 地址",
+        "operationId": "initiateAuth",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["email"],
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "format": "email",
+                    "description": "前台使用者身份驗證用的 email 地址"
+                  }
+                }
+              },
+              "example": { "email": "user@example.com" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "前台使用者身份驗證成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "url": {
+                      "type": "string",
+                      "description": "前台使用者一次性身份驗證用 URL"
+                    }
+                  }
+                },
+                "example": {
+                  "url": "http://localhost:3000/api/v1/auth/callback?t=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "無效的請求",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": { "type": "string", "description": "錯誤訊息" }
+                  }
+                },
+                "examples": {
+                  "Missing email": {
+                    "value": { "message": "Email is required" }
+                  },
+                  "Invalid request body": {
+                    "value": {
+                      "message": "Invalid request body. Email is required"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": { "type": "string", "description": "錯誤訊息" }
+                  }
+                },
+                "example": { "message": "Internal Server Error" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/callback": {
+      "get": {
+        "tags": ["Member Authentication"],
+        "summary": "完成無密碼身份驗證",
+        "description": "前台使用者使用一次性身份驗證超連結完成身份驗證並取得 JWT token",
+        "operationId": "completeAuth",
+        "parameters": [
+          {
+            "name": "t",
+            "in": "query",
+            "description": "前台使用者一次性身份驗證 token",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "前台使用者身份驗證成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "token": {
+                      "type": "string",
+                      "description": "JWT access token"
+                    }
+                  }
+                },
+                "example": {
+                  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "無效或過期的 token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": { "type": "string", "description": "錯誤訊息" }
+                  }
+                },
+                "examples": {
+                  "Missing token": { "value": { "message": "Missing token" } },
+                  "Invalid token": { "value": { "message": "Invalid token" } },
+                  "Expired token": {
+                    "value": {
+                      "message": "Invalid or expired token: TokenExpiredError: jwt expired"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "前台使用者未找到",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": { "type": "string", "description": "錯誤訊息" }
+                  }
+                },
+                "example": { "message": "Email not found" }
+              }
+            }
+          },
+          "500": {
+            "description": "伺服器錯誤",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": { "type": "string", "description": "錯誤訊息" }
+                  }
+                },
+                "example": { "message": "Internal Server Error" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/orders/create": {
+      "post": {
+        "tags": ["Orders"],
+        "summary": "建立訂單並處理付款",
+        "description": "建立新訂單，計算總金額，並使用提供的 TapPay prime 進行付款",
+        "operationId": "createOrder",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CreateOrderInput" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "訂單已建立且付款成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateOrderSuccessOutput"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "輸入無效或付款失敗",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateOrderFailureOutput"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "輸入無效，例如：票種不存在、需提供的會員資訊包含了已取票的會員、⋯⋯",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateOrderValidationFailureOutput"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "伺服器內部錯誤",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Internal Server Error"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/webhooks/tappay": {
+      "post": {
+        "tags": ["Webhooks"],
+        "summary": "TapPay Webhook Handler",
+        "description": "接收並處理來自 TapPay 的 webhook 通知。此端點不應由一般使用者直接呼叫，且需驗證簽名。",
+        "operationId": "handleTapPayWebhook",
+        "requestBody": {
+          "description": "TapPay webhook payload",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/TapPayWebhookPayload" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "成功接收 webhook",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebhookSuccessResponse"
+                }
+              }
+            }
+          },
+          "401": { "description": "簽名無效" }
+        }
+      }
+    },
+    "/api/v1/members/roles": {
+      "get": {
+        "tags": ["Members"],
+        "summary": "取得所有可用的會眾身份",
+        "description": "取得所有可用的會眾身份，用於前台下拉選單",
+        "operationId": "getMemberRoles",
+        "responses": {
+          "200": {
+            "description": "取得成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "label": {
+                        "type": "string",
+                        "description": "身份顯示名稱"
+                      },
+                      "value": { "type": "string", "description": "身份值" }
+                    }
+                  }
+                },
+                "example": [
+                  { "label": "主任牧師", "value": "senior-pastor" },
+                  { "label": "牧師", "value": "pastor" }
+                ]
+              }
+            }
+          },
+          "500": {
+            "description": "伺服器錯誤",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": { "type": "string", "description": "錯誤訊息" }
+                  }
+                },
+                "example": { "message": "Internal Server Error" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/members": {
+      "get": {
+        "tags": ["Members"],
+        "summary": "列出 members 資料",
+        "description": "列出分頁後的 members 資料",
+        "operationId": "listMembers",
+        "security": [{ "BearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "description": "頁數",
+            "schema": { "type": "integer", "default": 1 }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "每頁顯示的資料數量",
+            "schema": { "type": "integer", "default": 10 }
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "description": "排序條件；使用欄位名稱前加上 `-` 代表降序排列，否則為升序排列。多個欄位可用逗號分隔，如 `sort=-createdAt,name` 。",
+            "examples": {
+              "example1": {
+                "summary": "範例 1 - 照 createdAt 降序排列",
+                "value": "-createdAt"
+              },
+              "example2": {
+                "summary": "範例 2 - 照 updatedAt 升序排列",
+                "value": "updatedAt"
+              }
+            },
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "where[email][equals]",
+            "in": "query",
+            "description": "範例：過濾條件 - email 等於某個值；請求時請使用 URL 編碼，將欄位放至第一個 `[]` ，再將條件放至 `[]` 中。1. 可使用的條件請參考 [PayloadCMS 文件](https://payloadcms.com/docs/queries/overview#operators) 2. 若要以關聯資料查詢，請使用 `where[關聯資料名稱][equals]={{ 關聯資料的 ID }}` 。",
+            "examples": {
+              "example": {
+                "summary": "Email 值等於 \"john.doe@example.com\"",
+                "value": "john.doe@example.com"
+              }
+            },
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "取得成功",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/MembersListResponse" }
+              }
+            }
+          },
+          "401": {
+            "description": "未授權使用",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": { "message": { "type": "string" } }
+                },
+                "example": { "message": "Unauthorized" }
+              }
+            }
+          },
+          "500": {
+            "description": "伺服器錯誤",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": { "message": { "type": "string" } }
+                },
+                "example": { "message": "Internal Server Error" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/members/{id}": {
+      "get": {
+        "tags": ["Members"],
+        "summary": "以 ID 取得 members 資料",
+        "description": "以 ID 取得一筆 members 資料",
+        "operationId": "getMembers",
+        "security": [{ "BearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Members 的資料唯一識別碼",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "取得成功",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Members" }
+              }
+            }
+          },
+          "401": {
+            "description": "未授權使用",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": { "message": { "type": "string" } }
+                },
+                "example": { "message": "Unauthorized" }
+              }
+            }
+          },
+          "404": {
+            "description": "資料未找到",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": { "message": { "type": "string" } }
+                },
+                "example": { "message": "Not found" }
+              }
+            }
+          },
+          "500": {
+            "description": "伺服器錯誤",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": { "message": { "type": "string" } }
+                },
+                "example": { "message": "Internal Server Error" }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": ["Members"],
+        "summary": "更新 members 資料",
+        "description": "更新已存在的 members 資料",
+        "operationId": "updateMembers",
+        "security": [{ "BearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Members 的 ID",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/MembersRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "更新成功",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Members" }
+              }
+            }
+          },
+          "400": {
+            "description": "資料驗證錯誤",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "errors": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "message": { "type": "string" },
+                          "field": { "type": "string" }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "未授權使用",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": { "message": { "type": "string" } }
+                },
+                "example": { "message": "Unauthorized" }
+              }
+            }
+          },
+          "404": {
+            "description": "資料未找到",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": { "message": { "type": "string" } }
+                },
+                "example": { "message": "Not found" }
+              }
+            }
+          },
+          "500": {
+            "description": "伺服器錯誤",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": { "message": { "type": "string" } }
+                },
+                "example": { "message": "Internal Server Error" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/orders": {
+      "get": {
+        "tags": ["Orders"],
+        "summary": "列出 orders 資料",
+        "description": "列出分頁後的 orders 資料",
+        "operationId": "listOrders",
+        "security": [{ "BearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "description": "頁數",
+            "schema": { "type": "integer", "default": 1 }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "每頁顯示的資料數量",
+            "schema": { "type": "integer", "default": 10 }
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "description": "排序條件；使用欄位名稱前加上 `-` 代表降序排列，否則為升序排列。多個欄位可用逗號分隔，如 `sort=-createdAt,name` 。",
+            "examples": {
+              "example1": {
+                "summary": "範例 1 - 照 createdAt 降序排列",
+                "value": "-createdAt"
+              },
+              "example2": {
+                "summary": "範例 2 - 照 updatedAt 升序排列",
+                "value": "updatedAt"
+              }
+            },
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "where[email][equals]",
+            "in": "query",
+            "description": "範例：過濾條件 - email 等於某個值；請求時請使用 URL 編碼，將欄位放至第一個 `[]` ，再將條件放至 `[]` 中。1. 可使用的條件請參考 [PayloadCMS 文件](https://payloadcms.com/docs/queries/overview#operators) 2. 若要以關聯資料查詢，請使用 `where[關聯資料名稱][equals]={{ 關聯資料的 ID }}` 。",
+            "examples": {
+              "example": {
+                "summary": "Email 值等於 \"john.doe@example.com\"",
+                "value": "john.doe@example.com"
+              }
+            },
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "取得成功",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/OrdersListResponse" }
+              }
+            }
+          },
+          "401": {
+            "description": "未授權使用",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": { "message": { "type": "string" } }
+                },
+                "example": { "message": "Unauthorized" }
+              }
+            }
+          },
+          "500": {
+            "description": "伺服器錯誤",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": { "message": { "type": "string" } }
+                },
+                "example": { "message": "Internal Server Error" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/orders/{id}": {
+      "get": {
+        "tags": ["Orders"],
+        "summary": "以 ID 取得 orders 資料",
+        "description": "以 ID 取得一筆 orders 資料",
+        "operationId": "getOrders",
+        "security": [{ "BearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Orders 的資料唯一識別碼",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "取得成功",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Orders" }
+              }
+            }
+          },
+          "401": {
+            "description": "未授權使用",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": { "message": { "type": "string" } }
+                },
+                "example": { "message": "Unauthorized" }
+              }
+            }
+          },
+          "404": {
+            "description": "資料未找到",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": { "message": { "type": "string" } }
+                },
+                "example": { "message": "Not found" }
+              }
+            }
+          },
+          "500": {
+            "description": "伺服器錯誤",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": { "message": { "type": "string" } }
+                },
+                "example": { "message": "Internal Server Error" }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": ["Orders"],
+        "summary": "更新 orders 資料",
+        "description": "更新已存在的 orders 資料",
+        "operationId": "updateOrders",
+        "security": [{ "BearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Orders 的 ID",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/OrdersRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "更新成功",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Orders" }
+              }
+            }
+          },
+          "400": {
+            "description": "資料驗證錯誤",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "errors": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "message": { "type": "string" },
+                          "field": { "type": "string" }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "未授權使用",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": { "message": { "type": "string" } }
+                },
+                "example": { "message": "Unauthorized" }
+              }
+            }
+          },
+          "404": {
+            "description": "資料未找到",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": { "message": { "type": "string" } }
+                },
+                "example": { "message": "Not found" }
+              }
+            }
+          },
+          "500": {
+            "description": "伺服器錯誤",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": { "message": { "type": "string" } }
+                },
+                "example": { "message": "Internal Server Error" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/order-items": {
+      "get": {
+        "tags": ["Order-items"],
+        "summary": "列出 order-items 資料",
+        "description": "列出分頁後的 order-items 資料",
+        "operationId": "listOrder-items",
+        "security": [{ "BearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "description": "頁數",
+            "schema": { "type": "integer", "default": 1 }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "每頁顯示的資料數量",
+            "schema": { "type": "integer", "default": 10 }
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "description": "排序條件；使用欄位名稱前加上 `-` 代表降序排列，否則為升序排列。多個欄位可用逗號分隔，如 `sort=-createdAt,name` 。",
+            "examples": {
+              "example1": {
+                "summary": "範例 1 - 照 createdAt 降序排列",
+                "value": "-createdAt"
+              },
+              "example2": {
+                "summary": "範例 2 - 照 updatedAt 升序排列",
+                "value": "updatedAt"
+              }
+            },
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "where[email][equals]",
+            "in": "query",
+            "description": "範例：過濾條件 - email 等於某個值；請求時請使用 URL 編碼，將欄位放至第一個 `[]` ，再將條件放至 `[]` 中。1. 可使用的條件請參考 [PayloadCMS 文件](https://payloadcms.com/docs/queries/overview#operators) 2. 若要以關聯資料查詢，請使用 `where[關聯資料名稱][equals]={{ 關聯資料的 ID }}` 。",
+            "examples": {
+              "example": {
+                "summary": "Email 值等於 \"john.doe@example.com\"",
+                "value": "john.doe@example.com"
+              }
+            },
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "取得成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Order-itemsListResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "未授權使用",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": { "message": { "type": "string" } }
+                },
+                "example": { "message": "Unauthorized" }
+              }
+            }
+          },
+          "500": {
+            "description": "伺服器錯誤",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": { "message": { "type": "string" } }
+                },
+                "example": { "message": "Internal Server Error" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/order-items/{id}": {
+      "get": {
+        "tags": ["Order-items"],
+        "summary": "以 ID 取得 order-items 資料",
+        "description": "以 ID 取得一筆 order-items 資料",
+        "operationId": "getOrder-items",
+        "security": [{ "BearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Order-items 的資料唯一識別碼",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "取得成功",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Order-items" }
+              }
+            }
+          },
+          "401": {
+            "description": "未授權使用",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": { "message": { "type": "string" } }
+                },
+                "example": { "message": "Unauthorized" }
+              }
+            }
+          },
+          "404": {
+            "description": "資料未找到",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": { "message": { "type": "string" } }
+                },
+                "example": { "message": "Not found" }
+              }
+            }
+          },
+          "500": {
+            "description": "伺服器錯誤",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": { "message": { "type": "string" } }
+                },
+                "example": { "message": "Internal Server Error" }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": ["Order-items"],
+        "summary": "更新 order-items 資料",
+        "description": "更新已存在的 order-items 資料",
+        "operationId": "updateOrder-items",
+        "security": [{ "BearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Order-items 的 ID",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/Order-itemsRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "更新成功",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Order-items" }
+              }
+            }
+          },
+          "400": {
+            "description": "資料驗證錯誤",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "errors": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "message": { "type": "string" },
+                          "field": { "type": "string" }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "未授權使用",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": { "message": { "type": "string" } }
+                },
+                "example": { "message": "Unauthorized" }
+              }
+            }
+          },
+          "404": {
+            "description": "資料未找到",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": { "message": { "type": "string" } }
+                },
+                "example": { "message": "Not found" }
+              }
+            }
+          },
+          "500": {
+            "description": "伺服器錯誤",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": { "message": { "type": "string" } }
+                },
+                "example": { "message": "Internal Server Error" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/payments": {
+      "get": {
+        "tags": ["Payments"],
+        "summary": "列出 payments 資料",
+        "description": "列出分頁後的 payments 資料",
+        "operationId": "listPayments",
+        "security": [{ "BearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "description": "頁數",
+            "schema": { "type": "integer", "default": 1 }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "每頁顯示的資料數量",
+            "schema": { "type": "integer", "default": 10 }
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "description": "排序條件；使用欄位名稱前加上 `-` 代表降序排列，否則為升序排列。多個欄位可用逗號分隔，如 `sort=-createdAt,name` 。",
+            "examples": {
+              "example1": {
+                "summary": "範例 1 - 照 createdAt 降序排列",
+                "value": "-createdAt"
+              },
+              "example2": {
+                "summary": "範例 2 - 照 updatedAt 升序排列",
+                "value": "updatedAt"
+              }
+            },
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "where[email][equals]",
+            "in": "query",
+            "description": "範例：過濾條件 - email 等於某個值；請求時請使用 URL 編碼，將欄位放至第一個 `[]` ，再將條件放至 `[]` 中。1. 可使用的條件請參考 [PayloadCMS 文件](https://payloadcms.com/docs/queries/overview#operators) 2. 若要以關聯資料查詢，請使用 `where[關聯資料名稱][equals]={{ 關聯資料的 ID }}` 。",
+            "examples": {
+              "example": {
+                "summary": "Email 值等於 \"john.doe@example.com\"",
+                "value": "john.doe@example.com"
+              }
+            },
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "取得成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaymentsListResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "未授權使用",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": { "message": { "type": "string" } }
+                },
+                "example": { "message": "Unauthorized" }
+              }
+            }
+          },
+          "500": {
+            "description": "伺服器錯誤",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": { "message": { "type": "string" } }
+                },
+                "example": { "message": "Internal Server Error" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/payments/{id}": {
+      "get": {
+        "tags": ["Payments"],
+        "summary": "以 ID 取得 payments 資料",
+        "description": "以 ID 取得一筆 payments 資料",
+        "operationId": "getPayments",
+        "security": [{ "BearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Payments 的資料唯一識別碼",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "取得成功",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Payments" }
+              }
+            }
+          },
+          "401": {
+            "description": "未授權使用",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": { "message": { "type": "string" } }
+                },
+                "example": { "message": "Unauthorized" }
+              }
+            }
+          },
+          "404": {
+            "description": "資料未找到",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": { "message": { "type": "string" } }
+                },
+                "example": { "message": "Not found" }
+              }
+            }
+          },
+          "500": {
+            "description": "伺服器錯誤",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": { "message": { "type": "string" } }
+                },
+                "example": { "message": "Internal Server Error" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/ticketTypes": {
+      "get": {
+        "tags": ["TicketTypes"],
+        "summary": "列出 ticketTypes 資料",
+        "description": "列出分頁後的 ticketTypes 資料",
+        "operationId": "listTicketTypes",
+        "security": [{ "BearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "description": "頁數",
+            "schema": { "type": "integer", "default": 1 }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "每頁顯示的資料數量",
+            "schema": { "type": "integer", "default": 10 }
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "description": "排序條件；使用欄位名稱前加上 `-` 代表降序排列，否則為升序排列。多個欄位可用逗號分隔，如 `sort=-createdAt,name` 。",
+            "examples": {
+              "example1": {
+                "summary": "範例 1 - 照 createdAt 降序排列",
+                "value": "-createdAt"
+              },
+              "example2": {
+                "summary": "範例 2 - 照 updatedAt 升序排列",
+                "value": "updatedAt"
+              }
+            },
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "where[email][equals]",
+            "in": "query",
+            "description": "範例：過濾條件 - email 等於某個值；請求時請使用 URL 編碼，將欄位放至第一個 `[]` ，再將條件放至 `[]` 中。1. 可使用的條件請參考 [PayloadCMS 文件](https://payloadcms.com/docs/queries/overview#operators) 2. 若要以關聯資料查詢，請使用 `where[關聯資料名稱][equals]={{ 關聯資料的 ID }}` 。",
+            "examples": {
+              "example": {
+                "summary": "Email 值等於 \"john.doe@example.com\"",
+                "value": "john.doe@example.com"
+              }
+            },
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "取得成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TicketTypesListResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "未授權使用",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": { "message": { "type": "string" } }
+                },
+                "example": { "message": "Unauthorized" }
+              }
+            }
+          },
+          "500": {
+            "description": "伺服器錯誤",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": { "message": { "type": "string" } }
+                },
+                "example": { "message": "Internal Server Error" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/ticketTypes/{id}": {
+      "get": {
+        "tags": ["TicketTypes"],
+        "summary": "以 ID 取得 ticketTypes 資料",
+        "description": "以 ID 取得一筆 ticketTypes 資料",
+        "operationId": "getTicketTypes",
+        "security": [{ "BearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "TicketTypes 的資料唯一識別碼",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "取得成功",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/TicketTypes" }
+              }
+            }
+          },
+          "401": {
+            "description": "未授權使用",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": { "message": { "type": "string" } }
+                },
+                "example": { "message": "Unauthorized" }
+              }
+            }
+          },
+          "404": {
+            "description": "資料未找到",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": { "message": { "type": "string" } }
+                },
+                "example": { "message": "Not found" }
+              }
+            }
+          },
+          "500": {
+            "description": "伺服器錯誤",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": { "message": { "type": "string" } }
+                },
+                "example": { "message": "Internal Server Error" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/tickets": {
+      "get": {
+        "tags": ["Tickets"],
+        "summary": "列出 tickets 資料",
+        "description": "列出分頁後的 tickets 資料",
+        "operationId": "listTickets",
+        "security": [{ "BearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "description": "頁數",
+            "schema": { "type": "integer", "default": 1 }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "每頁顯示的資料數量",
+            "schema": { "type": "integer", "default": 10 }
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "description": "排序條件；使用欄位名稱前加上 `-` 代表降序排列，否則為升序排列。多個欄位可用逗號分隔，如 `sort=-createdAt,name` 。",
+            "examples": {
+              "example1": {
+                "summary": "範例 1 - 照 createdAt 降序排列",
+                "value": "-createdAt"
+              },
+              "example2": {
+                "summary": "範例 2 - 照 updatedAt 升序排列",
+                "value": "updatedAt"
+              }
+            },
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "where[email][equals]",
+            "in": "query",
+            "description": "範例：過濾條件 - email 等於某個值；請求時請使用 URL 編碼，將欄位放至第一個 `[]` ，再將條件放至 `[]` 中。1. 可使用的條件請參考 [PayloadCMS 文件](https://payloadcms.com/docs/queries/overview#operators) 2. 若要以關聯資料查詢，請使用 `where[關聯資料名稱][equals]={{ 關聯資料的 ID }}` 。",
+            "examples": {
+              "example": {
+                "summary": "Email 值等於 \"john.doe@example.com\"",
+                "value": "john.doe@example.com"
+              }
+            },
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "取得成功",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/TicketsListResponse" }
+              }
+            }
+          },
+          "401": {
+            "description": "未授權使用",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": { "message": { "type": "string" } }
+                },
+                "example": { "message": "Unauthorized" }
+              }
+            }
+          },
+          "500": {
+            "description": "伺服器錯誤",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": { "message": { "type": "string" } }
+                },
+                "example": { "message": "Internal Server Error" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/tickets/{id}": {
+      "get": {
+        "tags": ["Tickets"],
+        "summary": "以 ID 取得 tickets 資料",
+        "description": "以 ID 取得一筆 tickets 資料",
+        "operationId": "getTickets",
+        "security": [{ "BearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Tickets 的資料唯一識別碼",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "取得成功",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Tickets" }
+              }
+            }
+          },
+          "401": {
+            "description": "未授權使用",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": { "message": { "type": "string" } }
+                },
+                "example": { "message": "Unauthorized" }
+              }
+            }
+          },
+          "404": {
+            "description": "資料未找到",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": { "message": { "type": "string" } }
+                },
+                "example": { "message": "Not found" }
+              }
+            }
+          },
+          "500": {
+            "description": "伺服器錯誤",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": { "message": { "type": "string" } }
+                },
+                "example": { "message": "Internal Server Error" }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": ["Tickets"],
+        "summary": "更新 tickets 資料",
+        "description": "更新已存在的 tickets 資料",
+        "operationId": "updateTickets",
+        "security": [{ "BearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Tickets 的 ID",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/TicketsRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "更新成功",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Tickets" }
+              }
+            }
+          },
+          "400": {
+            "description": "資料驗證錯誤",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "errors": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "message": { "type": "string" },
+                          "field": { "type": "string" }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "未授權使用",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": { "message": { "type": "string" } }
+                },
+                "example": { "message": "Unauthorized" }
+              }
+            }
+          },
+          "404": {
+            "description": "資料未找到",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": { "message": { "type": "string" } }
+                },
+                "example": { "message": "Not found" }
+              }
+            }
+          },
+          "500": {
+            "description": "伺服器錯誤",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": { "message": { "type": "string" } }
+                },
+                "example": { "message": "Internal Server Error" }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "UserLoginRequest": {
+        "type": "object",
+        "required": ["email", "password"],
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "CMS 後台使用者 user 的 email 地址"
+          },
+          "password": {
+            "type": "string",
+            "minLength": 1,
+            "description": "CMS 後台使用者 user 的密碼"
+          }
+        },
+        "example": { "email": "user@example.com", "password": "password123" }
+      },
+      "UserLoginResponse": {
+        "type": "object",
+        "properties": {
+          "token": { "type": "string", "description": "JWT access token" },
+          "user": { "$ref": "#/components/schemas/Users" },
+          "exp": { "type": "number", "description": "Token 過期時間戳記" }
+        },
+        "example": {
+          "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+          "user": {
+            "id": "1",
+            "name": "John Doe",
+            "email": "user@example.com",
+            "role": "default"
+          },
+          "exp": 1704067200
+        }
+      },
+      "UserCreateRequest": {
+        "type": "object",
+        "required": ["name", "email", "password"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "CMS 後台使用者 user 的全名"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "CMS 後台使用者 user 的 email 地址"
+          },
+          "password": {
+            "type": "string",
+            "minLength": 6,
+            "description": "CMS 後台使用者 user 的密碼；至少 6 個字符"
+          }
+        },
+        "example": {
+          "name": "John Doe",
+          "email": "user@example.com",
+          "password": "password123"
+        }
+      },
+      "Users": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "description": "資料唯一識別碼" },
+          "name": {
+            "type": "string",
+            "description": "CMS 後台使用者 user 的全名"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "CMS 後台使用者 user 的 email 地址"
+          },
+          "role": {
+            "type": "string",
+            "enum": ["default", "admin"],
+            "description": "CMS 後台使用者 user 的身份"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "資料建立時間戳記"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "資料更新時間戳記"
+          }
+        },
+        "example": {
+          "id": "1",
+          "name": "John Doe",
+          "email": "user@example.com",
+          "role": "default",
+          "createdAt": "2024-01-01T00:00:00.000Z",
+          "updatedAt": "2024-01-01T00:00:00.000Z"
+        }
+      },
+      "AuthErrorResponse": {
+        "type": "object",
+        "properties": {
+          "message": { "type": "string", "description": "錯誤訊息" },
+          "errors": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "description": "欄位的錯誤訊息"
+                },
+                "field": {
+                  "type": "string",
+                  "description": "造成錯誤的欄位名稱"
+                }
+              }
+            },
+            "description": "驗證錯誤陣列"
+          }
+        }
+      },
+      "LogoutResponse": {
+        "type": "object",
+        "properties": {
+          "message": { "type": "string", "description": "登出成功訊息" }
+        },
+        "example": { "message": "Logout successful." }
+      },
+      "CreateOrderInput": {
+        "type": "object",
+        "required": ["memberId", "prime", "items"],
+        "properties": {
+          "memberId": {
+            "type": "string",
+            "description": "下訂單的會眾 ID",
+            "example": "6438b966-0905-4b16-9c22-37830546e1d4"
+          },
+          "prime": {
+            "type": "string",
+            "description": "從 TapPay 獲得的單次付款 prime ；測試環境中可用的 prime 請參考 [TapPay 文件](https://docs.tappaysdk.com/tutorial/zh/reference.html#test-prime)",
+            "example": "gp_test_kjo6i5uthfuehfjgit867584urjfhtyr74ytuhjyu7685jtufyejgitu"
+          },
+          "items": {
+            "type": "array",
+            "description": "訂單中的票種和數量陣列",
+            "items": {
+              "type": "object",
+              "required": ["ticketTypeId", "quantity"],
+              "properties": {
+                "ticketTypeId": {
+                  "type": "string",
+                  "description": "票種的 ID",
+                  "example": "84a57020-8669-4dbe-b5c7-1cc79c9f9133"
+                },
+                "quantity": {
+                  "type": "number",
+                  "description": "此票種的購買數量",
+                  "minimum": 1,
+                  "example": 1
+                },
+                "members": {
+                  "type": "array",
+                  "description": "若票種需要會員資訊，則此欄位為必填，且陣列長度需與 quantity 相符。若票種不需要會員資訊，則此欄位可省略",
+                  "items": {
+                    "type": "object",
+                    "required": ["name", "email", "role", "location", "tel"],
+                    "properties": {
+                      "name": {
+                        "type": "string",
+                        "description": "使用此票的會眾姓名",
+                        "example": "Danny Han"
+                      },
+                      "email": {
+                        "type": "string",
+                        "format": "email",
+                        "description": "購買此票的會眾 Email",
+                        "example": "user@example.com"
+                      },
+                      "role": {
+                        "type": "string",
+                        "description": "購買此票的會眾身份；目前僅允許填寫 \"senior-pastor\" 、 \"pastor\" 或 \"ministry-leader\"",
+                        "example": "senior-pastor"
+                      },
+                      "location": {
+                        "type": "string",
+                        "description": "購買此票的會眾所屬教會",
+                        "example": "Test Church"
+                      },
+                      "tel": {
+                        "type": "string",
+                        "description": "購買此票的會眾電話",
+                        "example": "0912345678"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "CreateOrderSuccessOutput": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Order created and payment successful."
+          },
+          "orderId": {
+            "type": "string",
+            "description": "新建立的訂單 ID",
+            "example": "4aa6f0e7-2bce-4eaf-aafd-899c87152225"
+          }
+        }
+      },
+      "CreateOrderFailureOutput": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Payment failed. Please try again."
+          }
+        }
+      },
+      "CreateOrderValidationFailureOutput": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Unprocessable Content: TicketType with ID a4b9ceee-74e5-4a0d-8b37-aa08e9cc6d94 not found."
+          }
+        }
+      },
+      "TapPayWebhookPayload": {
+        "type": "object",
+        "description": "TapPay webhook notification payload.",
+        "properties": {
+          "status": {
+            "type": "number",
+            "description": "交易狀態，0 為成功",
+            "example": 0
+          },
+          "msg": {
+            "type": "string",
+            "description": "交易訊息",
+            "example": "Success"
+          },
+          "rec_trade_id": {
+            "type": "string",
+            "description": "TapPay 交易紀錄 ID"
+          },
+          "order_number": { "type": "string", "description": "商戶訂單編號" },
+          "amount": { "type": "number", "description": "交易金額" }
+        }
+      },
+      "WebhookSuccessResponse": {
+        "type": "object",
+        "properties": { "received": { "type": "boolean", "enum": [true] } }
+      },
+      "Members": {
+        "type": "object",
+        "required": ["id", "email", "name", "tel", "location"],
+        "properties": {
+          "id": { "type": "string", "description": "資料唯一識別碼" },
+          "email": { "type": "string", "description": "Email" },
+          "name": { "type": "string", "description": "名稱 - 請填寫全名" },
+          "gender": { "type": "string", "description": "性別" },
+          "tel": { "type": "string", "description": "聯絡電話" },
+          "role": {
+            "type": "string",
+            "description": "身份 - 用於區分會眾身份"
+          },
+          "location": {
+            "type": "string",
+            "description": "所屬教會 - 會員所屬的教會，若未知請填「其他」"
+          },
+          "consentedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "同意隱私政策時間 - 需同意隱私政策才能購票"
+          },
+          "loginTokenIssuedAt": {
+            "type": "number",
+            "description": "登入權杖簽發時間 - 用於實作單次登入權杖"
+          },
+          "orders": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Orders",
+              "description": "關聯到 orders 的資料"
+            },
+            "description": "訂單 - 該會眾的所有訂單"
+          },
+          "updatedBy": {
+            "$ref": "#/components/schemas/Users",
+            "description": "關聯到 users 的資料"
+          },
+          "deletedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "被刪除時間"
+          },
+          "deletedBy": {
+            "$ref": "#/components/schemas/Users",
+            "description": "關聯到 users 的資料"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "資料更新時間戳記"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "資料建立時間戳記"
+          }
+        }
+      },
+      "MembersRequest": {
+        "type": "object",
+        "description": "更新 members 資料的請求 body 。 Schema 請見 Members",
+        "properties": {}
+      },
+      "MembersListResponse": {
+        "type": "object",
+        "properties": {
+          "docs": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/Members" }
+          },
+          "totalDocs": { "type": "number" },
+          "limit": { "type": "number" },
+          "totalPages": { "type": "number" },
+          "page": { "type": "number" },
+          "pagingCounter": { "type": "number" },
+          "hasPrevPage": { "type": "boolean" },
+          "hasNextPage": { "type": "boolean" },
+          "prevPage": { "type": "number", "nullable": true },
+          "nextPage": { "type": "number", "nullable": true }
+        }
+      },
+      "Orders": {
+        "type": "object",
+        "required": ["id", "member", "status", "total"],
+        "properties": {
+          "id": { "type": "string", "description": "資料唯一識別碼" },
+          "member": {
+            "$ref": "#/components/schemas/Members",
+            "description": "關聯到 members 的資料"
+          },
+          "status": {
+            "type": "string",
+            "description": "訂單狀態 - 訂單目前的狀態"
+          },
+          "total": {
+            "type": "number",
+            "description": "訂單總額 - 訂單的總金額（以新台幣為單位）"
+          },
+          "tapPayTradeId": {
+            "type": "string",
+            "description": "TapPay Trade ID - TapPay 交易成功後回傳的 rec_trade_id，可以用於退款操作"
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Order-items",
+              "description": "關聯到 order-items 的資料"
+            },
+            "description": "訂單項目 - 此訂單包含的票券項目，每項包含了票種與數量"
+          },
+          "tickets": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Tickets",
+              "description": "關聯到 tickets 的資料"
+            },
+            "description": "票券 - 此訂單包含的所有票券"
+          },
+          "updatedBy": {
+            "$ref": "#/components/schemas/Users",
+            "description": "關聯到 users 的資料"
+          },
+          "deletedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "被刪除時間"
+          },
+          "deletedBy": {
+            "$ref": "#/components/schemas/Users",
+            "description": "關聯到 users 的資料"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "資料更新時間戳記"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "資料建立時間戳記"
+          }
+        }
+      },
+      "OrdersRequest": {
+        "type": "object",
+        "description": "更新 orders 資料的請求 body 。 Schema 請見 Orders",
+        "properties": {}
+      },
+      "OrdersListResponse": {
+        "type": "object",
+        "properties": {
+          "docs": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/Orders" }
+          },
+          "totalDocs": { "type": "number" },
+          "limit": { "type": "number" },
+          "totalPages": { "type": "number" },
+          "page": { "type": "number" },
+          "pagingCounter": { "type": "number" },
+          "hasPrevPage": { "type": "boolean" },
+          "hasNextPage": { "type": "boolean" },
+          "prevPage": { "type": "number", "nullable": true },
+          "nextPage": { "type": "number", "nullable": true }
+        }
+      },
+      "Order-items": {
+        "type": "object",
+        "required": [
+          "id",
+          "order",
+          "ticketType",
+          "quantity",
+          "priceAtPurchase"
+        ],
+        "properties": {
+          "id": { "type": "string", "description": "資料唯一識別碼" },
+          "order": {
+            "$ref": "#/components/schemas/Orders",
+            "description": "關聯到 orders 的資料"
+          },
+          "ticketType": {
+            "$ref": "#/components/schemas/TicketTypes",
+            "description": "關聯到 ticketTypes 的資料"
+          },
+          "quantity": {
+            "type": "number",
+            "description": "數量 - 此票種的購買數量"
+          },
+          "priceAtPurchase": {
+            "type": "number",
+            "description": "購買時票種單價 - 購買此票種時的單價（以新台幣為單位）"
+          },
+          "updatedBy": {
+            "$ref": "#/components/schemas/Users",
+            "description": "關聯到 users 的資料"
+          },
+          "deletedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "被刪除時間"
+          },
+          "deletedBy": {
+            "$ref": "#/components/schemas/Users",
+            "description": "關聯到 users 的資料"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "資料更新時間戳記"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "資料建立時間戳記"
+          }
+        }
+      },
+      "Order-itemsRequest": {
+        "type": "object",
+        "description": "更新 order-items 資料的請求 body 。 Schema 請見 Order-items",
+        "properties": {}
+      },
+      "Order-itemsListResponse": {
+        "type": "object",
+        "properties": {
+          "docs": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/Order-items" }
+          },
+          "totalDocs": { "type": "number" },
+          "limit": { "type": "number" },
+          "totalPages": { "type": "number" },
+          "page": { "type": "number" },
+          "pagingCounter": { "type": "number" },
+          "hasPrevPage": { "type": "boolean" },
+          "hasNextPage": { "type": "boolean" },
+          "prevPage": { "type": "number", "nullable": true },
+          "nextPage": { "type": "number", "nullable": true }
+        }
+      },
+      "Payments": {
+        "type": "object",
+        "required": ["id", "order", "status"],
+        "properties": {
+          "id": { "type": "string", "description": "資料唯一識別碼" },
+          "order": {
+            "$ref": "#/components/schemas/Orders",
+            "description": "關聯到 orders 的資料"
+          },
+          "status": {
+            "type": "string",
+            "description": "付款狀態 - 此付款目前的狀態"
+          },
+          "prime": {
+            "type": "string",
+            "description": "Prime - Prime 是 TapPay 之於信用卡的 ID 。有效期間為 90 秒"
+          },
+          "amount": {
+            "type": "number",
+            "description": "Amount - 金額，單位為新台幣 (TWD)，例如 1000 代表 1000 元"
+          },
+          "currency": {
+            "type": "string",
+            "description": "Currency - 貨幣代碼，預設為 TWD (新台幣)"
+          },
+          "phoneNumber": {
+            "type": "string",
+            "description": "Phone Number - 付款人電話號碼"
+          },
+          "details": {
+            "type": "string",
+            "description": "Details - 教會內部用付款人詳細資訊"
+          },
+          "frontendRequest": {
+            "type": "string",
+            "description": "Frontend Request - 前端發起付款請求時的資料"
+          },
+          "tapPayRequest": {
+            "type": "string",
+            "description": "Tap Pay Request - 向 TapPay API 發起付款請求時的資料"
+          },
+          "tapPayResponse": {
+            "type": "string",
+            "description": "Tap Pay Response - TapPay API 回覆付款請求時的資料"
+          },
+          "updatedBy": {
+            "$ref": "#/components/schemas/Users",
+            "description": "關聯到 users 的資料"
+          },
+          "deletedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "被刪除時間"
+          },
+          "deletedBy": {
+            "$ref": "#/components/schemas/Users",
+            "description": "關聯到 users 的資料"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "資料更新時間戳記"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "資料建立時間戳記"
+          }
+        }
+      },
+      "PaymentsListResponse": {
+        "type": "object",
+        "properties": {
+          "docs": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/Payments" }
+          },
+          "totalDocs": { "type": "number" },
+          "limit": { "type": "number" },
+          "totalPages": { "type": "number" },
+          "page": { "type": "number" },
+          "pagingCounter": { "type": "number" },
+          "hasPrevPage": { "type": "boolean" },
+          "hasNextPage": { "type": "boolean" },
+          "prevPage": { "type": "number", "nullable": true },
+          "nextPage": { "type": "number", "nullable": true }
+        }
+      },
+      "TicketTypes": {
+        "type": "object",
+        "required": ["id", "name", "price", "maxTickets"],
+        "properties": {
+          "id": { "type": "string", "description": "資料唯一識別碼" },
+          "name": { "type": "string", "description": "票種名稱" },
+          "isMemberInfoRequired": {
+            "type": "boolean",
+            "description": "是否購買時就需要會員資訊 - 若確認，則購買此票種時就需要填寫會員資訊"
+          },
+          "price": {
+            "type": "number",
+            "description": "票價 - 單位為新台幣。確認後請勿任意更改，避免影響已購買的票種，並造成對帳困難"
+          },
+          "maxTickets": {
+            "type": "number",
+            "description": "可售票數上限 - 此票種的最大可售數量。若留空或設為 0，則代表此票種不可販售。"
+          },
+          "image": {
+            "type": "string",
+            "description": "圖片 - 前端顯示用的票券圖片"
+          },
+          "caption": {
+            "type": "string",
+            "description": "注意事項 - 前端顯示用的注意事項文字"
+          },
+          "description": {
+            "type": "string",
+            "description": "內容 - 前端顯示用的票券內容描述"
+          },
+          "updatedBy": {
+            "$ref": "#/components/schemas/Users",
+            "description": "關聯到 users 的資料"
+          },
+          "deletedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "被刪除時間"
+          },
+          "deletedBy": {
+            "$ref": "#/components/schemas/Users",
+            "description": "關聯到 users 的資料"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "資料更新時間戳記"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "資料建立時間戳記"
+          }
+        }
+      },
+      "TicketTypesListResponse": {
+        "type": "object",
+        "properties": {
+          "docs": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/TicketTypes" }
+          },
+          "totalDocs": { "type": "number" },
+          "limit": { "type": "number" },
+          "totalPages": { "type": "number" },
+          "page": { "type": "number" },
+          "pagingCounter": { "type": "number" },
+          "hasPrevPage": { "type": "boolean" },
+          "hasNextPage": { "type": "boolean" },
+          "prevPage": { "type": "number", "nullable": true },
+          "nextPage": { "type": "number", "nullable": true }
+        }
+      },
+      "Tickets": {
+        "type": "object",
+        "required": ["id", "order", "type"],
+        "properties": {
+          "id": { "type": "string", "description": "資料唯一識別碼" },
+          "order": {
+            "$ref": "#/components/schemas/Orders",
+            "description": "關聯到 orders 的資料"
+          },
+          "type": {
+            "$ref": "#/components/schemas/TicketTypes",
+            "description": "關聯到 ticketTypes 的資料"
+          },
+          "owner": {
+            "$ref": "#/components/schemas/Members",
+            "description": "關聯到 members 的資料"
+          },
+          "user": {
+            "$ref": "#/components/schemas/Members",
+            "description": "關聯到 members 的資料"
+          },
+          "isRedeemed": {
+            "type": "boolean",
+            "description": "是否已取票 - 用於確認是否已取票"
+          },
+          "isCheckedIn": {
+            "type": "boolean",
+            "description": "是否已報到 - 用於確認是否已報到"
+          },
+          "updatedBy": {
+            "$ref": "#/components/schemas/Users",
+            "description": "關聯到 users 的資料"
+          },
+          "deletedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "被刪除時間"
+          },
+          "deletedBy": {
+            "$ref": "#/components/schemas/Users",
+            "description": "關聯到 users 的資料"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "資料更新時間戳記"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "資料建立時間戳記"
+          }
+        }
+      },
+      "TicketsRequest": {
+        "type": "object",
+        "description": "更新 tickets 資料的請求 body 。 Schema 請見 Tickets",
+        "properties": {}
+      },
+      "TicketsListResponse": {
+        "type": "object",
+        "properties": {
+          "docs": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/Tickets" }
+          },
+          "totalDocs": { "type": "number" },
+          "limit": { "type": "number" },
+          "totalPages": { "type": "number" },
+          "page": { "type": "number" },
+          "pagingCounter": { "type": "number" },
+          "hasPrevPage": { "type": "boolean" },
+          "hasNextPage": { "type": "boolean" },
+          "prevPage": { "type": "number", "nullable": true },
+          "nextPage": { "type": "number", "nullable": true }
+        }
+      }
+    },
+    "securitySchemes": {
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "從 CMS 後台使用者身份驗證所取得的 JWT token"
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "Users Authentication",
+      "description": "CMS 後台使用者 users 身份驗證 endpoints"
+    },
+    {
+      "name": "Member Authentication",
+      "description": "前台使用者 members 身份驗證 endpoints"
+    },
+    { "name": "Members", "description": "前台使用者 members 用 endpoints" },
+    { "name": "Orders", "description": "訂單管理 endpoints" },
+    { "name": "Payments", "description": "已付款項相關 endpoints" }
+  ]
+}

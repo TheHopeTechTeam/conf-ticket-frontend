@@ -10,6 +10,7 @@ import {
 import { STATUS } from '../../constants/common';
 import { ROUTES } from '../../constants/routes';
 import './TicketDistribution.scss';
+import { apiService } from '../../api';
 
 export const TicketDistribution: React.FC<TicketDistributionProps> = ({
   ticketInfo,
@@ -27,13 +28,20 @@ export const TicketDistribution: React.FC<TicketDistributionProps> = ({
 
   // 動態生成取票者狀態
   const [recipients, setRecipients] = useState<RecipientInfo[]>(() =>
-    Array.from({ length: currentTicketInfo?.ticketCount || 0 }, (_, index) => ({
-      id: `recipient-${index + 1}`,
-      email: '',
-      isSelected: false,
-      isEmailValid: false,
-    }))
+    Array.from({ length: currentTicketInfo?.ticketCount || 0 }, (_, index) => {
+      // 使用可選鏈操作符簡化檢查
+      const userEmail = currentTicketInfo?.user?.[index]?.email || '';
+      const shouldAutoFill = Boolean(userEmail);
+
+      return {
+        id: `recipient-${index + 1}`,
+        email: userEmail,
+        isSelected: shouldAutoFill,
+        isEmailValid: shouldAutoFill,
+      };
+    })
   );
+  console.log(currentTicketInfo);
 
   // Dialog 狀態
   const [isTicketDistributionDialogOpen, setTicketDistributionDialogOpen] =
@@ -136,7 +144,7 @@ export const TicketDistribution: React.FC<TicketDistributionProps> = ({
   };
 
   // Dialog 確認處理
-  const handleTicketDistributionConfirm = () => {
+  const handleTicketDistributionConfirm = async () => {
     const selectedRecipients = recipients.filter(
       recipient => recipient.isSelected
     );
@@ -146,8 +154,44 @@ export const TicketDistribution: React.FC<TicketDistributionProps> = ({
       selectedRecipients,
     });
 
-    setTicketDistributionDialogOpen(false);
-    setDistributionStatus(STATUS.ERROR);
+    // 取得選中取票者的 email 陣列
+    const selectedEmails = selectedRecipients.map(recipient => recipient.email);
+
+    try {
+      // 調用 getMembers API，不使用 role filter
+      const membersResponse = await apiService.members.getMembers(
+        selectedEmails,
+        false
+      );
+      console.log('取票者會員資料:', membersResponse);
+
+      // 判斷分票邏輯
+      if (membersResponse && membersResponse.docs) {
+        membersResponse.docs.forEach((member: any) => {
+          if (member.orders && member.orders.length > 0) {
+            member.orders.forEach((order: any) => {
+              if (order.tickets && order.tickets.length > 0) {
+                const distributedTickets = order.tickets.filter(
+                  (ticket: any) =>
+                    ticket.isRedeemed && ticket.owner !== ticket.user
+                );
+
+                if (distributedTickets.length > 0) {
+                  alert(
+                    `會員 ${member.email} 有 ${distributedTickets.length} 張分票:`
+                  );
+                }
+              }
+            });
+          }
+        });
+      }
+    } catch (error) {
+      console.error('取得會員資料失敗:', error);
+    }
+
+    // setTicketDistributionDialogOpen(false);
+    // setDistributionStatus(STATUS.ERROR);
   };
 
   // Dialog 取消處理

@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { apiService } from '../../api/fetchService';
+import { apiService } from '../../api';
 import { GroupPassForm } from '../../components/common/GroupPassForm/GroupPassForm';
 import { TicketItem } from '../../components/common/TicketItem/TicketItem';
 import { MODE } from '../../constants/common';
@@ -40,17 +40,18 @@ export const Booking: React.FC = () => {
         showLoading('載入票券類型中...');
         const { docs } = await apiService.ticketsTypes.getTicketsTypes();
 
-        setTicketTypes(docs.map((ticket: TicketInfo) => ({
-          id: ticket.id,
-          name: ticket.name,
-          price: ticket.price,
-          image: ticket.image,
-          caption: ticket.caption || '',
-          description: ticket.description || [],
-          isMemberInfoRequired: Boolean(ticket.isMemberInfoRequired),
-        })));
+        setTicketTypes(
+          docs.map((ticket: TicketInfo) => ({
+            id: ticket.id,
+            name: ticket.name,
+            price: ticket.price,
+            image: ticket.image,
+            caption: ticket.caption || '',
+            description: ticket.description || [],
+            isMemberInfoRequired: Boolean(ticket.isMemberInfoRequired),
+          }))
+        );
         hideLoading();
-
       } catch (error) {
         hideLoading();
         console.error('載入票券類型失敗:', error);
@@ -75,7 +76,10 @@ export const Booking: React.FC = () => {
         });
 
         // 還原表單資料（如果存在且是對象格式）
-        if (data.groupPassFormData && typeof data.groupPassFormData === 'object') {
+        if (
+          data.groupPassFormData &&
+          typeof data.groupPassFormData === 'object'
+        ) {
           Object.keys(data.groupPassFormData).forEach(ticketId => {
             if (Array.isArray(data.groupPassFormData[ticketId])) {
               formData[ticketId] = data.groupPassFormData[ticketId];
@@ -108,7 +112,8 @@ export const Booking: React.FC = () => {
   const [ticketFormData, setTicketFormData] = useState<TicketFormData>(
     initialData.formData
   );
-  const [ticketValidationStates, setTicketValidationStates] = useState<TicketValidationState>({});
+  const [ticketValidationStates, setTicketValidationStates] =
+    useState<TicketValidationState>({});
 
   // 監控表單有效性
   React.useEffect(() => {
@@ -122,25 +127,31 @@ export const Booking: React.FC = () => {
     }));
   };
 
-  const handleFormDataChange = useCallback((ticketId: string, index: number, formData: GroupPassFormData) => {
-    setTicketFormData(prev => {
-      const currentTicketData = prev[ticketId] || [];
-      const updatedData = [...currentTicketData];
-      updatedData[index] = formData;
+  const handleFormDataChange = useCallback(
+    (ticketId: string, index: number, formData: GroupPassFormData) => {
+      setTicketFormData(prev => {
+        const currentTicketData = prev[ticketId] || [];
+        const updatedData = [...currentTicketData];
+        updatedData[index] = formData;
 
-      return {
+        return {
+          ...prev,
+          [ticketId]: updatedData,
+        };
+      });
+    },
+    []
+  );
+
+  const handleValidationChange = useCallback(
+    (ticketId: string, isValid: boolean) => {
+      setTicketValidationStates(prev => ({
         ...prev,
-        [ticketId]: updatedData
-      };
-    });
-  }, []);
-
-  const handleValidationChange = useCallback((ticketId: string, isValid: boolean) => {
-    setTicketValidationStates(prev => ({
-      ...prev,
-      [ticketId]: isValid
-    }));
-  }, []);
+        [ticketId]: isValid,
+      }));
+    },
+    []
+  );
 
   // 為每個票券創建穩定的回調函數
   const ticketHandlers = useMemo(() => {
@@ -148,7 +159,7 @@ export const Booking: React.FC = () => {
       [ticketId: string]: {
         onFormDataChange: (index: number, formData: GroupPassFormData) => void;
         onValidationChange: (isValid: boolean) => void;
-      }
+      };
     } = {};
 
     ticketTypes.forEach(ticket => {
@@ -157,14 +168,13 @@ export const Booking: React.FC = () => {
           onFormDataChange: (index: number, formData: GroupPassFormData) =>
             handleFormDataChange(ticket.id, index, formData),
           onValidationChange: (isValid: boolean) =>
-            handleValidationChange(ticket.id, isValid)
+            handleValidationChange(ticket.id, isValid),
         };
       }
     });
 
     return handlers;
   }, [ticketTypes, handleFormDataChange, handleValidationChange]);
-
 
   const getTotalQuantity = () => {
     return Object.values(ticketQuantities).reduce(
@@ -245,7 +255,9 @@ export const Booking: React.FC = () => {
 
         if (response.docs && response.docs.length > 0) {
           // 有重複資料，顯示重複的 email
-          const duplicateEmails = response.docs.map((member: any) => member.email).join(', ');
+          const duplicateEmails = response.docs
+            .map((member: any) => member.email)
+            .join(', ');
           hideLoading();
           alert(`以下 email 已存在重複資料：${duplicateEmails}`);
           return; // 不繼續執行
@@ -269,7 +281,9 @@ export const Booking: React.FC = () => {
 
   // 檢查所有需要會員資訊的票券的表單是否都有效
   const areAllFormsValid = () => {
-    const memberInfoRequiredTickets = ticketTypes.filter(ticket => ticket.isMemberInfoRequired);
+    const memberInfoRequiredTickets = ticketTypes.filter(
+      ticket => ticket.isMemberInfoRequired
+    );
     return memberInfoRequiredTickets.every(ticket => {
       const quantity = ticketQuantities[ticket.id] || 0;
       if (quantity === 0) return true; // 沒有選擇的票券不需要驗證
@@ -302,8 +316,12 @@ export const Booking: React.FC = () => {
                     mode={MODE.EDIT}
                     quantity={currentTicketQuantity}
                     formData={ticketFormData[ticket.id] || []}
-                    onFormDataChange={ticketHandlers[ticket.id].onFormDataChange}
-                    onValidationChange={ticketHandlers[ticket.id].onValidationChange}
+                    onFormDataChange={
+                      ticketHandlers[ticket.id].onFormDataChange
+                    }
+                    onValidationChange={
+                      ticketHandlers[ticket.id].onValidationChange
+                    }
                   />
                 )}
               </div>
@@ -339,4 +357,3 @@ export const Booking: React.FC = () => {
     </div>
   );
 };
-

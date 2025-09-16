@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { apiService } from '../../api/fetchService';
+import { apiService } from '../../api';
 import { TicketsCard } from '../../components/common/TicketsCard/TicketsCard';
 import { ROUTES } from '../../constants/routes';
 import {
@@ -9,8 +9,8 @@ import {
   TicketStatusType,
 } from '../../constants/tickets';
 import { useAuthContext } from '../../contexts/AuthContext';
-import './Tickets.scss';
 import { useLoading } from '../../contexts/LoadingContext';
+import './Tickets.scss';
 
 export const Tickets = () => {
   const navigate = useNavigate();
@@ -184,10 +184,7 @@ export const Tickets = () => {
         </div>
         <div className="tickets-content-container">
           {(() => {
-            const filteredTickets = getFilteredTickets(
-              allOrders,
-              activeStatus
-            );
+            const filteredTickets = getFilteredTickets(allOrders, activeStatus);
             const groupedTickets = groupTicketsByOrderAndType(filteredTickets);
 
             console.log('Filtered Tickets:', filteredTickets);
@@ -215,9 +212,10 @@ export const Tickets = () => {
                     const quantity = ticketGroup.length;
 
                     // 取得票券的詳細描述
-                    const ticketDetails = ticketType?.description?.map(
-                      (desc: any) => desc.bulletpoint
-                    ) || [];
+                    const ticketDetails =
+                      ticketType?.description?.map(
+                        (desc: any) => desc.bulletpoint
+                      ) || [];
 
                     return (
                       <TicketsCard
@@ -227,6 +225,7 @@ export const Tickets = () => {
                         orderNumber={order?.id?.slice(-8) || 'N/A'}
                         details={ticketDetails}
                         status={activeStatus}
+                        user={ticketGroup.map(ticket => ticket.user)}
                       />
                     );
                   }
@@ -244,28 +243,27 @@ export const Tickets = () => {
               activeStatus === TICKET_STATUS.COLLECTED)
           );
         })() && (
-            <div className="tickets-btn-container">
-              {(activeStatus === TICKET_STATUS.PURCHASED ||
-                activeStatus === TICKET_STATUS.COLLECTED) && (
-                  <button
-                    className="btn send-btn"
-                    onClick={() => navigate(ROUTES.BOOKING)}
-                  >
-                    前往購票
-                  </button>
-                )}
-              {activeStatus === TICKET_STATUS.COLLECTED && (
-                <button
-                  className="btn cancel-btn"
-                  onClick={() => navigate(ROUTES.HOME)}
-                >
-                  返回票券系統
-                </button>
-              )}
-            </div>
-          )}
+          <div className="tickets-btn-container">
+            {(activeStatus === TICKET_STATUS.PURCHASED ||
+              activeStatus === TICKET_STATUS.COLLECTED) && (
+              <button
+                className="btn send-btn"
+                onClick={() => navigate(ROUTES.BOOKING)}
+              >
+                前往購票
+              </button>
+            )}
+            {activeStatus === TICKET_STATUS.COLLECTED && (
+              <button
+                className="btn cancel-btn"
+                onClick={() => navigate(ROUTES.HOME)}
+              >
+                返回票券系統
+              </button>
+            )}
+          </div>
+        )}
       </div>
     </>
   );
 };
-

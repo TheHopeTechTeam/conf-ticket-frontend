@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { apiService } from '../../api/fetchService';
+import { apiService } from '../../api';
 import {
   PrivacyPolicyDialog,
   UserTermsDialog,
@@ -9,11 +9,11 @@ import { NotificationMessage } from '../../components/common/Notification/Notifi
 import { Select } from '../../components/common/Select/Select';
 import { STATUS } from '../../constants/common';
 import {
-  CHURCH_IDENTITY_OPTIONS,
   CHURCH_OPTIONS,
   GENDER_OPTIONS,
   ValidChurchType,
 } from '../../constants/profile';
+import { Option } from '../../components/interface/Option';
 import { ROUTES } from '../../constants/routes';
 import { useAuthContext } from '../../contexts/AuthContext';
 import './Profile.scss';
@@ -32,8 +32,30 @@ export const Profile: React.FC = () => {
   const [isUserTermsChecked, setUserTermsChecked] = React.useState(false);
   const [isPrivacyPolicyChecked, setPrivacyPolicyChecked] =
     React.useState(false);
+  const [churchIdentityOptions, setChurchIdentityOptions] = useState<Option[]>(
+    []
+  );
   const { showLoading, hideLoading } = useLoading();
   const { user } = useAuthContext();
+
+  useEffect(() => {
+    const loadChurchIdentityOptions = async () => {
+      try {
+        const response = await apiService.members.getMembersRoles();
+        const transformedOptions = (response || []).map(
+          (item: { label: string; value: string }) => ({
+            id: item.value,
+            label: item.label,
+          })
+        );
+        setChurchIdentityOptions(transformedOptions);
+      } catch (error) {
+        console.error('Failed to load church identity options:', error);
+      }
+    };
+
+    loadChurchIdentityOptions();
+  }, []);
 
   useEffect(() => {
     if (user?.name) {
@@ -169,16 +191,16 @@ export const Profile: React.FC = () => {
   // 通用輸入變更處理
   const handleFieldChange =
     (fieldName: keyof typeof fields) =>
-      (e: React.ChangeEvent<HTMLInputElement>) => {
-        const value = e.target.value;
-        setFields(prev => ({ ...prev, [fieldName]: value }));
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const value = e.target.value;
+      setFields(prev => ({ ...prev, [fieldName]: value }));
 
-        // 即時驗證
-        if (errors[fieldName]) {
-          const requiredMsg = validateField(value, fieldName);
-          setErrors(prev => ({ ...prev, [fieldName]: requiredMsg }));
-        }
-      };
+      // 即時驗證
+      if (errors[fieldName]) {
+        const requiredMsg = validateField(value, fieldName);
+        setErrors(prev => ({ ...prev, [fieldName]: requiredMsg }));
+      }
+    };
 
   // 通用 blur 驗證
   const handleFieldBlur = (fieldName: keyof typeof fields) => () => {
@@ -328,7 +350,7 @@ export const Profile: React.FC = () => {
               <p className="invaild-text">必填</p>
             </div>
             <Select
-              options={CHURCH_IDENTITY_OPTIONS}
+              options={churchIdentityOptions}
               value={fields.churchIdentity}
               onChange={handleSelectChange('churchIdentity')}
               placeholder="請選擇"
@@ -398,4 +420,3 @@ export const Profile: React.FC = () => {
     </div>
   );
 };
-

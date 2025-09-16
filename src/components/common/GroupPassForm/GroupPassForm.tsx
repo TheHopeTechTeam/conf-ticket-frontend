@@ -4,7 +4,6 @@ import { MODE } from '../../../constants/common';
 import './GroupPassForm.scss';
 import { GroupPassFormData } from '../../../types/payment';
 
-
 interface GroupPassFormProps {
   quantity: number;
   mode: string;
@@ -148,7 +147,7 @@ export const GroupPassForm: React.FC<GroupPassFormProps> = ({
   const toggleOpen = (fieldId: string) => {
     setOpenStates(prev => ({
       ...prev,
-      [fieldId]: !prev[fieldId]
+      [fieldId]: !prev[fieldId],
     }));
   };
 
@@ -182,10 +181,16 @@ export const GroupPassForm: React.FC<GroupPassFormProps> = ({
               width="24"
               height="24"
             >
-              <path d={openStates[field.id] ? "m7 10 5 5 5-5H7z" : "m7 14 5-5 5 5H7z"} />
+              <path
+                d={
+                  openStates[field.id] ? 'm7 10 5 5 5-5H7z' : 'm7 14 5-5 5 5H7z'
+                }
+              />
             </svg>
           </div>
-          <div className={`group-pass-form-content ${openStates[field.id] ? 'open' : ''}`}>
+          <div
+            className={`group-pass-form-content ${openStates[field.id] ? 'open' : ''}`}
+          >
             <div className="group-pass-form-input">
               <div className="form-item">
                 <div
@@ -328,4 +333,3 @@ export const GroupPassForm: React.FC<GroupPassFormProps> = ({
     </div>
   );
 };
-

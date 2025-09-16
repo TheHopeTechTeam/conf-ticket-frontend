@@ -10,6 +10,7 @@ interface TicketProps {
   orderNumber: string;
   details: string[];
   status?: TicketStatusType;
+  user: any[];
 }
 
 export const TicketsCard: React.FC<TicketProps> = ({
@@ -18,6 +19,7 @@ export const TicketsCard: React.FC<TicketProps> = ({
   orderNumber,
   details,
   status,
+  user,
 }) => {
   const navigate = useNavigate();
 
@@ -81,6 +83,7 @@ export const TicketsCard: React.FC<TicketProps> = ({
                     orderNumber: orderNumber,
                     details: details,
                     status: status,
+                    user: user,
                     useDate: '2026.05.01-2026.05.03',
                   },
                 },
