@@ -54,7 +54,7 @@
 
 .dropdown-menu {
   position: absolute;
-  z-index: 50;
+  z-index: 99999;
   width: 100%;
   margin-top: 2px;
   background-color: white;
@@ -80,6 +80,5 @@
   color: #090c0e;
   font-weight: 500;
   border-radius: 6px;
-  font-weight: 500;
   line-height: 28px;
 }

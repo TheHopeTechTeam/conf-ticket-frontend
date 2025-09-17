@@ -21,8 +21,8 @@ import { apiService } from '../../api';
 import { MAIL, MODE, STATUS } from '../../constants/common';
 import { ROUTES } from '../../constants/routes';
 import { useAuthContext } from '../../contexts/AuthContext';
-import './Payment.scss';
 import { useLoading } from '../../contexts/LoadingContext';
+import './Payment.scss';
 
 export const Payment: React.FC = () => {
   const { user } = useAuthContext();
@@ -159,10 +159,12 @@ export const Payment: React.FC = () => {
           items: paymentData.tickets.map(ticket => ({
             ticketTypeId: ticket.id,
             quantity: ticket.selectedQuantity,
-            members: (paymentData.groupPassFormData[ticket.id] || []).map(member => ({
-              ...member,
-              role: member.role || 'pastor',
-            })),
+            members: (paymentData.groupPassFormData[ticket.id] || []).map(
+              member => ({
+                ...member,
+                role: member.role,
+              })
+            ),
           })),
         });
         console.log(paymentData);
@@ -190,7 +192,6 @@ export const Payment: React.FC = () => {
       groupPassQuantity: ticket?.selectedQuantity || 0,
     };
   }, [paymentData]);
-
 
   return (
     <>
@@ -318,4 +319,3 @@ export const Payment: React.FC = () => {
     </>
   );
 };
-

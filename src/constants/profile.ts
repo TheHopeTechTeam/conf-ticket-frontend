@@ -17,12 +17,3 @@ export const CHURCH_OPTIONS = [
   { id: 'online', label: 'The Hope 線上分部' },
   { id: 'other', label: '其他' },
 ];
-
-export const CHURCH_IDENTITY_OPTIONS = [
-  { id: 'senior-pastor', label: '主任牧師' },
-  { id: 'pastor', label: '牧師' },
-  { id: 'minister', label: '傳道' },
-  { id: 'seminarian', label: '神學生' },
-  { id: 'staff', label: '全職同工' },
-  { id: 'default', label: '一般參加者' },
-];

@@ -3,8 +3,8 @@ import { apiService } from '../api';
 import { STATUS } from '../constants/common';
 import { SUPPORTED_NETWORKS } from '../constants/payment';
 import { ROUTES } from '../constants/routes';
-import { PaymentData, PaymentReadyState } from '../types/payment';
 import { useLoading } from '../contexts/LoadingContext';
+import { PaymentData, PaymentReadyState } from '../types/payment';
 
 declare global {
   interface Window {
@@ -36,10 +36,12 @@ export const usePaymentMethods = (
           items: paymentData.tickets.map(ticket => ({
             ticketTypeId: ticket.id,
             quantity: ticket.selectedQuantity,
-            members: (paymentData.groupPassFormData[ticket.id] || []).map(member => ({
-              ...member,
-              role: member.role || 'pastor',
-            })),
+            members: (paymentData.groupPassFormData[ticket.id] || []).map(
+              member => ({
+                ...member,
+                role: member.role,
+              })
+            ),
           })),
         });
         hideLoading();
@@ -118,7 +120,6 @@ export const usePaymentMethods = (
     });
 
     console.log(import.meta.env.VITE_APPLE_MERCHANT_ID);
-
 
     // 設定付款請求但不立即觸發
     const paymentRequest = {
@@ -228,4 +229,3 @@ export const usePaymentMethods = (
     checkSamsungPayAvailability,
   };
 };
-

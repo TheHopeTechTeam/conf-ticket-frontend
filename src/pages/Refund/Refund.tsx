@@ -137,7 +137,7 @@ export const Refund: React.FC = () => {
             </button>
             <button
               className="btn cancel-btn"
-              onClick={() => navigate(ROUTES.BOOKING)}
+              onClick={() => navigate(ROUTES.TICKETS)}
             >
               取消
             </button>
@@ -262,4 +262,3 @@ export const Refund: React.FC = () => {
     </>
   );
 };
-

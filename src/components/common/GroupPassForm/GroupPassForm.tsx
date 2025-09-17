@@ -1,8 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
+import { apiService } from '../../../api';
+import { Option } from '../../../components/interface/Option';
 import { MODE } from '../../../constants/common';
-import './GroupPassForm.scss';
 import { GroupPassFormData } from '../../../types/payment';
+import { Select } from '../Select/Select';
+import './GroupPassForm.scss';
 
 interface GroupPassFormProps {
   quantity: number;
@@ -30,6 +33,7 @@ export const GroupPassForm: React.FC<GroupPassFormProps> = ({
     watch,
     trigger,
     getValues,
+    setValue,
   } = useForm<FormData>({
     mode: 'onChange', // 改為 onChange 以即時更新 isValid
     defaultValues: {
@@ -41,9 +45,11 @@ export const GroupPassForm: React.FC<GroupPassFormProps> = ({
             email: '',
             location: '',
             tel: '',
+            role: '',
           }
       ),
     },
+    shouldUnregister: false,
   });
 
   const { fields, replace, append, remove } = useFieldArray({
@@ -55,6 +61,32 @@ export const GroupPassForm: React.FC<GroupPassFormProps> = ({
 
   // 控制每個 details 的展開狀態
   const [openStates, setOpenStates] = useState<{ [key: string]: boolean }>({});
+  const [churchIdentityOptions, setChurchIdentityOptions] = useState<Option[]>(
+    []
+  );
+
+  useEffect(() => {
+    const loadChurchIdentityOptions = async () => {
+      try {
+        const response = await apiService.members.getMembersRoles();
+        const filteredResponse = (response || []).filter(
+          (item: { label: string; value: string }) =>
+            item.value !== 'staff' && item.value !== 'default'
+        );
+        const transformedOptions = filteredResponse.map(
+          (item: { label: string; value: string }) => ({
+            id: item.value,
+            label: item.label,
+          })
+        );
+        setChurchIdentityOptions(transformedOptions);
+      } catch (error) {
+        console.error('Failed to load church identity options:', error);
+      }
+    };
+
+    loadChurchIdentityOptions();
+  }, []);
 
   // 調試：直接監控 watchedUsers
   useEffect(() => {
@@ -78,6 +110,7 @@ export const GroupPassForm: React.FC<GroupPassFormProps> = ({
             email: '',
             location: '',
             tel: '',
+            role: '',
           });
         }
       } else if (quantity < currentLength) {
@@ -138,10 +171,16 @@ export const GroupPassForm: React.FC<GroupPassFormProps> = ({
 
   const handleBlur = async (
     index: number,
-    field: 'name' | 'email' | 'location' | 'tel'
+    field: 'name' | 'email' | 'location' | 'tel' | 'role'
   ) => {
     await trigger(`users.${index}.${field}` as any);
   };
+
+  const handleSelectChange =
+    (index: number, field: string) => (value: string) => {
+      setValue(`users.${index}.${field}` as any, value);
+      trigger(`users.${index}.${field}` as any);
+    };
 
   // 處理展開收合
   const toggleOpen = (fieldId: string) => {
@@ -172,7 +211,7 @@ export const GroupPassForm: React.FC<GroupPassFormProps> = ({
             onClick={() => toggleOpen(field.id)}
           >
             <span className={`title ${mode !== MODE.EDIT && 'record-title'}`}>
-              使用者{index + 1}
+              與會者{index + 1}
             </span>
             <svg
               className={`icon ${openStates[field.id] ? 'arrow-down' : 'arrow-up'}`}
@@ -196,7 +235,7 @@ export const GroupPassForm: React.FC<GroupPassFormProps> = ({
                 <div
                   className={`form-label ${mode === MODE.EDIT ? 'p-l-6' : 'form-record-label'}`}
                 >
-                  <label htmlFor={`name-${index}`}>使用者姓名</label>
+                  <label htmlFor={`name-${index}`}>與會者姓名</label>
                 </div>
                 {mode === MODE.EDIT ? (
                   <>
@@ -204,14 +243,14 @@ export const GroupPassForm: React.FC<GroupPassFormProps> = ({
                       id={`name-${index}`}
                       className={`form-input ${errors.users?.[index]?.name ? 'error' : ''}`}
                       type="text"
-                      placeholder="請輸入使用者姓名"
+                      placeholder="請輸入與會者姓名"
                       {...register(`users.${index}.name`, {
-                        required: '請輸入使用者姓名',
+                        required: '請輸入與會者姓名',
                         validate: value =>
-                          value?.trim() ? true : '請輸入使用者姓名',
+                          value?.trim() ? true : '請輸入與會者姓名',
                       })}
                       onBlur={() => handleBlur(index, 'name')}
-                      aria-label="請輸入使用者姓名"
+                      aria-label="請輸入與會者姓名"
                       aria-required
                     />
                     {errors.users?.[index]?.name && (
@@ -250,6 +289,10 @@ export const GroupPassForm: React.FC<GroupPassFormProps> = ({
                       aria-label="請輸入電子郵件"
                       aria-required
                     />
+                    <p className="form-tip">
+                      請填寫實際使用此票券者的電子郵件，每個電子郵件限購一張
+                      Leadership Pass
+                    </p>
                     {errors.users?.[index]?.email && (
                       <span className="error-message">
                         {errors.users[index].email?.message}
@@ -258,6 +301,38 @@ export const GroupPassForm: React.FC<GroupPassFormProps> = ({
                   </>
                 ) : (
                   <p>{watchedUsers?.[index]?.email}</p>
+                )}
+              </div>
+              <div className="form-item">
+                <div
+                  className={`form-label ${mode === MODE.EDIT ? 'p-l-6' : 'form-record-label'}`}
+                >
+                  <label htmlFor={`tel-${index}`}>所屬教會電話</label>
+                </div>
+                {mode === MODE.EDIT ? (
+                  <>
+                    <input
+                      id={`tel-${index}`}
+                      className={`form-input ${errors.users?.[index]?.tel ? 'error' : ''}`}
+                      type="tel"
+                      placeholder="請輸入所屬教會電話"
+                      {...register(`users.${index}.tel`, {
+                        required: '請輸入所屬教會電話',
+                        validate: value =>
+                          value?.trim() ? true : '請輸入所屬教會電話',
+                      })}
+                      onBlur={() => handleBlur(index, 'tel')}
+                      aria-label="請輸入所屬教會電話"
+                      aria-required
+                    />
+                    {errors.users?.[index]?.tel && (
+                      <span className="error-message">
+                        {errors.users[index].tel?.message}
+                      </span>
+                    )}
+                  </>
+                ) : (
+                  <p>{watchedUsers?.[index]?.tel}</p>
                 )}
               </div>
             </div>
@@ -298,32 +373,34 @@ export const GroupPassForm: React.FC<GroupPassFormProps> = ({
                 <div
                   className={`form-label ${mode === MODE.EDIT ? 'p-l-6' : 'form-record-label'}`}
                 >
-                  <label htmlFor={`tel-${index}`}>所屬教會電話</label>
+                  <label htmlFor={`role-${index}`}>所屬教會身份</label>
                 </div>
                 {mode === MODE.EDIT ? (
                   <>
                     <input
-                      id={`tel-${index}`}
-                      className={`form-input ${errors.users?.[index]?.tel ? 'error' : ''}`}
-                      type="tel"
-                      placeholder="請輸入所屬教會電話"
-                      {...register(`users.${index}.tel`, {
-                        required: '請輸入所屬教會電話',
-                        validate: value =>
-                          value?.trim() ? true : '請輸入所屬教會電話',
+                      type="hidden"
+                      {...register(`users.${index}.role`, {
+                        required: '請選擇所屬教會身份',
                       })}
-                      onBlur={() => handleBlur(index, 'tel')}
-                      aria-label="請輸入所屬教會電話"
-                      aria-required
                     />
-                    {errors.users?.[index]?.tel && (
+                    <Select
+                      options={churchIdentityOptions}
+                      value={watchedUsers?.[index]?.role || ''}
+                      onChange={handleSelectChange(index, 'role')}
+                      placeholder="請選擇"
+                    />
+                    {errors.users?.[index]?.role && (
                       <span className="error-message">
-                        {errors.users[index].tel?.message}
+                        {errors.users[index].role?.message}
                       </span>
                     )}
                   </>
                 ) : (
-                  <p>{watchedUsers?.[index]?.tel}</p>
+                  <p className="form-record-item">
+                    {churchIdentityOptions.find(
+                      option => option.id === watchedUsers?.[index]?.role
+                    )?.label || watchedUsers?.[index]?.role}
+                  </p>
                 )}
               </div>
             </div>
