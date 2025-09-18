@@ -62,6 +62,8 @@ export interface TicketInfo {
   deletedBy: User | null;
   updatedAt: string;
   createdAt: string;
+  available?: number;
+  maxTickets?: number;
 }
 
 export interface TicketTypesResponse {
@@ -76,3 +78,4 @@ export interface TicketTypesResponse {
   prevPage: number | null;
   nextPage: number | null;
 }
+

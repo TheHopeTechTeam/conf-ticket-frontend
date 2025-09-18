@@ -300,7 +300,7 @@ export const GroupPassForm: React.FC<GroupPassFormProps> = ({
                     )}
                   </>
                 ) : (
-                  <p>{watchedUsers?.[index]?.email}</p>
+                  <p className="form-record-item">{watchedUsers?.[index]?.email}</p>
                 )}
               </div>
               <div className="form-item">
@@ -332,7 +332,7 @@ export const GroupPassForm: React.FC<GroupPassFormProps> = ({
                     )}
                   </>
                 ) : (
-                  <p>{watchedUsers?.[index]?.tel}</p>
+                  <p className="form-record-item">{watchedUsers?.[index]?.tel}</p>
                 )}
               </div>
             </div>
@@ -366,7 +366,7 @@ export const GroupPassForm: React.FC<GroupPassFormProps> = ({
                     )}
                   </>
                 ) : (
-                  <p>{watchedUsers?.[index]?.location}</p>
+                  <p className="form-record-item">{watchedUsers?.[index]?.location}</p>
                 )}
               </div>
               <div className="form-item">
@@ -410,3 +410,4 @@ export const GroupPassForm: React.FC<GroupPassFormProps> = ({
     </div>
   );
 };
+

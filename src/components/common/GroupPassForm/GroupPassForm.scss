@@ -9,7 +9,6 @@
   }
 
   .group-pass-form-record-title {
-    text-align: center;
     margin-top: 36px;
   }
 
@@ -83,7 +82,7 @@
         margin-bottom: 6px;
 
         label {
-          font-size: 14px;
+          font-size: 16px;
         }
       }
 
@@ -114,7 +113,6 @@
         padding: 12px 16px;
         border: 1px solid #ddd;
         border-radius: 6px;
-        font-size: 14px;
         line-height: 20px;
         transition: border-color 0.3s ease;
 
@@ -139,7 +137,6 @@
   .group-pass-form {
     .group-pass-form-title {
       padding-left: 4px;
-      color: #000;
     }
 
     .group-pass-form-record-title {
@@ -155,6 +152,10 @@
     .group-pass-form-content .group-pass-form-input {
       .form-item {
         .form-label {
+          padding-left: 2px;
+        }
+
+        .form-record-item {
           padding-left: 2px;
         }
       }

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import './QuantitySelector.scss';
 
 interface QuantitySelectorProps {
@@ -15,7 +15,7 @@ interface MinusIconProps {
 export const QuantitySelector: React.FC<QuantitySelectorProps> = ({
   initialValue = 0,
   min = 0,
-  max = 99,
+  max = 0,
   onChange,
 }) => {
   const [quantity, setQuantity] = useState(initialValue);
@@ -42,6 +42,7 @@ export const QuantitySelector: React.FC<QuantitySelectorProps> = ({
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!max) return; // 如果 max 為 0 或未定義，則不允許輸入
     const value = parseInt(e.target.value) || 0;
     if (value >= min && value <= max) {
       setQuantity(value);
@@ -60,7 +61,7 @@ export const QuantitySelector: React.FC<QuantitySelectorProps> = ({
     >
       <path
         d="M19 12.998H5V10.998H19V12.998Z"
-        fill={disabled ? '#a5a9ab' : 'black'}
+        fill={disabled ? '#A5A9AB' : 'black'}
       />
     </svg>
   );
@@ -76,13 +77,13 @@ export const QuantitySelector: React.FC<QuantitySelectorProps> = ({
     >
       <path
         d="M19 12.998H13V18.998H11V12.998H5V10.998H11V4.99805H13V10.998H19V12.998Z"
-        fill="black"
+        fill={!max ? '#A5A9AB' : 'black'}
       />
     </svg>
   );
 
   return (
-    <div className="quantity-selector">
+    <div className={`quantity-selector ${!max ? 'disabled' : ''}`}>
       <button
         className="quantity-btn decrease"
         onClick={handleDecrease}
@@ -94,7 +95,7 @@ export const QuantitySelector: React.FC<QuantitySelectorProps> = ({
 
       <input
         type="number"
-        className="quantity-input"
+        className={`quantity-input ${!max ? 'disabled' : ''}`}
         value={quantity}
         onChange={handleInputChange}
         min={min}
@@ -112,3 +113,4 @@ export const QuantitySelector: React.FC<QuantitySelectorProps> = ({
     </div>
   );
 };
+
