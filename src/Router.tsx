@@ -1,20 +1,20 @@
 import {
+  Navigate,
+  Route,
   BrowserRouter as Router,
   Routes,
-  Route,
-  Navigate,
 } from 'react-router-dom';
 import { Layout } from './components/common/Layout/Layout';
+import { EXTRA_ROUTES, ROUTES } from './constants/routes';
+import { LoadingProvider } from './contexts/LoadingContext';
 import { Booking } from './pages/Booking/Booking';
 import { Login } from './pages/Login/Login';
 import { Main } from './pages/Main/Main';
+import { Payment } from './pages/Payment/Payment';
 import { Profile } from './pages/Profile/Profile';
-import { Tickets } from './pages/Tickets/Tickets';
 import { Refund } from './pages/Refund/Refund';
 import { TicketDistribution } from './pages/TicketDistribution/TicketDistribution';
-import { Payment } from './pages/Payment/Payment';
-import { ROUTES, EXTRA_ROUTES } from './constants/routes';
-import { LoadingProvider } from './contexts/LoadingContext';
+import { Tickets } from './pages/Tickets/Tickets';
 
 const ExternalRedirect = ({ url }: { url: string }) => {
   window.location.href = url;
@@ -51,7 +51,7 @@ const AppRouter = () => {
           <Route
             path={ROUTES.BOOKING}
             element={
-              <Layout>
+              <Layout showBreadCrumbs={true}>
                 <Booking />
               </Layout>
             }
@@ -67,7 +67,7 @@ const AppRouter = () => {
           <Route
             path={ROUTES.PAYMENT}
             element={
-              <Layout>
+              <Layout showBreadCrumbs={true}>
                 <Payment />
               </Layout>
             }
@@ -83,7 +83,7 @@ const AppRouter = () => {
           <Route
             path={ROUTES.REFUND}
             element={
-              <Layout>
+              <Layout showBreadCrumbs={true}>
                 <Refund />
               </Layout>
             }
@@ -91,7 +91,7 @@ const AppRouter = () => {
           <Route
             path={ROUTES.TICKET_DISTRIBUTION}
             element={
-              <Layout>
+              <Layout showBreadCrumbs={true}>
                 <TicketDistribution />
               </Layout>
             }

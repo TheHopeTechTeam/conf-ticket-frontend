@@ -7,8 +7,30 @@
     padding-top: 72px;
     padding-left: 40px;
 
-    .bread-crumbs-text {
+    .bread-crumbs-content {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+
+    .bread-crumbs-item {
+        display: flex;
+        align-items: center;
+    }
+
+    .bread-crumbs-link {
         cursor: pointer;
+        color: #3C5464;
+    }
+
+    .bread-crumbs-current {
+        color: #000;
+        font-weight: 600;
+    }
+
+    .bread-crumbs-separator {
+        margin: 0 4px;
+        flex-shrink: 0;
     }
 }
 

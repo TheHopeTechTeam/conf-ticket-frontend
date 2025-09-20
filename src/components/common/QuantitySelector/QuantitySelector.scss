@@ -175,6 +175,7 @@
 
     &.disabled {
       color: #A5A9AB;
+      background-color: #E8EAEA !important;
     }
   }
 }
@@ -203,5 +204,11 @@
 
   .quantity-btn:last-child {
     border-radius: 0 20px 20px 0;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .quantity-selector {
+    padding: 3px 5px;
   }
 }

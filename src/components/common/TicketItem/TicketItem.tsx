@@ -40,12 +40,12 @@ export const TicketItem: React.FC<TicketItemProps> = ({
               <div className='ticket-info-title'>
                 <div className="ticket-info-title-name">
                   <span
-                    className={`${mode === MODE.EDIT ? 'edit-title' : 'record-title'}${ticket.available === 0 ? 'sold-out-title' : ''}`}
+                    className={`${mode === MODE.EDIT ? 'edit-title' : 'record-title'} ${!ticket.available ? 'sold-out-title' : ''}`}
                   >
                     {ticket.name}
                   </span>
                   <span
-                    className={`${mode === MODE.EDIT ? 'edit-title' : 'record-title'}${ticket.available === 0 ? 'sold-out-title' : ''}`}
+                    className={`${mode === MODE.EDIT ? 'edit-title' : 'record-title'} ${!ticket.available ? 'sold-out-title' : ''}`}
                   >
                     ${ticket.price.toLocaleString()}
                   </span>
@@ -60,12 +60,12 @@ export const TicketItem: React.FC<TicketItemProps> = ({
                 </p>
               </div>
               {ticket.caption && (
-                <p className={`ticket-info-remark ${ticket.available === 0 ? 'sold-out-title' : ''}`}>※{ticket.caption}</p>
+                <p className={`ticket-info-remark ${!ticket.available ? 'sold-out-title' : ''}`}>※{ticket.caption}</p>
               )}
             </div>
             <ul className="ticket-info-list">
               {ticket.description.map((feature, index) => (
-                <li key={index} className={`ticket-info-content ${ticket.available === 0 ? 'sold-out-content' : ''}`}>
+                <li key={index} className={`ticket-info-content ${!ticket.available ? 'sold-out-content' : ''}`}>
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     width="20"
@@ -77,7 +77,7 @@ export const TicketItem: React.FC<TicketItemProps> = ({
                       cx="10.0003"
                       cy="9.99935"
                       r="3.33333"
-                      fill={ticket.available === 0 ? "#C5CCD1" : "#778793"}
+                      fill={!ticket.available ? "#C5CCD1" : "#778793"}
                     />
                   </svg>
                   <p>{feature.bulletpoint}</p>
@@ -103,7 +103,7 @@ export const TicketItem: React.FC<TicketItemProps> = ({
       </div>
       <ul className="ticket-info-list-mobile">
         {ticket.description.map((feature, index) => (
-          <li key={index} className={`ticket-info-content ${ticket.available === 0 ? 'sold-out-content' : ''}`}>
+          <li key={index} className={`ticket-info-content ${!ticket.available ? 'sold-out-content' : ''}`}>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="20"
@@ -115,7 +115,7 @@ export const TicketItem: React.FC<TicketItemProps> = ({
                 cx="10.0003"
                 cy="9.99935"
                 r="3.33333"
-                fill={ticket.available === 0 ? "#C5CCD1" : "#778793"}
+                fill={!ticket.available ? "#C5CCD1" : "#778793"}
               />
             </svg>
             <p>{feature.bulletpoint}</p>
