@@ -9,6 +9,7 @@ export interface TicketInfo {
     gender: string | null;
     tel: string;
   }>;
+  ticketIds?: string[];
 }
 
 export interface RecipientInfo {

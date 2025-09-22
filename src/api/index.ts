@@ -1,5 +1,5 @@
+import { PostOrderCreateRequest, TicketSplitRequest } from '../types/payment';
 import { httpClient } from './service';
-import { PostOrderCreateRequest } from '../types/payment';
 
 const EMAIL_KEY = 'loginEmail';
 
@@ -27,7 +27,9 @@ export const authApi = {
 // 會員相關 API
 export const membersApi = {
   getMember: async () => {
-    const emailParam = encodeURIComponent(localStorage.getItem(EMAIL_KEY) as string);
+    const emailParam = encodeURIComponent(
+      localStorage.getItem(EMAIL_KEY) as string
+    );
     return await httpClient.get(
       `/v1/members?page=1&limit=1&sort=-createdAt&where%5Bemail%5D%5Bequals%5D=${emailParam}`
     );
@@ -53,7 +55,9 @@ export const membersApi = {
 // 票種相關 API
 export const ticketTypesApi = {
   getTicketTypes: async () => {
-    return await httpClient.get('/v1/ticketTypes?page=1&limit=20&sort=-createdAt');
+    return await httpClient.get(
+      '/v1/ticketTypes?page=1&limit=20&sort=-createdAt'
+    );
   },
 };
 
@@ -67,6 +71,16 @@ export const ordersApi = {
 
   createOrder: async (data: PostOrderCreateRequest) => {
     return await httpClient.post('/v1/orders/create', data);
+  },
+};
+
+// 分/領票、退票相關 API
+export const ticketApi = {
+  postTicketsSplit: async (data: TicketSplitRequest) => {
+    return await httpClient.post('/v1/tickets/split', data);
+  },
+  postTicketsRefund: async (orderId: string) => {
+    return await httpClient.post('/v1/tickets/refund', { orderId });
   },
 };
 
@@ -85,6 +99,10 @@ export const apiService = {
   orders: {
     getOrders: ordersApi.getOrdersByMember,
     postOrderCreate: ordersApi.createOrder,
+  },
+  tickets: {
+    postTicketsSplit: ticketApi.postTicketsSplit,
+    postTicketsRefund: ticketApi.postTicketsRefund,
   },
 };
 

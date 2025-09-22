@@ -187,3 +187,12 @@ export interface PostOrderCreateRequest {
     members: GroupPassFormData[];
   }[];
 }
+
+// 分票請求介面
+export interface TicketSplitRequest {
+  memberId: string;
+  tickets: {
+    ticketId: string;
+    email: string;
+  }[];
+}

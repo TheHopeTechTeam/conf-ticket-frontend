@@ -11,6 +11,7 @@ interface TicketProps {
   details: string[];
   status?: TicketStatusType;
   user: any[];
+  ticketIds?: string[];
 }
 
 export const TicketsCard: React.FC<TicketProps> = ({
@@ -20,6 +21,7 @@ export const TicketsCard: React.FC<TicketProps> = ({
   details,
   status,
   user,
+  ticketIds,
 }) => {
   const navigate = useNavigate();
 
@@ -65,7 +67,7 @@ export const TicketsCard: React.FC<TicketProps> = ({
             </div>
             <div className="ticket-card-info-oreder-number-item">
               <p className="order-number">訂單編號</p>
-              <p className="number">{orderNumber}</p>
+              <p className="number">{orderNumber.slice(-8)}</p>
             </div>
           </div>
         </div>
@@ -84,13 +86,14 @@ export const TicketsCard: React.FC<TicketProps> = ({
                     details: details,
                     status: status,
                     user: user,
+                    ticketIds: ticketIds,
                     useDate: '2026.05.01-2026.05.03',
                   },
                 },
               })
             }
           >
-            <p className="text">前往分票</p>
+            <p className="text">前往分票/領票</p>
             <img
               src="/images/white-arrow-right-icon.svg"
               alt=""
@@ -109,6 +112,8 @@ export const TicketsCard: React.FC<TicketProps> = ({
                       orderNumber: orderNumber,
                       details: details,
                       status: status,
+                      user: user,
+                      ticketIds: ticketIds,
                       useDate: '2026.05.01-2026.05.03',
                     },
                   },

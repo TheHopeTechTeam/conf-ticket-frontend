@@ -38,7 +38,11 @@ export const Tickets = () => {
 
         case TICKET_STATUS.COLLECTED:
           // 已取票：票券所屬訂單完成且票券已取票
-          return ticket.order?.status === 'completed' && ticket.isRedeemed;
+          return (
+            ticket.order?.status === 'completed' &&
+            ticket.isRedeemed &&
+            ticket.user?.id === user?.id
+          );
 
         case TICKET_STATUS.REFUNDED:
           // 退款記錄：票券所屬訂單退款
@@ -208,6 +212,10 @@ export const Tickets = () => {
                     const order = firstTicket.order;
                     const ticketType = firstTicket.type;
 
+                    // 取得 ticketGroup 裡的 id
+                    const ticketIds = ticketGroup.map(ticket => ticket.id);
+                    console.log(ticketGroup);
+
                     // 計算該票種的數量
                     const quantity = ticketGroup.length;
 
@@ -222,9 +230,10 @@ export const Tickets = () => {
                         key={`${order?.id}-${ticketType?.id}-${groupIndex}`}
                         title={ticketType?.name || '票券'}
                         quantity={quantity}
-                        orderNumber={order?.id?.slice(-8) || 'N/A'}
+                        orderNumber={order?.id || 'N/A'}
                         details={ticketDetails}
                         status={activeStatus}
+                        ticketIds={ticketIds}
                         user={ticketGroup.map(ticket => ticket.user)}
                       />
                     );
@@ -247,22 +256,20 @@ export const Tickets = () => {
             {(activeStatus === TICKET_STATUS.PURCHASED ||
               activeStatus === TICKET_STATUS.COLLECTED) && (
               <button
-                className="btn send-btn"
+                className="btn send-btn m-b-16"
                 onClick={() => navigate(ROUTES.BOOKING)}
               >
                 前往購票
               </button>
             )}
-            {activeStatus === TICKET_STATUS.COLLECTED && (
-              <button
-                className="btn cancel-btn"
-                onClick={() => navigate(ROUTES.HOME)}
-              >
-                返回票券系統
-              </button>
-            )}
           </div>
         )}
+        <button
+          className="btn cancel-btn"
+          onClick={() => navigate(ROUTES.HOME)}
+        >
+          返回票券系統
+        </button>
       </div>
     </>
   );

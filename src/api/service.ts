@@ -72,7 +72,16 @@ class FetchService {
           const errorData = await response.json();
 
           // 統一在這裡 alert 錯誤訊息
-          if (errorData.errors) {
+          if (errorData.message && Array.isArray(errorData.message)) {
+            // 處理 message 陣列格式的錯誤
+            const errorMessages = errorData.message
+              .map(
+                (err: { ticketId: string; message: string; status: number }) =>
+                  err.message
+              )
+              .join('\n');
+            alert(errorMessages);
+          } else if (errorData.errors) {
             // 處理欄位驗證錯誤格式
             const errorMessages = errorData.errors
               .map((err: { field: string; message: string }) => err.message)

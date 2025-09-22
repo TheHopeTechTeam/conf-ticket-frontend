@@ -1,5 +1,7 @@
 import { useMemo, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { apiService } from '../../api';
+import { ticketApi } from '../../api/index';
 import Dialog from '../../components/common/Dialog/Dialog';
 import { SuccessOrError } from '../../components/common/SuccessOrError/SuccessOrError';
 import {
@@ -9,12 +11,13 @@ import {
 } from '../../components/interface/TicketDistribution';
 import { STATUS } from '../../constants/common';
 import { ROUTES } from '../../constants/routes';
+import { useAuthContext } from '../../contexts/AuthContext';
 import './TicketDistribution.scss';
-import { apiService } from '../../api';
 
 export const TicketDistribution: React.FC<TicketDistributionProps> = ({
   ticketInfo,
 }) => {
+  const { user } = useAuthContext();
   const navigate = useNavigate();
   const location = useLocation();
   const [distributionStatus, setDistributionStatus] = useState<
@@ -143,11 +146,19 @@ export const TicketDistribution: React.FC<TicketDistributionProps> = ({
     setTicketDistributionDialogOpen(true);
   };
 
-  // Dialog 確認處理
+  // 表單驗證和分票邏輯檢查
   const handleTicketDistributionConfirm = async () => {
     const selectedRecipients = recipients.filter(
       recipient => recipient.isSelected
     );
+
+    if (selectedRecipients.length === 0) {
+      setFormError('請至少輸入一位取票者資訊');
+      return;
+    }
+
+    // 清除錯誤訊息
+    setFormError('');
 
     console.log('分票資訊:', {
       ticketInfo: currentTicketInfo,
@@ -166,6 +177,7 @@ export const TicketDistribution: React.FC<TicketDistributionProps> = ({
       console.log('取票者會員資料:', membersResponse);
 
       // 判斷分票邏輯
+      let hasDistributedTickets = false;
       if (membersResponse && membersResponse.docs) {
         membersResponse.docs.forEach((member: any) => {
           if (member.orders && member.orders.length > 0) {
@@ -177,6 +189,7 @@ export const TicketDistribution: React.FC<TicketDistributionProps> = ({
                 );
 
                 if (distributedTickets.length > 0) {
+                  hasDistributedTickets = true;
                   alert(
                     `會員 ${member.email} 有 ${distributedTickets.length} 張分票:`
                   );
@@ -186,12 +199,47 @@ export const TicketDistribution: React.FC<TicketDistributionProps> = ({
           }
         });
       }
+
+      // 如果分票邏輯檢查通過，打開確認 dialog
+      if (!hasDistributedTickets) {
+        setTicketDistributionDialogOpen(true);
+      }
     } catch (error) {
       console.error('取得會員資料失敗:', error);
     }
+  };
 
-    // setTicketDistributionDialogOpen(false);
-    // setDistributionStatus(STATUS.ERROR);
+  // Dialog 確認處理 - 執行分票 API
+  const handleDialogConfirm = async () => {
+    const selectedRecipients = recipients.filter(
+      recipient => recipient.isSelected
+    );
+
+    try {
+      // 準備 patchTicketsSplit 的資料
+      const splitData = {
+        memberId: user.id, // 需要從 currentTicketInfo 或其他地方取得
+        tickets: selectedRecipients.map((recipient, index) => ({
+          ticketId: currentTicketInfo.ticketIds?.[index] || '', // 從 ticketIds 取得對應的 ticketId
+          email: recipient.email,
+        })),
+      };
+
+      console.log('分票 API 資料:', splitData);
+
+      // 調用分票 API
+      const response = await ticketApi.postTicketsSplit(splitData);
+      console.log('分票 API 回應:', response);
+
+      // 分票成功，關閉 dialog 並顯示成功頁面
+      setTicketDistributionDialogOpen(false);
+      setDistributionStatus(STATUS.SUCCESS);
+    } catch (error) {
+      console.error('分票 API 失敗:', error);
+      // 分票失敗，關閉 dialog 並顯示錯誤頁面
+      setTicketDistributionDialogOpen(false);
+      setDistributionStatus(STATUS.ERROR);
+    }
   };
 
   // Dialog 取消處理
@@ -313,8 +361,9 @@ export const TicketDistribution: React.FC<TicketDistributionProps> = ({
               className={`btn send-btn ${
                 !hasValidEmail || !hasSelectedRecipients ? 'disabled' : ''
               }`}
-              type="submit"
+              type="button"
               disabled={!hasValidEmail || !hasSelectedRecipients}
+              onClick={handleTicketDistributionConfirm}
             >
               前往分票
             </button>
@@ -360,7 +409,7 @@ export const TicketDistribution: React.FC<TicketDistributionProps> = ({
         confirmText="確定分票"
         cancelText="取消"
         className="ticket-distribution-dialog"
-        onConfirm={handleTicketDistributionConfirm}
+        onConfirm={handleDialogConfirm}
         onCancel={handleTicketDistributionCancel}
       >
         <div className="distribution-dialog-content">

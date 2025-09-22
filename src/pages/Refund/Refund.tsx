@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { ticketApi } from '../../api/index';
 import Dialog from '../../components/common/Dialog/Dialog';
 import { SuccessOrError } from '../../components/common/SuccessOrError/SuccessOrError';
 import { MAIL, STATUS } from '../../constants/common';
@@ -43,8 +44,27 @@ export const Refund: React.FC = () => {
   };
 
   // 確定退票
-  const handleRefund = () => {
-    setRefundStatus(STATUS.SUCCESS);
+  const handleRefund = async () => {
+    try {
+      console.log('退票 API 資料:', {
+        orderId: currentTicketInfo.orderNumber,
+      });
+
+      // 調用退票 API
+      const response = await ticketApi.postTicketsRefund(
+        currentTicketInfo.orderNumber
+      );
+      console.log('退票 API 回應:', response);
+
+      // 退票成功
+      setRefundStatus(STATUS.SUCCESS);
+    } catch (error) {
+      console.error('退票 API 失敗:', error);
+      // 錯誤訊息已由 service.ts 統一處理和顯示
+
+      // 退票失敗，顯示錯誤頁面
+      setRefundStatus(STATUS.ERROR);
+    }
   };
 
   // 組件邏輯
