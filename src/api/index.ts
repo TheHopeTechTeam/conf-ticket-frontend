@@ -72,15 +72,16 @@ export const ordersApi = {
   createOrder: async (data: PostOrderCreateRequest) => {
     return await httpClient.post('/v1/orders/create', data);
   },
+
+  postOrdersRefund: async (orderId: string) => {
+    return await httpClient.post('/v1/orders/refund', { orderId });
+  },
 };
 
 // 分/領票、退票相關 API
 export const ticketApi = {
   postTicketsSplit: async (data: TicketSplitRequest) => {
     return await httpClient.post('/v1/tickets/split', data);
-  },
-  postTicketsRefund: async (orderId: string) => {
-    return await httpClient.post('/v1/tickets/refund', { orderId });
   },
 };
 
@@ -99,10 +100,10 @@ export const apiService = {
   orders: {
     getOrders: ordersApi.getOrdersByMember,
     postOrderCreate: ordersApi.createOrder,
+    postOrdersRefund: ordersApi.postOrdersRefund,
   },
   tickets: {
     postTicketsSplit: ticketApi.postTicketsSplit,
-    postTicketsRefund: ticketApi.postTicketsRefund,
   },
 };
 

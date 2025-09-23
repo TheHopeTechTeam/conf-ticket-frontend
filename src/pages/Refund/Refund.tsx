@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { ticketApi } from '../../api/index';
+import { ordersApi } from '../../api/index';
 import Dialog from '../../components/common/Dialog/Dialog';
 import { SuccessOrError } from '../../components/common/SuccessOrError/SuccessOrError';
 import { MAIL, STATUS } from '../../constants/common';
@@ -51,7 +51,7 @@ export const Refund: React.FC = () => {
       });
 
       // 調用退票 API
-      const response = await ticketApi.postTicketsRefund(
+      const response = await ordersApi.postOrdersRefund(
         currentTicketInfo.orderNumber
       );
       console.log('退票 API 回應:', response);
