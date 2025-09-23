@@ -12,126 +12,6 @@
   },
   "servers": [{ "url": "https://thehope.app", "description": "API Server" }],
   "paths": {
-    "/api/v1/users/login": {
-      "post": {
-        "tags": ["Users Authentication"],
-        "summary": "CMS 後台使用者登入",
-        "description": "以 CMS 後台使用者 user 進行登入",
-        "operationId": "loginUser",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": { "$ref": "#/components/schemas/UserLoginRequest" }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "登入成功，返回 JWT token 和使用者資訊",
-            "content": {
-              "application/json": {
-                "schema": { "$ref": "#/components/schemas/UserLoginResponse" }
-              }
-            }
-          },
-          "400": {
-            "description": "資料驗證錯誤",
-            "content": {
-              "application/json": {
-                "schema": { "$ref": "#/components/schemas/AuthErrorResponse" }
-              }
-            }
-          },
-          "401": {
-            "description": "資料不正確",
-            "content": {
-              "application/json": {
-                "schema": { "$ref": "#/components/schemas/AuthErrorResponse" }
-              }
-            }
-          },
-          "500": {
-            "description": "伺服器錯誤",
-            "content": {
-              "application/json": {
-                "schema": { "$ref": "#/components/schemas/AuthErrorResponse" }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/v1/users/logout": {
-      "post": {
-        "tags": ["Users Authentication"],
-        "summary": "CMS 後台使用者登出",
-        "description": "對 CMS 後台使用者 user 進行登出並使 JWT token 失效",
-        "operationId": "logoutUser",
-        "security": [{ "BearerAuth": [] }],
-        "responses": {
-          "200": {
-            "description": "登出成功",
-            "content": {
-              "application/json": {
-                "schema": { "$ref": "#/components/schemas/LogoutResponse" }
-              }
-            }
-          },
-          "401": {
-            "description": "未授權或無效的 token",
-            "content": {
-              "application/json": {
-                "schema": { "$ref": "#/components/schemas/AuthErrorResponse" }
-              }
-            }
-          },
-          "500": {
-            "description": "伺服器錯誤",
-            "content": {
-              "application/json": {
-                "schema": { "$ref": "#/components/schemas/AuthErrorResponse" }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/v1/users/refresh-token": {
-      "post": {
-        "tags": ["Users Authentication"],
-        "summary": "更新 JWT token",
-        "description": "使用仍有效的 JWT token 來換取新的 JWT token",
-        "operationId": "refreshUserToken",
-        "security": [{ "BearerAuth": [] }],
-        "responses": {
-          "200": {
-            "description": "Token 更新成功",
-            "content": {
-              "application/json": {
-                "schema": { "$ref": "#/components/schemas/UserLoginResponse" }
-              }
-            }
-          },
-          "401": {
-            "description": "無效或過期的 token",
-            "content": {
-              "application/json": {
-                "schema": { "$ref": "#/components/schemas/AuthErrorResponse" }
-              }
-            }
-          },
-          "500": {
-            "description": "伺服器錯誤",
-            "content": {
-              "application/json": {
-                "schema": { "$ref": "#/components/schemas/AuthErrorResponse" }
-              }
-            }
-          }
-        }
-      }
-    },
     "/api/v1/auth": {
       "post": {
         "tags": ["Member Authentication"],
@@ -202,94 +82,6 @@
           },
           "500": {
             "description": "Server error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": { "type": "string", "description": "錯誤訊息" }
-                  }
-                },
-                "example": { "message": "Internal Server Error" }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/v1/auth/callback": {
-      "get": {
-        "tags": ["Member Authentication"],
-        "summary": "完成無密碼身份驗證",
-        "description": "前台使用者使用一次性身份驗證超連結完成身份驗證並取得 JWT token",
-        "operationId": "completeAuth",
-        "parameters": [
-          {
-            "name": "t",
-            "in": "query",
-            "description": "前台使用者一次性身份驗證 token",
-            "required": true,
-            "schema": { "type": "string" }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "前台使用者身份驗證成功",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "token": {
-                      "type": "string",
-                      "description": "JWT access token"
-                    }
-                  }
-                },
-                "example": {
-                  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "無效或過期的 token",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": { "type": "string", "description": "錯誤訊息" }
-                  }
-                },
-                "examples": {
-                  "Missing token": { "value": { "message": "Missing token" } },
-                  "Invalid token": { "value": { "message": "Invalid token" } },
-                  "Expired token": {
-                    "value": {
-                      "message": "Invalid or expired token: TokenExpiredError: jwt expired"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "前台使用者未找到",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": { "type": "string", "description": "錯誤訊息" }
-                  }
-                },
-                "example": { "message": "Email not found" }
-              }
-            }
-          },
-          "500": {
-            "description": "伺服器錯誤",
             "content": {
               "application/json": {
                 "schema": {
@@ -455,6 +247,12 @@
         "operationId": "listMembers",
         "security": [{ "BearerAuth": [] }],
         "parameters": [
+          {
+            "name": "trash",
+            "in": "query",
+            "description": "是否包含已刪除的資料",
+            "schema": { "type": "boolean", "default": false }
+          },
           {
             "name": "page",
             "in": "query",
@@ -697,6 +495,12 @@
         "security": [{ "BearerAuth": [] }],
         "parameters": [
           {
+            "name": "trash",
+            "in": "query",
+            "description": "是否包含已刪除的資料",
+            "schema": { "type": "boolean", "default": false }
+          },
+          {
             "name": "page",
             "in": "query",
             "description": "頁數",
@@ -937,6 +741,12 @@
         "operationId": "listOrder-items",
         "security": [{ "BearerAuth": [] }],
         "parameters": [
+          {
+            "name": "trash",
+            "in": "query",
+            "description": "是否包含已刪除的資料",
+            "schema": { "type": "boolean", "default": false }
+          },
           {
             "name": "page",
             "in": "query",
@@ -1181,6 +991,12 @@
         "security": [{ "BearerAuth": [] }],
         "parameters": [
           {
+            "name": "trash",
+            "in": "query",
+            "description": "是否包含已刪除的資料",
+            "schema": { "type": "boolean", "default": false }
+          },
+          {
             "name": "page",
             "in": "query",
             "description": "頁數",
@@ -1332,6 +1148,12 @@
         "security": [{ "BearerAuth": [] }],
         "parameters": [
           {
+            "name": "trash",
+            "in": "query",
+            "description": "是否包含已刪除的資料",
+            "schema": { "type": "boolean", "default": false }
+          },
+          {
             "name": "page",
             "in": "query",
             "description": "頁數",
@@ -1482,6 +1304,12 @@
         "operationId": "listTickets",
         "security": [{ "BearerAuth": [] }],
         "parameters": [
+          {
+            "name": "trash",
+            "in": "query",
+            "description": "是否包含已刪除的資料",
+            "schema": { "type": "boolean", "default": false }
+          },
           {
             "name": "page",
             "in": "query",
@@ -1718,66 +1546,6 @@
   },
   "components": {
     "schemas": {
-      "UserLoginRequest": {
-        "type": "object",
-        "required": ["email", "password"],
-        "properties": {
-          "email": {
-            "type": "string",
-            "format": "email",
-            "description": "CMS 後台使用者 user 的 email 地址"
-          },
-          "password": {
-            "type": "string",
-            "minLength": 1,
-            "description": "CMS 後台使用者 user 的密碼"
-          }
-        },
-        "example": { "email": "user@example.com", "password": "password123" }
-      },
-      "UserLoginResponse": {
-        "type": "object",
-        "properties": {
-          "token": { "type": "string", "description": "JWT access token" },
-          "user": { "$ref": "#/components/schemas/Users" },
-          "exp": { "type": "number", "description": "Token 過期時間戳記" }
-        },
-        "example": {
-          "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
-          "user": {
-            "id": "1",
-            "name": "John Doe",
-            "email": "user@example.com",
-            "role": "default"
-          },
-          "exp": 1704067200
-        }
-      },
-      "UserCreateRequest": {
-        "type": "object",
-        "required": ["name", "email", "password"],
-        "properties": {
-          "name": {
-            "type": "string",
-            "description": "CMS 後台使用者 user 的全名"
-          },
-          "email": {
-            "type": "string",
-            "format": "email",
-            "description": "CMS 後台使用者 user 的 email 地址"
-          },
-          "password": {
-            "type": "string",
-            "minLength": 6,
-            "description": "CMS 後台使用者 user 的密碼；至少 6 個字符"
-          }
-        },
-        "example": {
-          "name": "John Doe",
-          "email": "user@example.com",
-          "password": "password123"
-        }
-      },
       "Users": {
         "type": "object",
         "properties": {
@@ -1815,36 +1583,6 @@
           "createdAt": "2024-01-01T00:00:00.000Z",
           "updatedAt": "2024-01-01T00:00:00.000Z"
         }
-      },
-      "AuthErrorResponse": {
-        "type": "object",
-        "properties": {
-          "message": { "type": "string", "description": "錯誤訊息" },
-          "errors": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "properties": {
-                "message": {
-                  "type": "string",
-                  "description": "欄位的錯誤訊息"
-                },
-                "field": {
-                  "type": "string",
-                  "description": "造成錯誤的欄位名稱"
-                }
-              }
-            },
-            "description": "驗證錯誤陣列"
-          }
-        }
-      },
-      "LogoutResponse": {
-        "type": "object",
-        "properties": {
-          "message": { "type": "string", "description": "登出成功訊息" }
-        },
-        "example": { "message": "Logout successful." }
       },
       "CreateOrderInput": {
         "type": "object",
@@ -1984,11 +1722,25 @@
           "id": { "type": "string", "description": "資料唯一識別碼" },
           "email": { "type": "string", "description": "Email" },
           "name": { "type": "string", "description": "名稱 - 請填寫全名" },
-          "gender": { "type": "string", "description": "性別" },
+          "gender": {
+            "type": "string",
+            "description": "- male: 男\n- female: 女\n- unknown: 其他",
+            "enum": ["male", "female", "unknown"]
+          },
           "tel": { "type": "string", "description": "聯絡電話" },
           "role": {
             "type": "string",
-            "description": "身份 - 用於區分會眾身份"
+            "description": "- senior-pastor: 主任牧師\n- pastor: 牧師\n- minister: 傳道人\n- ministry-leader: 事工團隊領袖\n- seminarian: 神學生\n- staff: 全職同工\n- default: 一般參加者",
+            "enum": [
+              "senior-pastor",
+              "pastor",
+              "minister",
+              "ministry-leader",
+              "seminarian",
+              "staff",
+              "default"
+            ],
+            "default": "default"
           },
           "location": {
             "type": "string",
@@ -1999,9 +1751,11 @@
             "format": "date-time",
             "description": "同意隱私政策時間 - 需同意隱私政策才能購票"
           },
-          "loginTokenIssuedAt": {
-            "type": "number",
-            "description": "登入權杖簽發時間 - 用於實作單次登入權杖"
+          "authNonce": { "type": "string", "description": "Auth Nonce" },
+          "authNonceIssuedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "登入碼簽發時間 - 登入碼簽發時間"
           },
           "orders": {
             "type": "array",
@@ -2070,7 +1824,9 @@
           },
           "status": {
             "type": "string",
-            "description": "訂單狀態 - 訂單目前的狀態"
+            "description": "- pending: Pending\n- completed: Completed\n- failed: Failed\n- refunded: Refunded",
+            "enum": ["pending", "completed", "failed", "refunded"],
+            "default": "pending"
           },
           "total": {
             "type": "number",
@@ -2230,7 +1986,9 @@
           },
           "status": {
             "type": "string",
-            "description": "付款狀態 - 此付款目前的狀態"
+            "description": "- pending: 待付款\n- completed: 完成\n- failed: 失敗",
+            "enum": ["pending", "completed", "failed"],
+            "default": "pending"
           },
           "prime": {
             "type": "string",
@@ -2468,10 +2226,6 @@
     }
   },
   "tags": [
-    {
-      "name": "Users Authentication",
-      "description": "CMS 後台使用者 users 身份驗證 endpoints"
-    },
     {
       "name": "Member Authentication",
       "description": "前台使用者 members 身份驗證 endpoints"
