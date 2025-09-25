@@ -47,6 +47,7 @@ export const Booking: React.FC = () => {
             price: ticket.price,
             image: ticket.image,
             caption: ticket.caption || '',
+            available: ticket.available || 0,
             description: ticket.description || [],
             isMemberInfoRequired: Boolean(ticket.isMemberInfoRequired),
           }))
