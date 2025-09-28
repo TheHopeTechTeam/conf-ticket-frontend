@@ -17,7 +17,6 @@ app.use(express.json());
 
 // 請求日誌中間件
 app.use((req, res, next) => {
-  console.log(`📝 ${req.method} ${req.path} - Query:`, req.query);
   next();
 });
 

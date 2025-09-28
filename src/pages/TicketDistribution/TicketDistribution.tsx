@@ -44,7 +44,6 @@ export const TicketDistribution: React.FC<TicketDistributionProps> = ({
       };
     })
   );
-  console.log(currentTicketInfo);
 
   // Dialog 狀態
   const [isTicketDistributionDialogOpen, setTicketDistributionDialogOpen] =
@@ -160,11 +159,6 @@ export const TicketDistribution: React.FC<TicketDistributionProps> = ({
     // 清除錯誤訊息
     setFormError('');
 
-    console.log('分票資訊:', {
-      ticketInfo: currentTicketInfo,
-      selectedRecipients,
-    });
-
     // 取得選中取票者的 email 陣列
     const selectedEmails = selectedRecipients.map(recipient => recipient.email);
 
@@ -174,7 +168,6 @@ export const TicketDistribution: React.FC<TicketDistributionProps> = ({
         selectedEmails,
         false
       );
-      console.log('取票者會員資料:', membersResponse);
 
       // 判斷分票邏輯
       let hasDistributedTickets = false;
@@ -225,11 +218,8 @@ export const TicketDistribution: React.FC<TicketDistributionProps> = ({
         })),
       };
 
-      console.log('分票 API 資料:', splitData);
-
       // 調用分票 API
-      const response = await ticketApi.postTicketsSplit(splitData);
-      console.log('分票 API 回應:', response);
+      await ticketApi.postTicketsSplit(splitData);
 
       // 分票成功，關閉 dialog 並顯示成功頁面
       setTicketDistributionDialogOpen(false);

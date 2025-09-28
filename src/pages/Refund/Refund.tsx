@@ -46,15 +46,8 @@ export const Refund: React.FC = () => {
   // 確定退票
   const handleRefund = async () => {
     try {
-      console.log('退票 API 資料:', {
-        orderId: currentTicketInfo.orderNumber,
-      });
-
       // 調用退票 API
-      const response = await ordersApi.postOrdersRefund(
-        currentTicketInfo.orderNumber
-      );
-      console.log('退票 API 回應:', response);
+      await ordersApi.postOrdersRefund(currentTicketInfo.orderNumber);
 
       // 退票成功
       setRefundStatus(STATUS.SUCCESS);

@@ -99,7 +99,7 @@ class FetchService {
           (error as any).status = response.status;
           throw error;
         } catch (jsonError) {
-          console.log(jsonError);
+          throw jsonError;
         }
       }
 
@@ -110,7 +110,6 @@ class FetchService {
       const data = await response.json();
       return data;
     } catch (error) {
-      console.error('❌ Fetch Error:', error);
       throw error;
     }
   }

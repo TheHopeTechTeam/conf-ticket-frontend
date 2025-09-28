@@ -167,7 +167,6 @@ export const Payment: React.FC = () => {
             ),
           })),
         });
-        console.log(paymentData);
 
         hideLoading();
         setPaymentStatus(STATUS.SUCCESS);

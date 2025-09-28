@@ -11,7 +11,6 @@ export const usePaymentState = () => {
   });
 
   const handlePaymentTypeChange = useCallback((selectedType: string) => {
-    console.log('選擇的支付方式:', selectedType);
     setPaymentType(selectedType);
 
     const newPaymentReady: PaymentReadyState = {

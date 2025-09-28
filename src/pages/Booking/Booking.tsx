@@ -116,11 +116,6 @@ export const Booking: React.FC = () => {
   const [ticketValidationStates, setTicketValidationStates] =
     useState<TicketValidationState>({});
 
-  // 監控表單有效性
-  React.useEffect(() => {
-    // console.log('表單驗證狀態:', ticketValidationStates);
-  }, [ticketValidationStates]);
-
   const handleQuantityChange = (ticketId: string, quantity: number) => {
     setTicketQuantities(prev => ({
       ...prev,

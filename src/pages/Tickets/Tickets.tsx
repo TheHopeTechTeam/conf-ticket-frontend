@@ -21,10 +21,6 @@ export const Tickets = () => {
   const [allOrders, setAllOrders] = useState<any[]>([]);
   const { showLoading, hideLoading } = useLoading();
 
-  // 現在您可以使用 memberData 中的所有資料
-  // console.log('Member Data:', memberData);
-  // console.log('User Info:', user);
-
   // 根據狀態過濾票券的函數
   const getFilteredTickets = (orders: any[], status: TicketStatusType) => {
     // 從所有訂單中提取所有票券
@@ -81,7 +77,6 @@ export const Tickets = () => {
           hideLoading();
           const orders = response.docs || [];
           setAllOrders(orders);
-          console.log('Fetched Orders:', orders);
 
           // 設定預設 Tab：若已購買有票券則跳到已購買，否則跳到已取票
           const purchasedTickets = getFilteredTickets(
@@ -191,9 +186,6 @@ export const Tickets = () => {
             const filteredTickets = getFilteredTickets(allOrders, activeStatus);
             const groupedTickets = groupTicketsByOrderAndType(filteredTickets);
 
-            console.log('Filtered Tickets:', filteredTickets);
-            console.log('Grouped Tickets:', groupedTickets);
-
             return filteredTickets.length === 0 ? (
               <>
                 <img
@@ -214,7 +206,6 @@ export const Tickets = () => {
 
                     // 取得 ticketGroup 裡的 id
                     const ticketIds = ticketGroup.map(ticket => ticket.id);
-                    console.log(ticketGroup);
 
                     // 計算該票種的數量
                     const quantity = ticketGroup.length;

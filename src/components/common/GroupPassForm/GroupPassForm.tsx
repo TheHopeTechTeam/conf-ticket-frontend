@@ -88,11 +88,6 @@ export const GroupPassForm: React.FC<GroupPassFormProps> = ({
     loadChurchIdentityOptions();
   }, []);
 
-  // 調試：直接監控 watchedUsers
-  useEffect(() => {
-    console.log('watchedUsers 直接變化:', watchedUsers);
-  }, [watchedUsers]);
-
   // 當 quantity 變化時智能更新表單（使用 append/remove 保持 details 狀態）
   const prevQuantityRef = React.useRef(quantity);
 
@@ -300,7 +295,9 @@ export const GroupPassForm: React.FC<GroupPassFormProps> = ({
                     )}
                   </>
                 ) : (
-                  <p className="form-record-item">{watchedUsers?.[index]?.email}</p>
+                  <p className="form-record-item">
+                    {watchedUsers?.[index]?.email}
+                  </p>
                 )}
               </div>
               <div className="form-item">
@@ -332,7 +329,9 @@ export const GroupPassForm: React.FC<GroupPassFormProps> = ({
                     )}
                   </>
                 ) : (
-                  <p className="form-record-item">{watchedUsers?.[index]?.tel}</p>
+                  <p className="form-record-item">
+                    {watchedUsers?.[index]?.tel}
+                  </p>
                 )}
               </div>
             </div>
@@ -366,7 +365,9 @@ export const GroupPassForm: React.FC<GroupPassFormProps> = ({
                     )}
                   </>
                 ) : (
-                  <p className="form-record-item">{watchedUsers?.[index]?.location}</p>
+                  <p className="form-record-item">
+                    {watchedUsers?.[index]?.location}
+                  </p>
                 )}
               </div>
               <div className="form-item">
@@ -410,4 +411,3 @@ export const GroupPassForm: React.FC<GroupPassFormProps> = ({
     </div>
   );
 };
-
