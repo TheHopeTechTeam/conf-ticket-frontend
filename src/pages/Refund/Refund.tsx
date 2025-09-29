@@ -264,7 +264,7 @@ export const Refund: React.FC = () => {
         <SuccessOrError
           type={STATUS.ERROR}
           message="系統發生錯誤，請再試一次。"
-          titlePrefix="分票"
+          titlePrefix="退票"
           errorText="失敗"
           retryButtonText="再試一次"
           backButtonText="返回票券系統"
