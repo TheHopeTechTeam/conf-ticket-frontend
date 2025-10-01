@@ -26,6 +26,11 @@
         flex-direction: column;
         gap: 8px;
 
+        .highlight {
+          color: #ee1b0a;
+          font-weight: 600;
+        }
+
         li {
           display: flex;
           gap: 3px;

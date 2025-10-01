@@ -1,4 +1,4 @@
-import { MAIL } from "./common";
+import { MAIL } from './common';
 
 export interface TicketFeature {
   text: string;
@@ -32,7 +32,7 @@ export const TICKET_ALERT_MESSAGES = {
     lines: [
       '退票需於購票日起 180 天內辦理。',
       '完成退票手續後，系統將於 5 個工作天內退款至您原付款的信用卡。',
-      `如需開立發票，請來信至 ${MAIL.CONTACT_EMAIL}`,
+      `如需開立收據，請來信至 ${MAIL.CONTACT_EMAIL}，並附上需開立收據的票號。`,
     ],
   },
 } as const;
@@ -78,4 +78,3 @@ export interface TicketTypesResponse {
   prevPage: number | null;
   nextPage: number | null;
 }
-

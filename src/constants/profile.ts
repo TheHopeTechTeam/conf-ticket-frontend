@@ -8,7 +8,6 @@ export enum ValidChurchType {
 export const GENDER_OPTIONS = [
   { id: 'male', label: '男' },
   { id: 'female', label: '女' },
-  { id: 'unknown', label: '其他' },
 ];
 
 export const CHURCH_OPTIONS = [

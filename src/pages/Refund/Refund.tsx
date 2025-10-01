@@ -12,8 +12,6 @@ export const Refund: React.FC = () => {
   const location = useLocation();
 
   const [isRefundDialogOpen, setRefundDialogOpen] = React.useState(false);
-  const [isRefundCheckBoxDisabled, setRefundCheckBoxDisabled] =
-    React.useState(true);
   const [isCheckboxChecked, setIsCheckboxChecked] = React.useState(false);
   const [refundStatus, setRefundStatus] = useState<
     'form' | 'success' | 'error'
@@ -32,7 +30,7 @@ export const Refund: React.FC = () => {
 
   const handleRefundConfirm = () => {
     setRefundDialogOpen(false);
-    setRefundCheckBoxDisabled(false); // 閱讀完條款後，啟用 checkbox
+    setIsCheckboxChecked(true); // 確認條款後勾選 checkbox
   };
 
   const handleRefundCancel = () => {
@@ -40,7 +38,13 @@ export const Refund: React.FC = () => {
   };
 
   const handleCheckboxChange = () => {
-    setIsCheckboxChecked(!isCheckboxChecked);
+    if (!isCheckboxChecked) {
+      // 當要勾選時，先開啟 dialog
+      setRefundDialogOpen(true);
+    } else {
+      // 當要取消勾選時，直接取消
+      setIsCheckboxChecked(false);
+    }
   };
 
   // 確定退票
@@ -73,7 +77,7 @@ export const Refund: React.FC = () => {
               </p>
               <div>
                 <ul className="refund-header-content-list">
-                  <li>
+                  <li className="highlight">
                     <span className="number">1.</span>退款將會酌收10%手續費
                   </li>
                   <li>
@@ -130,7 +134,6 @@ export const Refund: React.FC = () => {
               className="refund-checkbox"
               checked={isCheckboxChecked}
               onChange={handleCheckboxChange}
-              disabled={isRefundCheckBoxDisabled}
             />
             <label htmlFor="refund">我已閱讀並同意</label>
             <button

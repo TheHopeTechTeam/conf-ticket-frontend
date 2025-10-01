@@ -24,8 +24,9 @@ export const Tickets = () => {
   // 根據狀態過濾票券的函數
   const getFilteredTickets = (orders: any[], status: TicketStatusType) => {
     // 從所有訂單中提取所有票券
-    const allTickets = orders.flatMap(order => order.tickets || []);
-
+    const allTickets = orders.flatMap(order =>
+      order.tickets.map((ticket: any) => ({ ...ticket, order }))
+    );
     return allTickets.filter(ticket => {
       switch (status) {
         case TICKET_STATUS.PURCHASED:
@@ -185,6 +186,10 @@ export const Tickets = () => {
           {(() => {
             const filteredTickets = getFilteredTickets(allOrders, activeStatus);
             const groupedTickets = groupTicketsByOrderAndType(filteredTickets);
+
+            console.log('activeStatus:', activeStatus);
+            console.log('filteredTickets:', filteredTickets);
+            console.log('groupedTickets:', groupedTickets);
 
             return filteredTickets.length === 0 ? (
               <>

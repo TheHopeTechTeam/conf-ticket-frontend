@@ -35,26 +35,47 @@ const Dialog: React.FC<DialogProps> = ({
   const [canConfirm, setCanConfirm] = React.useState(!requireScrollToBottom);
   const contentRef = React.useRef<HTMLDivElement>(null);
 
+  // 處理背景頁面滾動禁用
+  React.useEffect(() => {
+    if (isOpen) {
+      // 禁止背景頁面滾動
+      const originalOverflow = document.body.style.overflow;
+      document.body.style.overflow = 'hidden';
+
+      // 清理函數：恢復背景頁面滾動
+      return () => {
+        document.body.style.overflow = originalOverflow;
+      };
+    }
+  }, [isOpen]);
+
   // 重置狀態當對話框開啟時
   React.useEffect(() => {
-    if (isOpen && requireScrollToBottom) {
-      setCanConfirm(false);
+    if (isOpen) {
+      // 確保內容從頂部開始顯示
+      const element = contentRef.current;
+      if (element) {
+        element.scrollTop = 0;
+      }
 
-      // 檢查是否需要滾動
-      const checkScrollNeeded = () => {
-        const element = contentRef.current;
-        if (element) {
-          const needsScroll = element.scrollHeight > element.clientHeight;
-          // 如果內容不需要滾動，直接允許確認
-          setCanConfirm(!needsScroll);
-        }
-      };
+      if (requireScrollToBottom) {
+        setCanConfirm(false);
 
-      // 延遲檢查確保DOM已渲染
-      const timer = setTimeout(checkScrollNeeded, 100);
-      return () => clearTimeout(timer);
-    } else if (isOpen) {
-      setCanConfirm(true);
+        // 檢查是否需要滾動
+        const checkScrollNeeded = () => {
+          if (element) {
+            const needsScroll = element.scrollHeight > element.clientHeight;
+            // 如果內容不需要滾動，直接允許確認
+            setCanConfirm(!needsScroll);
+          }
+        };
+
+        // 延遲檢查確保DOM已渲染
+        const timer = setTimeout(checkScrollNeeded, 100);
+        return () => clearTimeout(timer);
+      } else {
+        setCanConfirm(true);
+      }
     }
   }, [isOpen, requireScrollToBottom]);
 
