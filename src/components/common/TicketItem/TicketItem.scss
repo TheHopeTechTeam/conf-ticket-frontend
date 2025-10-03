@@ -23,7 +23,7 @@
       display: flex;
       flex-direction: column;
       gap: 12px;
-      max-width: 460px;
+      max-width: 430px;
       width: 100%;
 
       .ticket-info-title-container {
@@ -41,7 +41,7 @@
             display: flex;
             gap: 4px;
             align-items: center;
-            color: #EE1B0A;
+            color: #ee1b0a;
             font-size: 14px;
             white-space: nowrap;
           }
@@ -61,7 +61,7 @@
         }
 
         .sold-out-title {
-          color: #A5A9AB !important;
+          color: #a5a9ab !important;
         }
 
         .ticket-info-remark {
@@ -90,7 +90,7 @@
         }
 
         .sold-out-content {
-          color: #C5CCD1 !important;
+          color: #c5ccd1 !important;
         }
       }
     }
@@ -229,7 +229,7 @@
         }
 
         .sold-out-title {
-          color: #A5A9AB !important;
+          color: #a5a9ab !important;
         }
 
         .ticket-info-remark {
@@ -258,7 +258,7 @@
         }
 
         .sold-out-content {
-          color: #C5CCD1 !important;
+          color: #c5ccd1 !important;
         }
       }
     }
