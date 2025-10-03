@@ -14,9 +14,17 @@ import { ROUTES } from '../../constants/routes';
 import { useAuthContext } from '../../contexts/AuthContext';
 import './TicketDistribution.scss';
 
-export const TicketDistribution: React.FC<TicketDistributionProps> = ({
-  ticketInfo,
-}) => {
+/*************  ✨ Windsurf Command ⭐  *************/
+/**
+ * TicketDistribution is a component that allows users to fill in ticket recipient information
+ * and then submit the information to the server to distribute the tickets.
+ *
+ * @param {TicketInfo} ticketInfo - The ticket information object that contains the ticket type, ticket count, and use date.
+ * @returns {JSX.Element} - The TicketDistribution component.
+ */
+/*******  8d9e1d3e-53c3-4b96-a5b3-26917a98915d  *******/ export const TicketDistribution: React.FC<
+  TicketDistributionProps
+> = ({ ticketInfo }) => {
   const { user } = useAuthContext();
   const navigate = useNavigate();
   const location = useLocation();
@@ -171,28 +179,39 @@ export const TicketDistribution: React.FC<TicketDistributionProps> = ({
 
       // 判斷分票邏輯
       let hasDistributedTickets = false;
+      const distributedMembers: string[] = [];
+
       if (membersResponse && membersResponse.docs) {
         membersResponse.docs.forEach((member: any) => {
           if (member.orders && member.orders.length > 0) {
             member.orders.forEach((order: any) => {
-              if (order.tickets && order.tickets.length > 0) {
-                const distributedTickets = order.tickets.filter(
-                  (ticket: any) =>
-                    ticket.isRedeemed && ticket.owner !== ticket.user
-                );
+              if (!order.tickets?.length) return;
 
-                if (distributedTickets.length > 0) {
-                  hasDistributedTickets = true;
-                  alert(
-                    `會員 ${member.email} 有 ${distributedTickets.length} 張分票:`
-                  );
-                }
+              const isCurrentUser = user.email === member.email;
+              const distributedTickets = order.tickets.filter(
+                (ticket: any) =>
+                  ticket.isRedeemed &&
+                  (isCurrentUser
+                    ? ticket.owner === ticket.user
+                    : ticket.owner !== ticket.user)
+              );
+
+              if (
+                distributedTickets.length > 0 &&
+                !distributedMembers.includes(member.email)
+              ) {
+                hasDistributedTickets = true;
+                distributedMembers.push(member.email);
               }
             });
           }
         });
-      }
 
+        // 統一顯示已取票會員
+        if (distributedMembers.length > 0) {
+          alert(`以下會員已取票：\n${distributedMembers.join('\n')}`);
+        }
+      }
       // 如果分票邏輯檢查通過，打開確認 dialog
       if (!hasDistributedTickets) {
         setTicketDistributionDialogOpen(true);
@@ -399,6 +418,7 @@ export const TicketDistribution: React.FC<TicketDistributionProps> = ({
         confirmText="確定分票"
         cancelText="取消"
         className="ticket-distribution-dialog"
+        contentClassName="p-0"
         onConfirm={handleDialogConfirm}
         onCancel={handleTicketDistributionCancel}
       >

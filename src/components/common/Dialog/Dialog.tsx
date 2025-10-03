@@ -14,6 +14,7 @@ interface DialogProps {
   onCancel?: () => void;
   showCloseButton?: boolean;
   className?: string;
+  contentClassName?: string;
   requireScrollToBottom?: boolean; // 新增：是否需要滾動到底部才能確認
 }
 
@@ -30,6 +31,7 @@ const Dialog: React.FC<DialogProps> = ({
   showCloseButton = true,
   className = '',
   requireScrollToBottom = false,
+  contentClassName = '',
   isShowButton = true, // 是否顯示確認和取消按鈕
 }) => {
   const [canConfirm, setCanConfirm] = React.useState(!requireScrollToBottom);
@@ -131,7 +133,7 @@ const Dialog: React.FC<DialogProps> = ({
 
         {/* 內容區域 */}
         <div
-          className="dialog-content"
+          className={`dialog-content ${contentClassName}`}
           ref={contentRef}
           onScroll={handleScroll}
           style={{ marginBottom: isShowButton ? '0' : '40px' }}

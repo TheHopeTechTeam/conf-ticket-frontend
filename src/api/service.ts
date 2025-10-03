@@ -1,4 +1,5 @@
 import { ROUTES } from '../constants/routes';
+import { errorHandler } from '../utils/errorHandler';
 
 class FetchService {
   private baseURL: string;
@@ -71,7 +72,7 @@ class FetchService {
         try {
           const errorData = await response.json();
 
-          // 統一在這裡 alert 錯誤訊息
+          // 統一在這裡使用 WarnDialog 顯示錯誤訊息
           if (errorData.message && Array.isArray(errorData.message)) {
             // 處理 message 陣列格式的錯誤
             const errorMessages = errorData.message
@@ -80,16 +81,16 @@ class FetchService {
                   err.message
               )
               .join('\n');
-            alert(errorMessages);
+            errorHandler.showError(errorMessages);
           } else if (errorData.errors) {
             // 處理欄位驗證錯誤格式
             const errorMessages = errorData.errors
               .map((err: { field: string; message: string }) => err.message)
               .join('\n');
-            alert(errorMessages);
+            errorHandler.showError(errorMessages);
           } else if (!errorData.success) {
             // 處理一般錯誤格式
-            alert(errorData.message);
+            errorHandler.showError(errorData.message);
           }
 
           const error = new Error(

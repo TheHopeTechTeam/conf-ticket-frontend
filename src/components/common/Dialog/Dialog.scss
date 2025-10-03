@@ -192,3 +192,30 @@
     }
   }
 }
+
+.warn-dialog {
+  .warn-dialog-content {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+
+    .warn-dialog-header {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 40px;
+
+      .warn-icon {
+        margin: 0 auto;
+      }
+    }
+
+    .warn-dialog-info {
+      text-align: center;
+    }
+  }
+}
+
+.p-0 {
+  padding: 0 !important;
+}
