@@ -119,6 +119,8 @@ export const usePaymentMethods = (
       countryCode: 'TW',
     });
 
+    console.log(import.meta.env.VITE_APPLE_MERCHANT_ID);
+
     // 設定付款請求但不立即觸發
     const paymentRequest = {
       supportedNetworks: SUPPORTED_NETWORKS.COMMON,
@@ -161,14 +163,25 @@ export const usePaymentMethods = (
     // 立即滾動到頂部
     window.scrollTo({ top: 0, behavior: 'smooth' });
 
-    // 只有在用戶點擊時才獲取 prime 並處理付款
+    // 在 usePaymentMethods.ts:167-176 的地方加強錯誤處理
     window.TPDirect.paymentRequestApi.getPrime((result: any) => {
       if (result.status === 0) {
         processPayment(result.prime).catch(error => {
           console.error('Apple Pay processPayment error:', error);
         });
       } else {
+        // 更詳細的錯誤資訊
         console.error('Apple Pay getPrime error:', result);
+        console.error('Error status:', result.status);
+        console.error('Error message:', result.msg);
+        console.log(import.meta.env.VITE_APPLE_MERCHANT_ID);
+
+        // 根據不同錯誤給出不同提示
+        if (result.status === 403) {
+          alert('Apple Pay 服務暫時無法使用，請嘗試其他付款方式');
+        } else {
+          alert('Apple Pay 付款失敗，請重試或選擇其他付款方式');
+        }
         setPaymentStatus('error');
       }
     });
