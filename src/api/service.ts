@@ -83,11 +83,20 @@ class FetchService {
               .join('\n');
             errorHandler.showError(errorMessages);
           } else if (errorData.errors) {
-            // 處理欄位驗證錯誤格式
-            const errorMessages = errorData.errors
-              .map((err: { field: string; message: string }) => err.message)
-              .join('\n');
-            errorHandler.showError(errorMessages);
+            // 處理 errors 陣列格式的錯誤
+            if (Array.isArray(errorData.errors)) {
+              if (typeof errorData.errors[0] === 'string') {
+                // 處理字串陣列格式：["error message 1", "error message 2"]
+                const errorMessages = errorData.errors.join('\n');
+                errorHandler.showError(errorMessages);
+              } else {
+                // 處理物件陣列格式：[{field: "name", message: "error"}]
+                const errorMessages = errorData.errors
+                  .map((err: { field: string; message: string }) => err.message)
+                  .join('\n');
+                errorHandler.showError(errorMessages);
+              }
+            }
           } else if (!errorData.success) {
             // 處理一般錯誤格式
             errorHandler.showError(errorData.message);
