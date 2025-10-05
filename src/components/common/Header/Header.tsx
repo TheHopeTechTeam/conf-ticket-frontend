@@ -22,7 +22,7 @@ export const Header = () => {
     <>
       <header className="header">
         <img
-          src="/images/logo.png"
+          src="/images/logo.svg?v=2"
           alt=""
           onClick={() => navigate(ROUTES.HOME)}
           className="cursor-pointer"

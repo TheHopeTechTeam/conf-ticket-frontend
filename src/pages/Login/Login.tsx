@@ -141,7 +141,6 @@ export const Login: React.FC = () => {
             </p>
             <div className="form-label">
               <label htmlFor="email">電子郵件</label>
-              <p className="label-invaild-text">必填</p>
             </div>
             <input
               id="email"

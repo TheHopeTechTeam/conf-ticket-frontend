@@ -1,5 +1,6 @@
 .login-form {
   max-width: 426px;
+  font-family: 'Noto Sans TC';
 
   @media screen and (max-width: 768px) {
     max-width: 353px;
@@ -23,6 +24,7 @@
         font-weight: 600;
         color: #3c5464;
       }
+
       display: flex;
       flex-direction: column;
       gap: 32px;

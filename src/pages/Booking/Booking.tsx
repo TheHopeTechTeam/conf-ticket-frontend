@@ -233,39 +233,6 @@ export const Booking: React.FC = () => {
   const handleNextStep = async () => {
     const ticketInfo = getSelectedTickets();
 
-    // 收集所有表單中的 email
-    const emailsToCheck: string[] = [];
-    Object.values(ticketInfo.groupPassFormData).forEach(formDataArray => {
-      formDataArray.forEach(formData => {
-        if (formData.email) {
-          emailsToCheck.push(formData.email);
-        }
-      });
-    });
-
-    // 如果有 email 需要檢查，先檢查是否有重複資料
-    if (emailsToCheck.length > 0) {
-      try {
-        showLoading('檢查會員資料中...');
-        const response = await apiService.members.getMembers(emailsToCheck);
-
-        if (response.docs && response.docs.length > 0) {
-          // 有重複資料，顯示重複的 email
-          const duplicateEmails = response.docs
-            .map((member: any) => member.email)
-            .join(', ');
-          hideLoading();
-          alert(`以下 email 已存在重複資料：${duplicateEmails}`);
-          return; // 不繼續執行
-        }
-      } catch (error) {
-        hideLoading();
-        console.error('檢查會員資料失敗:', error);
-        alert('檢查會員資料時發生錯誤，請稍後再試');
-        return;
-      }
-    }
-
     // 沒有重複資料，繼續執行原本的邏輯
     hideLoading();
     // 將票券資訊存入 sessionStorage

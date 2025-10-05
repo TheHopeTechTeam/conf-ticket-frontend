@@ -12,6 +12,11 @@
   box-sizing: border-box;
   margin: 0 auto;
 
+  &:hover {
+    background: #E1B225;
+    color: #FFF;
+  }
+
   &:disabled {
     opacity: 0.4;
     cursor: not-allowed;
@@ -24,6 +29,11 @@
   background: #ffcc32;
   color: #000;
 
+  &:hover {
+    background: #E1B225;
+    color: #FFF;
+  }
+
   &.disabled {
     opacity: 0.4;
     cursor: not-allowed;
@@ -35,6 +45,11 @@
 .cancel-btn {
   background: #3c5464;
   color: #fff;
+
+  &:hover {
+    background: #0C1114;
+    color: #ECEEF0;
+  }
 }
 
 @media screen and (max-width: 768px) {

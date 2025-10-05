@@ -8,12 +8,17 @@
     background: #ffcc32;
     text-align: center;
     color: #000;
-    font-family: Inter;
+    font-family: 'Noto Sans TC';
     font-size: 16px;
     font-weight: 600;
     line-height: 21px;
     padding: 7px 0;
     border-radius: 12px 12px 0 0;
+
+    &:hover {
+      background: #E1B225;
+      color: #FFF;
+    }
   }
 
   .ticket-card-content {
@@ -43,7 +48,7 @@
 
           .year {
             color: #000;
-            font-family: Inter;
+            font-family: 'Noto Sans TC';
             font-size: 11px;
             font-style: normal;
             font-weight: 600;
@@ -56,7 +61,7 @@
 
             .date {
               color: #000;
-              font-family: Inter;
+              font-family: 'Noto Sans TC';
               font-size: 30px;
               font-style: normal;
               font-weight: 600;
@@ -70,7 +75,7 @@
 
               p {
                 color: #000;
-                font-family: Inter;
+                font-family: 'Noto Sans TC';
                 font-size: 13px;
                 font-style: normal;
                 font-weight: 600;
@@ -111,7 +116,7 @@
 
           .number {
             color: #000;
-            font-family: Inter;
+            font-family: 'Noto Sans TC';
             font-size: 24px;
             font-style: normal;
             font-weight: 600;
@@ -134,7 +139,7 @@
 
           .number {
             color: #000;
-            font-family: Inter;
+            font-family: 'Noto Sans TC';
             font-size: 16px;
             font-style: normal;
             font-weight: 600;

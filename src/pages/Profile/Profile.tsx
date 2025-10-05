@@ -109,6 +109,16 @@ export const Profile: React.FC = () => {
     setUserTermsDialogOpen(false);
   };
 
+  const handleUserTermsCheckboxChange = () => {
+    if (!isUserTermsChecked) {
+      // 當要勾選時，先開啟 dialog
+      setUserTermsDialogOpen(true);
+    } else {
+      // 當要取消勾選時，直接取消
+      setUserTermsChecked(false);
+    }
+  };
+
   const handlePrivacyPolicyConfirm = () => {
     setPrivacyPolicyCheckBoxDisabled(false);
     setPrivacyPolicyDialogOpen(false);
@@ -117,6 +127,16 @@ export const Profile: React.FC = () => {
 
   const handlePrivacyPolicyCancel = () => {
     setPrivacyPolicyDialogOpen(false);
+  };
+
+  const handlePrivacyPolicyCheckboxChange = () => {
+    if (!isPrivacyPolicyChecked) {
+      // 當要勾選時，先開啟 dialog
+      setPrivacyPolicyDialogOpen(true);
+    } else {
+      // 當要取消勾選時，直接取消
+      setPrivacyPolicyChecked(false);
+    }
   };
 
   // 儲存個人檔案
@@ -368,7 +388,7 @@ export const Profile: React.FC = () => {
                 id="user-terms"
                 disabled={isUserTermsCheckBoxDisabled}
                 checked={isUserTermsChecked}
-                onChange={e => setUserTermsChecked(e.target.checked)}
+                onChange={handleUserTermsCheckboxChange}
               />
               <label htmlFor="user-terms">我已閱讀並同意</label>
               <button
@@ -385,7 +405,7 @@ export const Profile: React.FC = () => {
                 id="privacy-policy"
                 disabled={isPrivacyPolicyCheckBoxDisabled}
                 checked={isPrivacyPolicyChecked}
-                onChange={e => setPrivacyPolicyChecked(e.target.checked)}
+                onChange={handlePrivacyPolicyCheckboxChange}
               />
               <label htmlFor="privacy-policy">我已閱讀並同意</label>
               <button

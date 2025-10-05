@@ -209,7 +209,7 @@ export const GroupPassForm: React.FC<GroupPassFormProps> = ({
               與會者{index + 1}
             </span>
             <svg
-              className={`icon ${openStates[field.id] ? 'arrow-down' : 'arrow-up'}`}
+              className='icon'
               viewBox="0 0 24 24"
               fill="black"
               width="24"
@@ -217,7 +217,7 @@ export const GroupPassForm: React.FC<GroupPassFormProps> = ({
             >
               <path
                 d={
-                  openStates[field.id] ? 'm7 10 5 5 5-5H7z' : 'm7 14 5-5 5 5H7z'
+                  openStates[field.id] ? 'm7 14 5-5 5 5H7z' : 'm7 10 5 5 5-5H7z '
                 }
               />
             </svg>
@@ -228,7 +228,7 @@ export const GroupPassForm: React.FC<GroupPassFormProps> = ({
             <div className="group-pass-form-input">
               <div className="form-item">
                 <div
-                  className={`form-label ${mode === MODE.EDIT ? 'p-l-6' : 'form-record-label'}`}
+                  className={`form-label ${mode !== MODE.EDIT && 'form-record-label'}`}
                 >
                   <label htmlFor={`name-${index}`}>與會者姓名</label>
                 </div>
@@ -262,7 +262,7 @@ export const GroupPassForm: React.FC<GroupPassFormProps> = ({
               </div>
               <div className="form-item">
                 <div
-                  className={`form-label ${mode === MODE.EDIT ? 'p-l-6' : 'form-record-label'}`}
+                  className={`form-label ${mode !== MODE.EDIT && 'form-record-label'}`}
                 >
                   <label htmlFor={`email-${index}`}>電子郵件</label>
                 </div>
@@ -284,15 +284,15 @@ export const GroupPassForm: React.FC<GroupPassFormProps> = ({
                       aria-label="請輸入電子郵件"
                       aria-required
                     />
-                    <p className="form-tip">
-                      請填寫實際使用此票券者的電子郵件，每個電子郵件限購一張
-                      Leadership Pass
-                    </p>
                     {errors.users?.[index]?.email && (
                       <span className="error-message">
                         {errors.users[index].email?.message}
                       </span>
                     )}
+                    <p className="form-tip">
+                      請填寫實際使用此票券者的電子郵件，每個電子郵件限購一張
+                      Leadership Pass
+                    </p>
                   </>
                 ) : (
                   <p className="form-record-item">
@@ -302,7 +302,7 @@ export const GroupPassForm: React.FC<GroupPassFormProps> = ({
               </div>
               <div className="form-item">
                 <div
-                  className={`form-label ${mode === MODE.EDIT ? 'p-l-6' : 'form-record-label'}`}
+                  className={`form-label ${mode !== MODE.EDIT && 'form-record-label'}`}
                 >
                   <label htmlFor={`tel-${index}`}>所屬教會電話</label>
                 </div>
@@ -338,7 +338,7 @@ export const GroupPassForm: React.FC<GroupPassFormProps> = ({
             <div className="group-pass-form-input">
               <div className="form-item">
                 <div
-                  className={`form-label ${mode === MODE.EDIT ? 'p-l-6' : 'form-record-label'}`}
+                  className={`form-label ${mode !== MODE.EDIT && 'form-record-label'}`}
                 >
                   <label htmlFor={`location-${index}`}>所屬教會名稱</label>
                 </div>
@@ -372,7 +372,7 @@ export const GroupPassForm: React.FC<GroupPassFormProps> = ({
               </div>
               <div className="form-item">
                 <div
-                  className={`form-label ${mode === MODE.EDIT ? 'p-l-6' : 'form-record-label'}`}
+                  className={`form-label ${mode !== MODE.EDIT && 'form-record-label'}`}
                 >
                   <label htmlFor={`role-${index}`}>所屬教會身份</label>
                 </div>

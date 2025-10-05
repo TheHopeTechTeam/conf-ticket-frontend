@@ -15,8 +15,7 @@
   }
 
   &:focus {
-    border-color: #3b82f6;
-    box-shadow: 0 0 0 2px #3b82f6;
+    border-color: #000000;
   }
 
   &:disabled {
@@ -39,7 +38,6 @@
   color: #ee1b0a;
   font-size: 14px;
   margin-top: 4px;
-  padding-left: 6px;
   display: block;
 }
 
@@ -60,8 +58,7 @@
   }
 
   &:focus {
-    border-color: #3b82f6;
-    box-shadow: 0 0 0 2px #3b82f6;
+    border-color: #000000;
   }
 
   &:disabled {
@@ -84,6 +81,5 @@
   color: #ee1b0a;
   font-size: 14px;
   margin-top: 4px;
-  padding-left: 6px;
   display: block;
 }

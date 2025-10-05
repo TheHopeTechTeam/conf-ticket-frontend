@@ -14,15 +14,7 @@ import { ROUTES } from '../../constants/routes';
 import { useAuthContext } from '../../contexts/AuthContext';
 import './TicketDistribution.scss';
 
-/*************  ✨ Windsurf Command ⭐  *************/
-/**
- * TicketDistribution is a component that allows users to fill in ticket recipient information
- * and then submit the information to the server to distribute the tickets.
- *
- * @param {TicketInfo} ticketInfo - The ticket information object that contains the ticket type, ticket count, and use date.
- * @returns {JSX.Element} - The TicketDistribution component.
- */
-/*******  8d9e1d3e-53c3-4b96-a5b3-26917a98915d  *******/ export const TicketDistribution: React.FC<
+export const TicketDistribution: React.FC<
   TicketDistributionProps
 > = ({ ticketInfo }) => {
   const { user } = useAuthContext();
@@ -367,9 +359,8 @@ import './TicketDistribution.scss';
 
           <div className="distribution-footer">
             <button
-              className={`btn send-btn ${
-                !hasValidEmail || !hasSelectedRecipients ? 'disabled' : ''
-              }`}
+              className={`btn send-btn ${!hasValidEmail || !hasSelectedRecipients ? 'disabled' : ''
+                }`}
               type="button"
               disabled={!hasValidEmail || !hasSelectedRecipients}
               onClick={handleTicketDistributionConfirm}
