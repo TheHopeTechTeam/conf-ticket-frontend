@@ -24,8 +24,9 @@ export const WarnDialog: React.FC<WarnDialogProps> = ({
       className="warn-dialog"
       contentClassName="p-0"
       onConfirm={onConfirm}
-      showCloseButton={false}
       isShowButton={isShowButton}
+      isShowCancelButton={false}
+      requireScrollToBottom={true}
     >
       <div className="warn-dialog-content">
         <div className="warn-dialog-header">

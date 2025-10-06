@@ -14,11 +14,6 @@
     line-height: 21px;
     padding: 7px 0;
     border-radius: 12px 12px 0 0;
-
-    &:hover {
-      background: #E1B225;
-      color: #FFF;
-    }
   }
 
   .ticket-card-content {
@@ -39,7 +34,7 @@
         padding: 10px 16px;
         align-items: center;
         justify-content: space-between;
-        background-color: #ECEEF0;
+        background-color: #eceef0;
 
         .ticket-card-info-start {
           display: flex;
@@ -200,7 +195,7 @@
 
     /* 當開啟時改變背景顏色 */
     &[open] {
-      background-color: #F2F2F2;
+      background-color: #f2f2f2;
     }
 
     /* 預設顯示加號，隱藏減號 */
@@ -258,14 +253,14 @@
       .title {
         font-size: 16px;
         font-weight: 600;
-        color: #3C5464;
+        color: #3c5464;
       }
 
       .icon {
         width: 20px;
         height: 20px;
         transition: transform 0.3s ease;
-        color: #3C5464;
+        color: #3c5464;
         padding-top: 1px;
       }
     }
@@ -297,48 +292,48 @@
 
 .ticket-refund-card-container {
   .ticket-card-title {
-    background: #D2D4D5 !important;
-    color: #777F82 !important;
+    background: #d2d4d5 !important;
+    color: #777f82 !important;
   }
 
   .ticket-card-content {
     .ticket-card-info {
       .ticket-card-info-time {
-        background-color: #E8EAEA !important;
+        background-color: #e8eaea !important;
 
         .ticket-card-info-start {
           .year {
-            color: #777F82 !important;
+            color: #777f82 !important;
           }
 
           .ticket-card-info-date {
             .date {
-              color: #777F82 !important;
+              color: #777f82 !important;
             }
 
             .ticket-card-info-day {
               p {
-                color: #777F82 !important;
+                color: #777f82 !important;
               }
             }
           }
         }
 
         .ticket-card-info-line {
-          background: #777F82 !important;
+          background: #777f82 !important;
         }
       }
 
       .ticket-card-info-quantity-order {
-        background-color: #F2F2F2;
+        background-color: #f2f2f2;
 
         .ticket-card-info-quantity-item {
           .quantity {
-            color: #777F82;
+            color: #777f82;
           }
 
           .number {
-            color: #777F82;
+            color: #777f82;
           }
         }
 
@@ -348,7 +343,7 @@
           }
 
           .number {
-            color: #777F82;
+            color: #777f82;
           }
         }
       }

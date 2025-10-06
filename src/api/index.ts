@@ -40,9 +40,9 @@ export const membersApi = {
   },
 
   getMembersByEmail: async (emails: string[], filterByRole: boolean = true) => {
-    const baseQuery = `where[or][0][email][in]=${emails.join(',')}`;
+    const baseQuery = `where[and][1][email][in]=${emails.join(',')}`;
     const roleFilter = filterByRole
-      ? '&where[and][0][role][in]=pastor,senior-pastor'
+      ? '&where[and][0][role][in]=pastor,senior-pastor,minister,ministry-leader,seminarian'
       : '';
     return await httpClient.get(`/v1/members?${baseQuery}${roleFilter}`);
   },

@@ -16,6 +16,7 @@ interface DialogProps {
   className?: string;
   contentClassName?: string;
   requireScrollToBottom?: boolean; // 新增：是否需要滾動到底部才能確認
+  isShowCancelButton?: boolean;
 }
 
 const Dialog: React.FC<DialogProps> = ({
@@ -33,6 +34,7 @@ const Dialog: React.FC<DialogProps> = ({
   requireScrollToBottom = false,
   contentClassName = '',
   isShowButton = true, // 是否顯示確認和取消按鈕
+  isShowCancelButton = true,
 }) => {
   const [canConfirm, setCanConfirm] = React.useState(!requireScrollToBottom);
   const contentRef = React.useRef<HTMLDivElement>(null);
@@ -151,9 +153,11 @@ const Dialog: React.FC<DialogProps> = ({
             >
               {confirmText}
             </button>
-            <button className="btn cancel-btn" onClick={handleCancel}>
-              {cancelText}
-            </button>
+            {isShowCancelButton && (
+              <button className="btn cancel-btn" onClick={handleCancel}>
+                {cancelText}
+              </button>
+            )}
           </div>
         )}
       </div>
