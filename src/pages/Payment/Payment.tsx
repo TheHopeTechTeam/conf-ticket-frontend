@@ -36,10 +36,6 @@ export const Payment: React.FC = () => {
   const [isWarnDialogOpen, setIsWarnDialogOpen] = useState(false);
   const [warnMessage, setWarnMessage] = useState('');
 
-  // 滾動至頂部
-  const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
   const [creditCardStatus, setCreditCardStatus] = useState<CreditCardStatus>({
     number: '',
     expiry: '',
@@ -173,7 +169,6 @@ export const Payment: React.FC = () => {
         });
 
         hideLoading();
-        scrollToTop();
         setPaymentStatus(STATUS.SUCCESS);
         sessionStorage.removeItem('ticketOrderData');
       } catch (error) {

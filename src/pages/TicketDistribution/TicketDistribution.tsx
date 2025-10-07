@@ -23,10 +23,6 @@ export const TicketDistribution: React.FC<TicketDistributionProps> = ({
   const [distributionStatus, setDistributionStatus] = useState<
     'form' | 'success' | 'error'
   >(STATUS.FORM);
-  // 滾動至頂部
-  const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
 
   // 從路由狀態或 props 獲取票券資訊
   const currentTicketInfo: TicketInfo = useMemo(() => {
@@ -233,7 +229,6 @@ export const TicketDistribution: React.FC<TicketDistributionProps> = ({
 
       // 調用分票 API
       await apiService.tickets.postTicketsSplit(splitData);
-      scrollToTop();
       // 分票成功，關閉 dialog 並顯示成功頁面
       setTicketDistributionDialogOpen(false);
       setDistributionStatus(STATUS.SUCCESS);
@@ -241,7 +236,6 @@ export const TicketDistribution: React.FC<TicketDistributionProps> = ({
       console.error('分票 API 失敗:', error);
       // 分票失敗，關閉 dialog 並顯示錯誤頁面
       setTicketDistributionDialogOpen(false);
-      scrollToTop();
       setDistributionStatus(STATUS.ERROR);
     }
   };

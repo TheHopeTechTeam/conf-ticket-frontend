@@ -22,11 +22,6 @@ export const Refund: React.FC = () => {
     return location.state?.ticketInfo;
   }, [location.state]);
 
-  // 滾動至頂部
-  const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
-
   // 如果沒有票券資訊，導回票券頁面
   if (!currentTicketInfo) {
     navigate(ROUTES.TICKETS);
@@ -57,13 +52,11 @@ export const Refund: React.FC = () => {
     try {
       // 調用退票 API
       await ordersApi.postOrdersRefund(currentTicketInfo.orderNumber);
-      scrollToTop();
       // 退票成功
       setRefundStatus(STATUS.SUCCESS);
     } catch (error) {
       console.error('退票 API 失敗:', error);
       // 錯誤訊息已由 service.ts 統一處理和顯示
-      scrollToTop();
       // 退票失敗，顯示錯誤頁面
       setRefundStatus(STATUS.ERROR);
     }

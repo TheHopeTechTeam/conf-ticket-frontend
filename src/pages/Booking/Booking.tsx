@@ -33,10 +33,6 @@ export const Booking: React.FC = () => {
   const navigate = useNavigate();
   const { showLoading, hideLoading } = useLoading();
   const [ticketTypes, setTicketTypes] = useState<TicketInfo[]>([]);
-  // 滾動至頂部
-  const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
 
   // 載入票券類型
   useEffect(() => {
@@ -284,8 +280,6 @@ export const Booking: React.FC = () => {
     hideLoading();
     // 將票券資訊存入 sessionStorage
     sessionStorage.setItem('ticketOrderData', JSON.stringify(ticketInfo));
-
-    scrollToTop();
 
     // 導航到付款頁面
     navigate(ROUTES.PAYMENT);

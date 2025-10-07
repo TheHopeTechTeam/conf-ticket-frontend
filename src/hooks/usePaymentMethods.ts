@@ -21,10 +21,6 @@ export const usePaymentMethods = (
   setWarnMessage: (message: string) => void,
   setIsWarnDialogOpen: (isOpen: boolean) => void
 ) => {
-  // 滾動至頂部
-  const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
   const { showLoading, hideLoading } = useLoading();
   const processPayment = useCallback(
     async (prime: string) => {
@@ -51,13 +47,11 @@ export const usePaymentMethods = (
           })),
         });
         hideLoading();
-        scrollToTop();
         setPaymentStatus(STATUS.SUCCESS);
         sessionStorage.removeItem('ticketOrderData');
       } catch (error) {
         hideLoading();
         console.error('Payment failed:', error);
-        scrollToTop();
         setPaymentStatus(STATUS.ERROR);
       }
     },
@@ -95,9 +89,6 @@ export const usePaymentMethods = (
 
   const setupGooglePay = useCallback(() => {
     if (!paymentData) return;
-
-    // 立即滾動到頂部
-    window.scrollTo({ top: 0, behavior: 'smooth' });
 
     window.TPDirect.googlePay.getPrime(function (err: any, prime: any) {
       if (err) {
@@ -171,9 +162,6 @@ export const usePaymentMethods = (
   const setupApplePay = useCallback(() => {
     if (!paymentData) return;
 
-    // 立即滾動到頂部
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-
     // 在 usePaymentMethods.ts:167-176 的地方加強錯誤處理
     window.TPDirect.paymentRequestApi.getPrime((result: any) => {
       if (result.status === 0) {
@@ -226,9 +214,6 @@ export const usePaymentMethods = (
 
   const setupSamsungPay = useCallback(() => {
     if (!paymentData) return;
-
-    // 立即滾動到頂部
-    window.scrollTo({ top: 0, behavior: 'smooth' });
 
     window.TPDirect.samsungPay.getPrime(function (result: any) {
       if (result.status !== 0) {

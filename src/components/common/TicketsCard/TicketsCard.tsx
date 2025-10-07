@@ -24,10 +24,6 @@ export const TicketsCard: React.FC<TicketProps> = ({
   ticketIds,
 }) => {
   const navigate = useNavigate();
-  // 滾動至頂部
-  const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
 
   return (
     <div
@@ -81,7 +77,6 @@ export const TicketsCard: React.FC<TicketProps> = ({
           <div
             className="distribution"
             onClick={() => {
-              scrollToTop();
               navigate(ROUTES.TICKET_DISTRIBUTION, {
                 state: {
                   ticketInfo: {
@@ -109,7 +104,6 @@ export const TicketsCard: React.FC<TicketProps> = ({
             <p
               className="text"
               onClick={() => {
-                scrollToTop();
                 navigate(ROUTES.REFUND, {
                   state: {
                     ticketInfo: {

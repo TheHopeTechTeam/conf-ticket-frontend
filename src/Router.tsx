@@ -16,6 +16,7 @@ import { Profile } from './pages/Profile/Profile';
 import { Refund } from './pages/Refund/Refund';
 import { TicketDistribution } from './pages/TicketDistribution/TicketDistribution';
 import { Tickets } from './pages/Tickets/Tickets';
+import { ScrollToTop } from './components/common/ScrollToTop/ScrollToTop';
 
 const ExternalRedirect = ({ url }: { url: string }) => {
   window.location.href = url;
@@ -27,6 +28,7 @@ const AppRouter = () => {
     <ErrorProvider>
       <LoadingProvider>
         <Router>
+          <ScrollToTop />
           <Routes>
             {/* 根路徑 - 導向外部網站 */}
             <Route
