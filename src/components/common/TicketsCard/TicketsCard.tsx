@@ -24,6 +24,10 @@ export const TicketsCard: React.FC<TicketProps> = ({
   ticketIds,
 }) => {
   const navigate = useNavigate();
+  // 滾動至頂部
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   return (
     <div
@@ -76,7 +80,8 @@ export const TicketsCard: React.FC<TicketProps> = ({
         <div className="ticket-card-btns">
           <div
             className="distribution"
-            onClick={() =>
+            onClick={() => {
+              scrollToTop();
               navigate(ROUTES.TICKET_DISTRIBUTION, {
                 state: {
                   ticketInfo: {
@@ -90,8 +95,8 @@ export const TicketsCard: React.FC<TicketProps> = ({
                     useDate: '2026.05.01-2026.05.03',
                   },
                 },
-              })
-            }
+              });
+            }}
           >
             <p className="text">前往分票/領票</p>
             <img
@@ -103,7 +108,8 @@ export const TicketsCard: React.FC<TicketProps> = ({
           <div className="refund">
             <p
               className="text"
-              onClick={() =>
+              onClick={() => {
+                scrollToTop();
                 navigate(ROUTES.REFUND, {
                   state: {
                     ticketInfo: {
@@ -117,8 +123,8 @@ export const TicketsCard: React.FC<TicketProps> = ({
                       useDate: '2026.05.01-2026.05.03',
                     },
                   },
-                })
-              }
+                });
+              }}
             >
               申請退票
             </p>

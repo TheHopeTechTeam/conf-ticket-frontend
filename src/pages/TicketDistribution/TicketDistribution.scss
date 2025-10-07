@@ -109,6 +109,10 @@
       .dialog-icon {
         margin: 0 auto;
       }
+
+      .dialog-info {
+        padding: 0 28px;
+      }
     }
 
     .distribution-dialog-info {
@@ -116,6 +120,7 @@
       flex-direction: column;
       gap: 12px;
       align-items: center;
+      padding: 0 28px;
 
       .distribution-dialog-info-item {
         display: flex;

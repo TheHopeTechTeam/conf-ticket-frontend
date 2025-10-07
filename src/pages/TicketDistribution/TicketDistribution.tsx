@@ -1,8 +1,8 @@
 import { useMemo, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { apiService } from '../../api';
-import { ticketApi } from '../../api/index';
 import Dialog from '../../components/common/Dialog/Dialog';
+import { WarnDialog } from '../../components/common/Dialog/WarnDialog';
 import { SuccessOrError } from '../../components/common/SuccessOrError/SuccessOrError';
 import {
   RecipientInfo,
@@ -14,15 +14,19 @@ import { ROUTES } from '../../constants/routes';
 import { useAuthContext } from '../../contexts/AuthContext';
 import './TicketDistribution.scss';
 
-export const TicketDistribution: React.FC<
-  TicketDistributionProps
-> = ({ ticketInfo }) => {
+export const TicketDistribution: React.FC<TicketDistributionProps> = ({
+  ticketInfo,
+}) => {
   const { user } = useAuthContext();
   const navigate = useNavigate();
   const location = useLocation();
   const [distributionStatus, setDistributionStatus] = useState<
     'form' | 'success' | 'error'
   >(STATUS.FORM);
+  // 滾動至頂部
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   // 從路由狀態或 props 獲取票券資訊
   const currentTicketInfo: TicketInfo = useMemo(() => {
@@ -48,6 +52,8 @@ export const TicketDistribution: React.FC<
   // Dialog 狀態
   const [isTicketDistributionDialogOpen, setTicketDistributionDialogOpen] =
     useState(false);
+  const [isWarnDialogOpen, setIsWarnDialogOpen] = useState(false);
+  const [warnMessage, setWarnMessage] = useState('');
 
   // 表單錯誤狀態
   const [formError, setFormError] = useState('');
@@ -179,13 +185,8 @@ export const TicketDistribution: React.FC<
             member.orders.forEach((order: any) => {
               if (!order.tickets?.length) return;
 
-              const isCurrentUser = user.email === member.email;
               const distributedTickets = order.tickets.filter(
-                (ticket: any) =>
-                  ticket.isRedeemed &&
-                  (isCurrentUser
-                    ? ticket.owner === ticket.user
-                    : ticket.owner !== ticket.user)
+                (ticket: any) => ticket.isRedeemed && member.id === ticket.user
               );
 
               if (
@@ -201,7 +202,8 @@ export const TicketDistribution: React.FC<
 
         // 統一顯示已取票會員
         if (distributedMembers.length > 0) {
-          alert(`以下會員已取票：\n${distributedMembers.join('\n')}`);
+          setWarnMessage(`以下會員已取票：\n${distributedMembers.join('\n')}`);
+          setIsWarnDialogOpen(true);
         }
       }
       // 如果分票邏輯檢查通過，打開確認 dialog
@@ -230,8 +232,8 @@ export const TicketDistribution: React.FC<
       };
 
       // 調用分票 API
-      await ticketApi.postTicketsSplit(splitData);
-
+      await apiService.tickets.postTicketsSplit(splitData);
+      scrollToTop();
       // 分票成功，關閉 dialog 並顯示成功頁面
       setTicketDistributionDialogOpen(false);
       setDistributionStatus(STATUS.SUCCESS);
@@ -239,6 +241,7 @@ export const TicketDistribution: React.FC<
       console.error('分票 API 失敗:', error);
       // 分票失敗，關閉 dialog 並顯示錯誤頁面
       setTicketDistributionDialogOpen(false);
+      scrollToTop();
       setDistributionStatus(STATUS.ERROR);
     }
   };
@@ -359,8 +362,9 @@ export const TicketDistribution: React.FC<
 
           <div className="distribution-footer">
             <button
-              className={`btn send-btn ${!hasValidEmail || !hasSelectedRecipients ? 'disabled' : ''
-                }`}
+              className={`btn send-btn ${
+                !hasValidEmail || !hasSelectedRecipients ? 'disabled' : ''
+              }`}
               type="button"
               disabled={!hasValidEmail || !hasSelectedRecipients}
               onClick={handleTicketDistributionConfirm}
@@ -417,7 +421,9 @@ export const TicketDistribution: React.FC<
           <div className="distribution-dialog-header">
             <img className="dialog-icon" src="/images/warn.svg" alt="" />
             <h1>確認取票者資訊</h1>
-            <p>票券一旦分出，將歸戶至取票者的帳戶，無法再次分票或申請退票</p>
+            <p className="dialog-info">
+              票券一旦分出，將歸戶至取票者的帳戶，無法再次分票或申請退票
+            </p>
           </div>
           <div className="distribution-dialog-info">
             {recipients
@@ -438,6 +444,12 @@ export const TicketDistribution: React.FC<
           </div>
         </div>
       </Dialog>
+
+      <WarnDialog
+        isOpen={isWarnDialogOpen}
+        onClose={() => setIsWarnDialogOpen(false)}
+        message={warnMessage}
+      />
     </>
   );
 };

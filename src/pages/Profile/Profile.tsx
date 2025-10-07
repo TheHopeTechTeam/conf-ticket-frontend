@@ -4,6 +4,7 @@ import { apiService } from '../../api';
 import {
   PrivacyPolicyDialog,
   UserTermsDialog,
+  WarnDialog,
 } from '../../components/common/Dialog';
 import { NotificationMessage } from '../../components/common/Notification/Notification';
 import { Select } from '../../components/common/Select/Select';
@@ -37,6 +38,8 @@ export const Profile: React.FC = () => {
   );
   const { showLoading, hideLoading } = useLoading();
   const { user } = useAuthContext();
+  const [isWarnDialogOpen, setIsWarnDialogOpen] = useState(false);
+  const [warnMessage, setWarnMessage] = useState('');
 
   useEffect(() => {
     const loadChurchIdentityOptions = async () => {
@@ -188,7 +191,8 @@ export const Profile: React.FC = () => {
         console.error('Save profile failed:', error);
       }
     } else if (checkboxError) {
-      alert('請先閱讀並同意使用者條款和隱私權保護政策');
+      setWarnMessage('請先閱讀並同意使用者條款和隱私權保護政策');
+      setIsWarnDialogOpen(true);
     }
   };
 
@@ -436,6 +440,11 @@ export const Profile: React.FC = () => {
         onClose={() => setPrivacyPolicyDialogOpen(false)}
         onConfirm={handlePrivacyPolicyConfirm}
         onCancel={handlePrivacyPolicyCancel}
+      />
+      <WarnDialog
+        isOpen={isWarnDialogOpen}
+        onClose={() => setIsWarnDialogOpen(false)}
+        message={warnMessage}
       />
     </div>
   );

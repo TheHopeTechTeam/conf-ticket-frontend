@@ -18,6 +18,7 @@ import { usePaymentState } from '../../hooks/usePaymentState';
 import { useTapPay } from '../../hooks/useTapPay';
 
 import { apiService } from '../../api';
+import { WarnDialog } from '../../components/common/Dialog/WarnDialog';
 import { MAIL, MODE, STATUS } from '../../constants/common';
 import { ROUTES } from '../../constants/routes';
 import { useAuthContext } from '../../contexts/AuthContext';
@@ -32,6 +33,8 @@ export const Payment: React.FC = () => {
     'form' | 'success' | 'error'
   >(STATUS.FORM);
   const { showLoading, hideLoading } = useLoading();
+  const [isWarnDialogOpen, setIsWarnDialogOpen] = useState(false);
+  const [warnMessage, setWarnMessage] = useState('');
 
   // 滾動至頂部
   const scrollToTop = () => {
@@ -63,7 +66,9 @@ export const Payment: React.FC = () => {
     updatePaymentReady,
     setPaymentStatus,
     user,
-    navigate
+    navigate,
+    setWarnMessage,
+    setIsWarnDialogOpen
   );
 
   // 當付款方式改變時，檢查相應付款方法的可用性
@@ -118,9 +123,6 @@ export const Payment: React.FC = () => {
   }, [navigate]);
 
   const handleCreditCardPayment = () => {
-    // 立即滾動到頂部
-    scrollToTop();
-
     if (!paymentData || !user) {
       setPaymentStatus(STATUS.ERROR);
       return;
@@ -140,13 +142,15 @@ export const Payment: React.FC = () => {
       tappayStatus.status.ccv === 0;
 
     if (!isValidCard) {
-      alert('請檢查信用卡資訊是否正確填寫');
+      setWarnMessage('請檢查信用卡資訊是否正確填寫');
+      setIsWarnDialogOpen(true);
       return;
     }
 
     TPDirect.card.getPrime(async (result: any) => {
       if (result.status !== 0) {
-        alert('信用卡資訊驗證失敗，請重新檢查');
+        setWarnMessage('信用卡資訊驗證失敗，請重新檢查');
+        setIsWarnDialogOpen(true);
         setPaymentStatus(STATUS.ERROR);
         return;
       }
@@ -169,7 +173,9 @@ export const Payment: React.FC = () => {
         });
 
         hideLoading();
+        scrollToTop();
         setPaymentStatus(STATUS.SUCCESS);
+        sessionStorage.removeItem('ticketOrderData');
       } catch (error) {
         hideLoading();
         console.error('Payment failed:', error);
@@ -194,6 +200,11 @@ export const Payment: React.FC = () => {
 
   return (
     <>
+      <WarnDialog
+        isOpen={isWarnDialogOpen}
+        onClose={() => setIsWarnDialogOpen(false)}
+        message={warnMessage}
+      />
       {paymentStatus === STATUS.FORM && (
         <div className="form-container payment-container">
           <h1>確認訂單</h1>

@@ -17,8 +17,14 @@ export const usePaymentMethods = (
   updatePaymentReady: (updates: Partial<PaymentReadyState>) => void,
   setPaymentStatus: (status: 'form' | 'success' | 'error') => void,
   user: any,
-  navigate: (route: string) => void
+  navigate: (route: string) => void,
+  setWarnMessage: (message: string) => void,
+  setIsWarnDialogOpen: (isOpen: boolean) => void
 ) => {
+  // 滾動至頂部
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
   const { showLoading, hideLoading } = useLoading();
   const processPayment = useCallback(
     async (prime: string) => {
@@ -45,10 +51,13 @@ export const usePaymentMethods = (
           })),
         });
         hideLoading();
+        scrollToTop();
         setPaymentStatus(STATUS.SUCCESS);
+        sessionStorage.removeItem('ticketOrderData');
       } catch (error) {
         hideLoading();
         console.error('Payment failed:', error);
+        scrollToTop();
         setPaymentStatus(STATUS.ERROR);
       }
     },
@@ -77,11 +86,12 @@ export const usePaymentMethods = (
           updatePaymentReady({ isGooglePayReady: true });
         } else {
           updatePaymentReady({ isGooglePayReady: false });
-          alert('此裝置不支援 Google Pay');
+          setWarnMessage('此裝置不支援 Google Pay');
+          setIsWarnDialogOpen(true);
         }
       }
     );
-  }, [paymentData, updatePaymentReady]);
+  }, [paymentData, updatePaymentReady, setWarnMessage, setIsWarnDialogOpen]);
 
   const setupGooglePay = useCallback(() => {
     if (!paymentData) return;
@@ -92,7 +102,8 @@ export const usePaymentMethods = (
     window.TPDirect.googlePay.getPrime(function (err: any, prime: any) {
       if (err) {
         console.error('Google Pay getPrime error:', err);
-        alert('此裝置不支援 Google Pay');
+        setWarnMessage('此裝置不支援 Google Pay');
+        setIsWarnDialogOpen(true);
         setPaymentStatus(STATUS.ERROR);
         return;
       }
@@ -155,7 +166,7 @@ export const usePaymentMethods = (
         }
       }
     );
-  }, [paymentData, updatePaymentReady]);
+  }, [paymentData, updatePaymentReady, setWarnMessage, setIsWarnDialogOpen]);
 
   const setupApplePay = useCallback(() => {
     if (!paymentData) return;
@@ -178,10 +189,11 @@ export const usePaymentMethods = (
 
         // 根據不同錯誤給出不同提示
         if (result.status === 403) {
-          alert('Apple Pay 服務暫時無法使用，請嘗試其他付款方式');
+          setWarnMessage('Apple Pay 服務暫時無法使用，請嘗試其他付款方式');
         } else {
-          alert('Apple Pay 付款失敗，請重試或選擇其他付款方式');
+          setWarnMessage('Apple Pay 付款失敗，請重試或選擇其他付款方式');
         }
+        setIsWarnDialogOpen(true);
         setPaymentStatus('error');
       }
     });
@@ -207,9 +219,10 @@ export const usePaymentMethods = (
     } catch (error) {
       console.error('Samsung Pay setup error:', error);
       updatePaymentReady({ isSamsungPayReady: false });
-      alert('此裝置不支援 Samsung Pay');
+      setWarnMessage('此裝置不支援 Samsung Pay');
+      setIsWarnDialogOpen(true);
     }
-  }, [paymentData, updatePaymentReady]);
+  }, [paymentData, updatePaymentReady, setWarnMessage, setIsWarnDialogOpen]);
 
   const setupSamsungPay = useCallback(() => {
     if (!paymentData) return;
@@ -220,7 +233,8 @@ export const usePaymentMethods = (
     window.TPDirect.samsungPay.getPrime(function (result: any) {
       if (result.status !== 0) {
         console.error('Samsung Pay error:', result);
-        alert('此裝置不支援 Samsung Pay');
+        setWarnMessage('此裝置不支援 Samsung Pay');
+        setIsWarnDialogOpen(true);
         setPaymentStatus(STATUS.ERROR);
         return;
       }

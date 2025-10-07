@@ -1,14 +1,14 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { apiService } from '../../api';
+import { WarnDialog } from '../../components/common/Dialog/WarnDialog';
 import { GroupPassForm } from '../../components/common/GroupPassForm/GroupPassForm';
 import { TicketItem } from '../../components/common/TicketItem/TicketItem';
 import { MODE } from '../../constants/common';
 import { ROUTES } from '../../constants/routes';
 import { TicketInfo } from '../../constants/tickets';
-import './Booking.scss';
 import { useLoading } from '../../contexts/LoadingContext';
-import { WarnDialog } from '../../components/common/Dialog/WarnDialog';
+import './Booking.scss';
 interface TicketQuantities {
   [key: string]: number;
 }
@@ -33,6 +33,10 @@ export const Booking: React.FC = () => {
   const navigate = useNavigate();
   const { showLoading, hideLoading } = useLoading();
   const [ticketTypes, setTicketTypes] = useState<TicketInfo[]>([]);
+  // 滾動至頂部
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   // 載入票券類型
   useEffect(() => {
@@ -252,13 +256,19 @@ export const Booking: React.FC = () => {
         showLoading('檢查會員資料中...');
         const response = await apiService.members.getMembers(emailsToCheck);
 
-        if (response.docs && response.docs.length > 0) {
-          // 有重複資料，顯示重複的 email
-          const duplicateEmails = response.docs
-            .map((member: any) => member.email)
-            .join(', ');
+        // 找出不在資料庫中的 email（不符合資格的）
+        const existingEmails =
+          response.docs?.map((member: any) => member.email) || [];
+        const invalidEmails = emailsToCheck.filter(
+          email => !existingEmails.includes(email)
+        );
+
+        if (invalidEmails.length > 0) {
+          // 有不符合資格的 email
           hideLoading();
-          setWarnMessage(`以下 email 已存在重複資料：${duplicateEmails}`);
+          setWarnMessage(
+            `以下 email 不屬於主任牧師 牧師 傳道 事工團隊領袖 神學生：${invalidEmails.join(', ')}`
+          );
           setIsWarnDialogOpen(true);
           return; // 不繼續執行
         }
@@ -274,6 +284,8 @@ export const Booking: React.FC = () => {
     hideLoading();
     // 將票券資訊存入 sessionStorage
     sessionStorage.setItem('ticketOrderData', JSON.stringify(ticketInfo));
+
+    scrollToTop();
 
     // 導航到付款頁面
     navigate(ROUTES.PAYMENT);
