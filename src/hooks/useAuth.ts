@@ -65,6 +65,12 @@ export const useAuth = () => {
 
       if (response && response.docs && response.docs.length > 0) {
         hideLoading();
+
+        // 檢查是否有 name，如果沒有則導向 PROFILE 頁面
+        if (!response.docs[0].name && currentPath !== ROUTES.PROFILE) {
+          navigate(ROUTES.PROFILE);
+        }
+
         // 驗證成功
         setAuthState({
           isLoading: false,

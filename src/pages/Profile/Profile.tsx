@@ -26,10 +26,6 @@ export const Profile: React.FC = () => {
   const [isUserTermsDialogOpen, setUserTermsDialogOpen] = React.useState(false);
   const [isPrivacyPolicyDialogOpen, setPrivacyPolicyDialogOpen] =
     React.useState(false);
-  const [isUserTermsCheckBoxDisabled, setUserTermsCheckBoxDisabled] =
-    React.useState(true);
-  const [isPrivacyPolicyCheckBoxDisabled, setPrivacyPolicyCheckBoxDisabled] =
-    React.useState(true);
   const [isUserTermsChecked, setUserTermsChecked] = React.useState(false);
   const [isPrivacyPolicyChecked, setPrivacyPolicyChecked] =
     React.useState(false);
@@ -77,8 +73,6 @@ export const Profile: React.FC = () => {
       }));
       setPrivacyPolicyChecked(Boolean(user.consentedAt));
       setUserTermsChecked(Boolean(user.consentedAt));
-      setPrivacyPolicyCheckBoxDisabled(Boolean(!user.consentedAt));
-      setUserTermsCheckBoxDisabled(Boolean(!user.consentedAt));
     } else {
       setShowNotification('true');
     }
@@ -104,7 +98,6 @@ export const Profile: React.FC = () => {
 
   const handleUserTermsConfirm = () => {
     setUserTermsDialogOpen(false);
-    setUserTermsCheckBoxDisabled(false);
     setUserTermsChecked(true);
   };
 
@@ -123,7 +116,6 @@ export const Profile: React.FC = () => {
   };
 
   const handlePrivacyPolicyConfirm = () => {
-    setPrivacyPolicyCheckBoxDisabled(false);
     setPrivacyPolicyDialogOpen(false);
     setPrivacyPolicyChecked(true);
   };
@@ -390,7 +382,6 @@ export const Profile: React.FC = () => {
               <input
                 type="checkbox"
                 id="user-terms"
-                disabled={isUserTermsCheckBoxDisabled}
                 checked={isUserTermsChecked}
                 onChange={handleUserTermsCheckboxChange}
               />
@@ -407,7 +398,6 @@ export const Profile: React.FC = () => {
               <input
                 type="checkbox"
                 id="privacy-policy"
-                disabled={isPrivacyPolicyCheckBoxDisabled}
                 checked={isPrivacyPolicyChecked}
                 onChange={handlePrivacyPolicyCheckboxChange}
               />

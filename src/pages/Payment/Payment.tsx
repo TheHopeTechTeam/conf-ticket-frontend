@@ -124,12 +124,6 @@ export const Payment: React.FC = () => {
       return;
     }
 
-    // 檢查用戶是否有完整資料，如果沒有先導向 profile 頁面
-    if (!user.name) {
-      navigate(ROUTES.PROFILE);
-      return;
-    }
-
     // 檢查信用卡欄位狀態
     const tappayStatus = TPDirect.card.getTappayFieldsStatus();
     const isValidCard =

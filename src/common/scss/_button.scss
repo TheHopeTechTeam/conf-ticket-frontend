@@ -1,6 +1,6 @@
 .btn {
   width: 224px;
-  padding: 10px 24px 10px 24px;
+  padding: 8px 24px 10px 24px;
   border-radius: 44px;
   background: #ffcc32;
   color: #090c0e;
@@ -13,8 +13,8 @@
   margin: 0 auto;
 
   &:hover {
-    background: #E1B225;
-    color: #FFF;
+    background: #e1b225;
+    color: #fff;
   }
 
   &:disabled {
@@ -30,8 +30,8 @@
   color: #000;
 
   &:hover {
-    background: #E1B225;
-    color: #FFF;
+    background: #e1b225;
+    color: #fff;
   }
 
   &.disabled {
@@ -47,8 +47,8 @@
   color: #fff;
 
   &:hover {
-    background: #0C1114;
-    color: #ECEEF0;
+    background: #0c1114;
+    color: #eceef0;
   }
 }
 
