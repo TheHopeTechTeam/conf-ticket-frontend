@@ -71,7 +71,10 @@ export const GroupPassForm: React.FC<GroupPassFormProps> = ({
         const response = await apiService.members.getMembersRoles();
         const filteredResponse = (response || []).filter(
           (item: { label: string; value: string }) =>
-            item.value !== 'staff' && item.value !== 'default'
+            item.value !== 'pastor' &&
+            item.value !== 'staff' &&
+            item.value !== 'seminarian' &&
+            item.value !== 'default'
         );
         const transformedOptions = filteredResponse.map(
           (item: { label: string; value: string }) => ({
@@ -209,7 +212,7 @@ export const GroupPassForm: React.FC<GroupPassFormProps> = ({
               與會者{index + 1}
             </span>
             <svg
-              className='icon'
+              className="icon"
               viewBox="0 0 24 24"
               fill="black"
               width="24"
@@ -217,7 +220,9 @@ export const GroupPassForm: React.FC<GroupPassFormProps> = ({
             >
               <path
                 d={
-                  openStates[field.id] ? 'm7 14 5-5 5 5H7z' : 'm7 10 5 5 5-5H7z '
+                  openStates[field.id]
+                    ? 'm7 14 5-5 5 5H7z'
+                    : 'm7 10 5 5 5-5H7z '
                 }
               />
             </svg>
