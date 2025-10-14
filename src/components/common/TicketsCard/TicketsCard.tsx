@@ -12,6 +12,7 @@ interface TicketProps {
   status?: TicketStatusType;
   user: any[];
   ticketIds?: string[];
+  updatedAt?: string;
 }
 
 export const TicketsCard: React.FC<TicketProps> = ({
@@ -22,8 +23,29 @@ export const TicketsCard: React.FC<TicketProps> = ({
   status,
   user,
   ticketIds,
+  updatedAt,
 }) => {
   const navigate = useNavigate();
+
+  // 格式化日期函數
+  const formatRefundDate = (dateString?: string) => {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `已於 ${year}.${month}.${day} 完成退票手續`;
+  };
+
+  // 檢查是否可以退票（活動開始前十天不能退票）
+  const canRefund = () => {
+    const eventStartDate = new Date('2026-05-01');
+    const today = new Date();
+    const tenDaysBeforeEvent = new Date(eventStartDate);
+    tenDaysBeforeEvent.setDate(eventStartDate.getDate() - 10);
+
+    return today < tenDaysBeforeEvent;
+  };
 
   return (
     <div
@@ -100,24 +122,26 @@ export const TicketsCard: React.FC<TicketProps> = ({
               className="arrow"
             />
           </div>
-          <div className="refund">
+          <div className={`refund ${!canRefund() ? 'disabled' : ''}`}>
             <p
               className="text"
               onClick={() => {
-                navigate(ROUTES.REFUND, {
-                  state: {
-                    ticketInfo: {
-                      ticketType: title,
-                      ticketCount: quantity,
-                      orderNumber: orderNumber,
-                      details: details,
-                      status: status,
-                      user: user,
-                      ticketIds: ticketIds,
-                      useDate: '2026.05.01-2026.05.03',
+                if (canRefund()) {
+                  navigate(ROUTES.REFUND, {
+                    state: {
+                      ticketInfo: {
+                        ticketType: title,
+                        ticketCount: quantity,
+                        orderNumber: orderNumber,
+                        details: details,
+                        status: status,
+                        user: user,
+                        ticketIds: ticketIds,
+                        useDate: '2026.05.01-2026.05.03',
+                      },
                     },
-                  },
-                });
+                  });
+                }
               }}
             >
               申請退票
@@ -132,7 +156,7 @@ export const TicketsCard: React.FC<TicketProps> = ({
       )}
       {status === TICKET_STATUS.REFUNDED && (
         <div className="ticket-card-refund">
-          <p className="refund-text">已於2026.04.30完成退票手續</p>
+          <p className="refund-text">{formatRefundDate(updatedAt)}</p>
         </div>
       )}
       <details className="ticket-card-details">

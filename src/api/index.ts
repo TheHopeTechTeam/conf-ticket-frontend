@@ -83,6 +83,11 @@ export const ticketApi = {
   postTicketsSplit: async (data: TicketSplitRequest) => {
     return await httpClient.post('/v1/tickets/split', data);
   },
+  getTickets: async (id: string) => {
+    return await httpClient.get(
+      `/v1/tickets?where[and][0][user][equals]=${id}&where[and][1][isRedeemed][equals]=true`
+    );
+  },
 };
 
 // 匯出所有 API（向後兼容）
@@ -104,6 +109,7 @@ export const apiService = {
   },
   tickets: {
     postTicketsSplit: ticketApi.postTicketsSplit,
+    getTickets: ticketApi.getTickets,
   },
 };
 

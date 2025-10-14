@@ -19,10 +19,16 @@ export const Tickets = () => {
     TICKET_STATUS.COLLECTED
   );
   const [allOrders, setAllOrders] = useState<any[]>([]);
+  const [collectedTickets, setCollectedTickets] = useState<any[]>([]);
   const { showLoading, hideLoading } = useLoading();
 
   // 根據狀態過濾票券的函數
   const getFilteredTickets = (orders: any[], status: TicketStatusType) => {
+    // 如果是已取票狀態，直接返回從 API 獲取的已取票資料
+    if (status === TICKET_STATUS.COLLECTED) {
+      return collectedTickets;
+    }
+
     // 從所有訂單中提取所有票券
     const allTickets = orders.flatMap(order =>
       order.tickets.map((ticket: any) => ({ ...ticket, order }))
@@ -32,14 +38,6 @@ export const Tickets = () => {
         case TICKET_STATUS.PURCHASED:
           // 已購買：票券所屬訂單完成且票券未取票
           return ticket.order?.status === 'completed' && !ticket.isRedeemed;
-
-        case TICKET_STATUS.COLLECTED:
-          // 已取票：票券所屬訂單完成且票券已取票
-          return (
-            ticket.order?.status === 'completed' &&
-            ticket.isRedeemed &&
-            ticket.user?.id === user?.id
-          );
 
         case TICKET_STATUS.REFUNDED:
           // 退款記錄：票券所屬訂單退款
@@ -74,16 +72,32 @@ export const Tickets = () => {
       if (user?.id) {
         try {
           showLoading('載入票券中...');
-          const response = await apiService.orders.getOrders(user.id);
+
+          // 並行獲取訂單資料和已取票資料
+          const [ordersResponse, ticketsResponse] = await Promise.all([
+            apiService.orders.getOrders(user.id),
+            apiService.tickets.getTickets(user.id),
+          ]);
+
           hideLoading();
-          const orders = response.docs || [];
+
+          const orders = ordersResponse.docs || [];
+          const tickets = ticketsResponse.docs || [];
+
+          console.log(tickets);
+
           setAllOrders(orders);
+          setCollectedTickets(tickets);
 
           // 設定預設 Tab：若已購買有票券則跳到已購買，否則跳到已取票
-          const purchasedTickets = getFilteredTickets(
-            orders,
-            TICKET_STATUS.PURCHASED
+          const allTickets = orders.flatMap((order: any) =>
+            order.tickets.map((ticket: any) => ({ ...ticket, order }))
           );
+          const purchasedTickets = allTickets.filter(
+            (ticket: any) =>
+              ticket.order?.status === 'completed' && !ticket.isRedeemed
+          );
+
           if (purchasedTickets.length > 0) {
             setActiveStatus(TICKET_STATUS.PURCHASED);
           } else {
@@ -93,6 +107,7 @@ export const Tickets = () => {
           hideLoading();
           console.error('Failed to fetch orders:', error);
           setAllOrders([]);
+          setCollectedTickets([]);
         }
       }
     };
@@ -230,6 +245,7 @@ export const Tickets = () => {
                         details={ticketDetails}
                         status={activeStatus}
                         ticketIds={ticketIds}
+                        updatedAt={order?.updatedAt}
                         user={ticketGroup.map(ticket => ticket.user)}
                       />
                     );

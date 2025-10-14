@@ -63,57 +63,11 @@ export const Booking: React.FC = () => {
     loadTicketTypes();
   }, []);
 
-  // 初始化時檢查是否有儲存的資料（從 sessionStorage）
-  const initializeFromStorage = () => {
-    const storedData = sessionStorage.getItem('ticketOrderData');
-    if (storedData) {
-      try {
-        const data = JSON.parse(storedData);
-        const quantities: TicketQuantities = {};
-        const formData: TicketFormData = {};
-
-        // 從儲存的票券資料重建數量狀態
-        data.tickets.forEach((ticket: any) => {
-          quantities[ticket.id] = ticket.selectedQuantity;
-        });
-
-        // 還原表單資料（如果存在且是對象格式）
-        if (
-          data.groupPassFormData &&
-          typeof data.groupPassFormData === 'object'
-        ) {
-          Object.keys(data.groupPassFormData).forEach(ticketId => {
-            if (Array.isArray(data.groupPassFormData[ticketId])) {
-              formData[ticketId] = data.groupPassFormData[ticketId];
-            }
-          });
-        }
-
-        return {
-          quantities,
-          formData,
-        };
-      } catch (error) {
-        console.error('解析儲存資料失敗:', error);
-      }
-    }
-
-    // 預設值
-    return {
-      quantities: {},
-      formData: {},
-    };
-  };
-
-  const initialData = initializeFromStorage();
-
   const [ticketQuantities, setTicketQuantities] = useState<TicketQuantities>(
-    initialData.quantities
+    {}
   );
 
-  const [ticketFormData, setTicketFormData] = useState<TicketFormData>(
-    initialData.formData
-  );
+  const [ticketFormData, setTicketFormData] = useState<TicketFormData>({});
   const [ticketValidationStates, setTicketValidationStates] =
     useState<TicketValidationState>({});
   const [isWarnDialogOpen, setIsWarnDialogOpen] = useState(false);
@@ -278,11 +232,11 @@ export const Booking: React.FC = () => {
 
     // 沒有重複資料，繼續執行原本的邏輯
     hideLoading();
-    // 將票券資訊存入 sessionStorage
-    sessionStorage.setItem('ticketOrderData', JSON.stringify(ticketInfo));
 
-    // 導航到付款頁面
-    navigate(ROUTES.PAYMENT);
+    // 導航到付款頁面，直接傳遞票券資訊
+    navigate(ROUTES.PAYMENT, {
+      state: { ticketOrderData: ticketInfo },
+    });
   };
 
   // 檢查所有需要會員資訊的票券的表單是否都有效

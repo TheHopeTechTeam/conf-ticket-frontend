@@ -48,7 +48,6 @@ export const usePaymentMethods = (
         });
         hideLoading();
         setPaymentStatus(STATUS.SUCCESS);
-        sessionStorage.removeItem('ticketOrderData');
       } catch (error) {
         hideLoading();
         console.error('Payment failed:', error);
