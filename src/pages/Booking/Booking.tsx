@@ -51,6 +51,13 @@ export const Booking: React.FC = () => {
             available: ticket.available || 0,
             description: ticket.description || [],
             isMemberInfoRequired: Boolean(ticket.isMemberInfoRequired),
+            bundleSize: ticket.bundleSize || 1,
+            updatedBy: ticket.updatedBy,
+            deletedAt: ticket.deletedAt,
+            deletedBy: ticket.deletedBy,
+            updatedAt: ticket.updatedAt,
+            createdAt: ticket.createdAt,
+            maxTickets: ticket.maxTickets,
           }))
         );
         hideLoading();

@@ -5,6 +5,7 @@ interface QuantitySelectorProps {
   initialValue?: number;
   min?: number;
   max?: number;
+  step?: number; // 每次增減的數量（用於套票）
   onChange?: (value: number) => void;
 }
 
@@ -16,6 +17,7 @@ export const QuantitySelector: React.FC<QuantitySelectorProps> = ({
   initialValue = 0,
   min = 0,
   max = 0,
+  step = 1, // 預設每次增減 1
   onChange,
 }) => {
   const [quantity, setQuantity] = useState(initialValue);
@@ -27,7 +29,7 @@ export const QuantitySelector: React.FC<QuantitySelectorProps> = ({
 
   const handleDecrease = () => {
     if (quantity > min) {
-      const newValue = quantity - 1;
+      const newValue = Math.max(quantity - step, min);
       setQuantity(newValue);
       onChange?.(newValue);
     }
@@ -35,7 +37,7 @@ export const QuantitySelector: React.FC<QuantitySelectorProps> = ({
 
   const handleIncrease = () => {
     if (quantity < max) {
-      const newValue = quantity + 1;
+      const newValue = Math.min(quantity + step, max);
       setQuantity(newValue);
       onChange?.(newValue);
     }
@@ -44,7 +46,9 @@ export const QuantitySelector: React.FC<QuantitySelectorProps> = ({
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!max) return; // 如果 max 為 0 或未定義，則不允許輸入
     const value = parseInt(e.target.value) || 0;
-    if (value >= min && value <= max) {
+
+    // 檢查輸入值是否為 step 的倍數
+    if (value >= min && value <= max && value % step === 0) {
       setQuantity(value);
       onChange?.(value);
     }
@@ -113,4 +117,3 @@ export const QuantitySelector: React.FC<QuantitySelectorProps> = ({
     </div>
   );
 };
-

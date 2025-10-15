@@ -8,7 +8,7 @@
     background: #ffcc32;
     text-align: center;
     color: #000;
-    font-family: 'Noto Sans TC';
+    font-family: 'Inter';
     font-size: 16px;
     font-weight: 600;
     line-height: 21px;
@@ -43,7 +43,7 @@
 
           .year {
             color: #000;
-            font-family: 'Noto Sans TC';
+            font-family: 'Inter';
             font-size: 11px;
             font-style: normal;
             font-weight: 600;
@@ -56,7 +56,7 @@
 
             .date {
               color: #000;
-              font-family: 'Noto Sans TC';
+              font-family: 'Inter';
               font-size: 30px;
               font-style: normal;
               font-weight: 600;
@@ -70,7 +70,7 @@
 
               p {
                 color: #000;
-                font-family: 'Noto Sans TC';
+                font-family: 'Inter';
                 font-size: 13px;
                 font-style: normal;
                 font-weight: 600;
@@ -111,11 +111,11 @@
 
           .number {
             color: #000;
-            font-family: 'Noto Sans TC';
+            font-family: 'Inter';
             font-size: 24px;
             font-style: normal;
             font-weight: 600;
-            margin-bottom: 5px;
+            margin-bottom: 2px;
           }
         }
 
@@ -134,10 +134,11 @@
 
           .number {
             color: #000;
-            font-family: 'Noto Sans TC';
+            font-family: 'Inter';
             font-size: 16px;
             font-style: normal;
             font-weight: 600;
+            padding-bottom: 1px;
           }
         }
       }

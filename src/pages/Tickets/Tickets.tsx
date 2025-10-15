@@ -20,6 +20,9 @@ export const Tickets = () => {
   );
   const [allOrders, setAllOrders] = useState<any[]>([]);
   const [collectedTickets, setCollectedTickets] = useState<any[]>([]);
+  const [ticketTypesMap, setTicketTypesMap] = useState<Map<string, any>>(
+    new Map()
+  );
   const { showLoading, hideLoading } = useLoading();
 
   // 根據狀態過濾票券的函數
@@ -36,8 +39,13 @@ export const Tickets = () => {
     return allTickets.filter(ticket => {
       switch (status) {
         case TICKET_STATUS.PURCHASED:
+          console.log(ticket.order.id);
+
           // 已購買：票券所屬訂單完成且票券未取票
-          return ticket.order?.status === 'completed' && !ticket.isRedeemed;
+          return (
+            (ticket.order?.status === 'completed' && !ticket.isRedeemed) ||
+            (!ticket.user?.consentedAt && ticket.isRedeemed)
+          );
 
         case TICKET_STATUS.REFUNDED:
           // 退款記錄：票券所屬訂單退款
@@ -73,21 +81,31 @@ export const Tickets = () => {
         try {
           showLoading('載入票券中...');
 
-          // 並行獲取訂單資料和已取票資料
-          const [ordersResponse, ticketsResponse] = await Promise.all([
-            apiService.orders.getOrders(user.id),
-            apiService.tickets.getTickets(user.id),
-          ]);
+          // 並行獲取訂單資料、已取票資料和票券類型資料
+          const [ordersResponse, ticketsResponse, ticketTypesResponse] =
+            await Promise.all([
+              apiService.orders.getOrders(user.id),
+              apiService.tickets.getTickets(user.id),
+              apiService.ticketsTypes.getTicketsTypes(),
+            ]);
 
           hideLoading();
 
           const orders = ordersResponse.docs || [];
           const tickets = ticketsResponse.docs || [];
+          console.log(orders, tickets, 'sss');
 
-          console.log(tickets);
+          const ticketTypes = ticketTypesResponse.docs || [];
+
+          // 建立票券類型 Map，key 是票券類型 ID，value 是票券類型資料
+          const typesMap = new Map();
+          ticketTypes.forEach((type: any) => {
+            typesMap.set(type.id, type);
+          });
 
           setAllOrders(orders);
           setCollectedTickets(tickets);
+          setTicketTypesMap(typesMap);
 
           // 設定預設 Tab：若已購買有票券則跳到已購買，否則跳到已取票
           const allTickets = orders.flatMap((order: any) =>
@@ -202,10 +220,6 @@ export const Tickets = () => {
             const filteredTickets = getFilteredTickets(allOrders, activeStatus);
             const groupedTickets = groupTicketsByOrderAndType(filteredTickets);
 
-            console.log('activeStatus:', activeStatus);
-            console.log('filteredTickets:', filteredTickets);
-            console.log('groupedTickets:', groupedTickets);
-
             return filteredTickets.length === 0 ? (
               <>
                 <img
@@ -236,9 +250,21 @@ export const Tickets = () => {
                         (desc: any) => desc.bulletpoint
                       ) || [];
 
+                    // 從 ticketTypesMap 取得票券類型資料
+                    const ticketTypeData = ticketTypesMap.get(ticketType?.id);
+                    const ticketImageUrl =
+                      ticketTypeData?.image?.url || '/images/ticket-sample.png';
+
+                    // 檢查是否有任何一張票已經被分票（已取票且已同意）
+                    const hasDistributedTicket = ticketGroup.some(
+                      ticket => ticket.user?.consentedAt && ticket.isRedeemed
+                    );
+
                     return (
                       <TicketsCard
                         key={`${order?.id}-${ticketType?.id}-${groupIndex}`}
+                        ticketTypeId={ticketType?.id || 'N/A'}
+                        ticketImageUrl={ticketImageUrl}
                         title={ticketType?.name || '票券'}
                         quantity={quantity}
                         orderNumber={order?.id || 'N/A'}
@@ -246,7 +272,10 @@ export const Tickets = () => {
                         status={activeStatus}
                         ticketIds={ticketIds}
                         updatedAt={order?.updatedAt}
-                        user={ticketGroup.map(ticket => ticket.user)}
+                        user={ticketGroup
+                          .map(ticket => ticket.user)
+                          .filter(u => u && typeof u === 'object' && u.email)}
+                        hasDistributedTicket={hasDistributedTicket}
                       />
                     );
                   }

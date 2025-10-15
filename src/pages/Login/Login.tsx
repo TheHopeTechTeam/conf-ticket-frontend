@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { apiService } from '../../api';
-import './Login.scss';
-import { useLoading } from '../../contexts/LoadingContext';
 import { MAIL } from '../../constants/common';
+import { useLoading } from '../../contexts/LoadingContext';
+import './Login.scss';
 
 const OTP_TIMER_KEY = 'otpTimerEndTime';
 const EMAIL_KEY = 'loginEmail';
@@ -135,9 +135,10 @@ export const Login: React.FC = () => {
         // 第一階段：輸入 Email
         <form onSubmit={handleEmailSubmit}>
           <div className="form-block">
-            <h1 className="mb-16">登入/註冊帳戶</h1>
+            <h1 className="mb-16">請登入購票系統</h1>
             <p className="form-description">
-              請輸入您的電子郵件地址，並按下「發送電子郵件」，您將收到來自{MAIL.NOREPLAY_EMAIL}寄送的一次性密碼。
+              請輸入您的電子郵件地址，並按下「發送電子郵件」，您將收到來自
+              {MAIL.NOREPLAY_EMAIL}寄送的一次性密碼。
             </p>
             <div className="form-label">
               <label htmlFor="email">電子郵件</label>

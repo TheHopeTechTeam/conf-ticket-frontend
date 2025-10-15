@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import CreditCard from '../../components/common/CreditCard/CreditCard';
 import { GroupPassForm } from '../../components/common/GroupPassForm/GroupPassForm';
 import PayButton from '../../components/common/PayButton/PayButton';
@@ -28,6 +28,7 @@ import './Payment.scss';
 export const Payment: React.FC = () => {
   const { user } = useAuthContext();
   const navigate = useNavigate();
+  const location = useLocation();
   const [paymentData, setPaymentData] = useState<PaymentData | null>(null);
   const [paymentStatus, setPaymentStatus] = useState<
     'form' | 'success' | 'error'
@@ -100,6 +101,15 @@ export const Payment: React.FC = () => {
   // 載入訂單資料
   useEffect(() => {
     const loadPaymentData = () => {
+      // 先嘗試從 location.state 取得資料
+      const stateData = location.state?.ticketOrderData;
+
+      if (stateData) {
+        setPaymentData(stateData as PaymentData);
+        return;
+      }
+
+      // 向下相容：如果 state 沒有資料，再從 sessionStorage 讀取
       const storedData = sessionStorage.getItem('ticketOrderData');
       if (!storedData) {
         navigate(ROUTES.BOOKING);
@@ -116,7 +126,7 @@ export const Payment: React.FC = () => {
     };
 
     loadPaymentData();
-  }, [navigate]);
+  }, [navigate, location.state]);
 
   const handleCreditCardPayment = () => {
     if (!paymentData || !user) {

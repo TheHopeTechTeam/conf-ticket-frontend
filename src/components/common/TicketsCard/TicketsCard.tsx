@@ -13,6 +13,9 @@ interface TicketProps {
   user: any[];
   ticketIds?: string[];
   updatedAt?: string;
+  ticketTypeId?: string;
+  ticketImageUrl?: string;
+  hasDistributedTicket?: boolean;
 }
 
 export const TicketsCard: React.FC<TicketProps> = ({
@@ -24,6 +27,8 @@ export const TicketsCard: React.FC<TicketProps> = ({
   user,
   ticketIds,
   updatedAt,
+  ticketImageUrl = '/images/ticket-sample.png',
+  hasDistributedTicket = false,
 }) => {
   const navigate = useNavigate();
 
@@ -51,13 +56,21 @@ export const TicketsCard: React.FC<TicketProps> = ({
     <div
       className={`ticket-card-container ${status === TICKET_STATUS.REFUNDED ? 'ticket-refund-card-container' : ''}`}
     >
-      <div className="ticket-card-title">{title}</div>
+      <div className="ticket-card-title">
+        {title}
+        {status === TICKET_STATUS.PURCHASED && user?.length > 0 && (
+          <p>
+            {user.map((u, index) => (
+              <React.Fragment key={u.id || index}>
+                已分給 {u.email} 未取票
+                {index < user.length - 1 && <br />}
+              </React.Fragment>
+            ))}
+          </p>
+        )}
+      </div>
       <div className="ticket-card-content">
-        <img
-          src="/images/ticket-sample.png"
-          alt=""
-          className="ticket-card-pic"
-        />
+        <img src={ticketImageUrl} alt={title} className="ticket-card-pic" />
         <div className="ticket-card-info">
           <div className="ticket-card-info-time">
             <div className="ticket-card-info-start">
@@ -122,11 +135,13 @@ export const TicketsCard: React.FC<TicketProps> = ({
               className="arrow"
             />
           </div>
-          <div className={`refund ${!canRefund() ? 'disabled' : ''}`}>
+          <div
+            className={`refund ${!canRefund() || hasDistributedTicket ? 'disabled' : ''}`}
+          >
             <p
               className="text"
               onClick={() => {
-                if (canRefund()) {
+                if (canRefund() && !hasDistributedTicket) {
                   navigate(ROUTES.REFUND, {
                     state: {
                       ticketInfo: {
@@ -141,10 +156,12 @@ export const TicketsCard: React.FC<TicketProps> = ({
                       },
                     },
                   });
+                } else {
+                  alert('活動開始前十天不開放退票');
                 }
               }}
             >
-              申請退票
+              {hasDistributedTicket ? '已分票不可退' : '申請退票'}
             </p>
             <img
               src="/images/white-arrow-right-icon.svg"
