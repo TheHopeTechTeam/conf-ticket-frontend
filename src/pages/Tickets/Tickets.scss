@@ -105,19 +105,11 @@
   }
 
   .tickets-content-container {
-    margin: 40px auto;
-    display: flex;
-    flex-direction: column;
-    gap: 28px;
-    align-items: center;
+    margin: 48px auto;
+    text-align: center;
 
-    .ticket-pic {
-      width: 100px;
-      height: 100px;
-    }
-
-    p {
-      color: #000;
+    .no-ticket-text {
+      color: #3c5464;
       font-size: 16px;
       font-weight: 600;
     }
@@ -155,6 +147,10 @@
           }
         }
       }
+    }
+
+    .tickets-content-container {
+      margin: 40px auto;
     }
   }
 }

@@ -222,12 +222,7 @@ export const Tickets = () => {
 
             return filteredTickets.length === 0 ? (
               <>
-                <img
-                  src="/images/ticket-sample.png"
-                  alt=""
-                  className="ticket-pic"
-                />
-                <p>{noTicketText()}</p>
+                <p className="no-ticket-text">{noTicketText()}</p>
               </>
             ) : (
               <>
@@ -256,8 +251,12 @@ export const Tickets = () => {
                       ticketTypeData?.image?.url || '/images/ticket-sample.png';
 
                     // 檢查是否有任何一張票已經被分票（已取票且已同意）
-                    const hasDistributedTicket = ticketGroup.some(
-                      ticket => ticket.user?.consentedAt && ticket.isRedeemed
+                    // 需要從該訂單的所有同類型票券中檢查，而非只從已過濾的 ticketGroup
+                    const hasDistributedTicket = order?.tickets?.some(
+                      (ticket: any) =>
+                        ticket.type?.id === ticketType?.id &&
+                        ticket.user?.consentedAt &&
+                        ticket.isRedeemed
                     );
 
                     return (

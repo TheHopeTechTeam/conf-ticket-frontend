@@ -8,6 +8,7 @@ export const ROUTES = {
   PAYMENT: '/conf-ticket/payment',
   REFUND: '/conf-ticket/refund',
   TICKET_DISTRIBUTION: '/conf-ticket/ticket-distribution',
+  Introduction: '/conf-ticket/introduction',
 } as const;
 
 // 路由常數

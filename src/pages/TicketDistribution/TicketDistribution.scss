@@ -5,13 +5,30 @@
   .distribution-header {
     display: flex;
     flex-direction: column;
-    gap: 28px;
+
+    h1 {
+      margin-bottom: 12px;
+    }
+
+    .distribution-header-content-alert {
+      color: #ee1b0a;
+      font-family: 'Noto Sans TC';
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 48px;
+      ul {
+        li {
+          display: flex;
+          gap: 2px;
+        }
+      }
+    }
 
     .distribution-header-content {
       display: flex;
       flex-direction: column;
-      gap: 16px;
-      margin-bottom: 40px;
+      gap: 12px;
+      margin-bottom: 48px;
 
       .distribution-header-content-title {
         font-size: 18px;
@@ -26,7 +43,7 @@
 
         .distribution-header-content-info-item {
           display: flex;
-          gap: 16px;
+          gap: 12px;
 
           .distribution-header-content-info-item-label {
             font-size: 16px;
@@ -100,7 +117,6 @@
   .distribution-dialog-content {
     display: flex;
     flex-direction: column;
-    text-align: center;
 
     .distribution-dialog-header {
       display: flex;
@@ -113,7 +129,12 @@
       }
 
       .dialog-info {
-        padding: 0 28px;
+        color: #ee1b0a;
+        font-size: 16px;
+        font-weight: 600;
+        max-width: 350px;
+        width: 100%;
+        margin: 0 auto;
       }
     }
 
@@ -155,5 +176,24 @@
 @media screen and (max-width: 768px) {
   .distribution-container {
     padding: 28px 20px 40px 20px !important;
+
+    .distribution-header {
+      .distribution-header-content-alert {
+        margin-bottom: 40px;
+      }
+
+      .distribution-header-content {
+        margin-bottom: 40px;
+      }
+    }
+  }
+  .ticket-distribution-dialog {
+    .distribution-dialog-content {
+      .distribution-dialog-header {
+        .dialog-info {
+          padding: 0 20px;
+        }
+      }
+    }
   }
 }

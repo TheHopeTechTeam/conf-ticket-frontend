@@ -259,6 +259,18 @@ export const TicketDistribution: React.FC<TicketDistributionProps> = ({
         >
           <div className="distribution-header">
             <h1>填寫取票者資訊</h1>
+            <div className="distribution-header-content-alert">
+              請注意：
+              <ul>
+                <li>
+                  <span>1.</span>分票後，此筆內的所有票券將無法退票或退款。
+                </li>
+                <li>
+                  <span>2.</span>
+                  已填寫取票者資訊的票券，一旦分出，將歸戶至取票者帳戶，無法再次分票或申請退票。
+                </li>
+              </ul>
+            </div>
             <div className="distribution-header-content">
               <p className="distribution-header-content-title">
                 您要分票的票券資訊為：
@@ -416,7 +428,7 @@ export const TicketDistribution: React.FC<TicketDistributionProps> = ({
             <img className="dialog-icon" src="/images/warn.svg" alt="" />
             <h1>確認取票者資訊</h1>
             <p className="dialog-info">
-              票券一旦分出，將歸戶至取票者的帳戶，無法再次分票或申請退票
+              請注意：分票後，此筆票券內的所有票將無法退票或退款；若票券已填寫取票者資訊，一旦分出，將歸戶至取票者帳戶，並無法再次分票或申請退票。
             </p>
           </div>
           <div className="distribution-dialog-info">

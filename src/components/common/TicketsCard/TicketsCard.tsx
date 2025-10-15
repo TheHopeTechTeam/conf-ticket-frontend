@@ -156,12 +156,10 @@ export const TicketsCard: React.FC<TicketProps> = ({
                       },
                     },
                   });
-                } else {
-                  alert('活動開始前十天不開放退票');
                 }
               }}
             >
-              {hasDistributedTicket ? '已分票不可退' : '申請退票'}
+              申請退票
             </p>
             <img
               src="/images/white-arrow-right-icon.svg"

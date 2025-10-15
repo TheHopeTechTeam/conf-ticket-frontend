@@ -17,6 +17,7 @@ import { Refund } from './pages/Refund/Refund';
 import { TicketDistribution } from './pages/TicketDistribution/TicketDistribution';
 import { Tickets } from './pages/Tickets/Tickets';
 import { ScrollToTop } from './components/common/ScrollToTop/ScrollToTop';
+import { Introduction } from './pages/Introduction/Introduction';
 
 const ExternalRedirect = ({ url }: { url: string }) => {
   window.location.href = url;
@@ -42,6 +43,16 @@ const AppRouter = () => {
               element={
                 <Layout requireAuth={false}>
                   <Login />
+                </Layout>
+              }
+            />
+
+            {/* 不需要認證的路由 */}
+            <Route
+              path={ROUTES.Introduction}
+              element={
+                <Layout requireAuth={false}>
+                  <Introduction />
                 </Layout>
               }
             />

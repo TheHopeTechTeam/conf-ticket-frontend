@@ -30,7 +30,7 @@
         .ticket-info-title {
           display: flex;
           align-items: center;
-          gap: 24px;
+          gap: 20px;
 
           .ticket-info-title-name {
             display: flex;
@@ -63,19 +63,19 @@
         .sold-out-title {
           color: #a5a9ab !important;
         }
-
-        .ticket-info-remark {
-          color: #ee1b0a;
-          font-size: 12px;
-          font-weight: 600;
-          margin-top: 4px;
-        }
       }
 
       .ticket-info-list {
         display: flex;
         flex-direction: column;
         gap: 6px;
+
+        .ticket-info-remark {
+          color: #ee1b0a;
+          font-size: 12px;
+          font-weight: 600;
+          margin-bottom: 6px;
+        }
 
         .ticket-info-content {
           color: var(--midnight-blue-500, #3c5464);
@@ -87,176 +87,12 @@
           svg {
             flex-shrink: 0;
           }
-        }
-
-        .sold-out-content {
-          color: #c5ccd1 !important;
-        }
-      }
-    }
-
-    .ticket-quantity {
-      align-self: center;
-
-      p {
-        font-weight: 600;
-      }
-    }
-  }
-}
-
-.ticket-info-list-mobile {
-  display: none;
-}
-
-@media screen and (max-width: 768px) {
-  .booking-content-item {
-    gap: 12px;
-
-    .booking-content-item-left {
-      .edit-ticket-pic {
-        width: 108px;
-        height: 78px;
-      }
-
-      .record-ticket-pic {
-        width: 90px;
-        height: 65px;
-      }
-    }
-
-    .booking-content-item-right {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-
-      .ticket-info {
-        display: block;
-
-        .ticket-info-title-container {
-          .ticket-info-title {
-            flex-direction: column;
-            gap: 4px;
-
-            .ticket-info-title-name {
-              gap: 12px;
-            }
-          }
-        }
-
-        .ticket-info-list {
-          display: none;
-        }
-      }
-
-      .ticket-quantity {
-        align-self: flex-start;
-      }
-    }
-  }
-
-  .ticket-info-list-mobile {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    margin-top: 8px;
-
-    .ticket-info-content {
-      color: var(--midnight-blue-500, #3c5464);
-      font-size: 14px;
-      line-height: 20px;
-      display: flex;
-      gap: 2px;
-
-      svg {
-        flex-shrink: 0;
-      }
-    }
-  }
-}
-
-.booking-content-item {
-  display: flex;
-  gap: 16px;
-
-  .booking-content-item-left {
-    .edit-ticket-pic {
-      width: 180px;
-      height: 130px;
-    }
-
-    .record-ticket-pic {
-      width: 126px;
-      height: 91px;
-    }
-  }
-
-  .booking-content-item-right {
-    display: flex;
-    gap: 20px;
-    flex: 2;
-
-    .ticket-info {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      max-width: 420px;
-      width: 100%;
-
-      .ticket-info-title-container {
-        .ticket-info-title {
-          display: flex;
-          align-items: center;
-          gap: 24px;
-
-          .ticket-info-title-name {
-            display: flex;
-            gap: 16px;
-          }
-        }
-
-        span {
-          font-weight: 600;
-          line-height: 24px;
-        }
-
-        .edit-title {
-          color: #000;
-        }
-
-        .record-title {
-          color: #24323c;
         }
 
         .sold-out-title {
           color: #a5a9ab !important;
         }
 
-        .ticket-info-remark {
-          color: #ee1b0a;
-          font-size: 12px;
-          font-weight: 600;
-          margin-top: 4px;
-        }
-      }
-
-      .ticket-info-list {
-        display: flex;
-        flex-direction: column;
-        gap: 6px;
-
-        .ticket-info-content {
-          color: var(--midnight-blue-500, #3c5464);
-          font-size: 14px;
-          line-height: 20px;
-          display: flex;
-          gap: 2px;
-
-          svg {
-            flex-shrink: 0;
-          }
-        }
-
         .sold-out-content {
           color: #c5ccd1 !important;
         }
@@ -266,8 +102,12 @@
     .ticket-quantity {
       align-self: center;
 
-      p {
-        font-weight: 600;
+      .sold-out-alert {
+        display: none;
+      }
+
+      .sold-out-alert-mobile {
+        display: none;
       }
     }
   }
@@ -284,7 +124,7 @@
     .booking-content-item-left {
       .edit-ticket-pic {
         width: 108px;
-        height: 78px;
+        height: 108px;
       }
 
       .record-ticket-pic {
@@ -308,7 +148,12 @@
             align-items: flex-start;
 
             .ticket-info-title-name {
-              gap: 12px;
+              flex-direction: column;
+              gap: 4px;
+            }
+
+            .sold-out-alert {
+              display: none !important;
             }
           }
         }
@@ -320,6 +165,19 @@
 
       .ticket-quantity {
         align-self: flex-start;
+        .ticket-quantity-content {
+          display: flex;
+          gap: 12px;
+
+          .sold-out-alert-mobile {
+            display: flex;
+            gap: 4px;
+            align-items: center;
+            color: #ee1b0a;
+            font-size: 14px;
+            white-space: nowrap;
+          }
+        }
       }
     }
   }
@@ -328,7 +186,13 @@
     display: flex;
     flex-direction: column;
     gap: 6px;
-    margin-top: 12px;
+    margin-top: 8px;
+
+    .ticket-info-remark {
+      color: #ee1b0a;
+      font-size: 12px;
+      font-weight: 600;
+    }
 
     .ticket-info-content {
       color: var(--midnight-blue-500, #3c5464);
@@ -340,6 +204,14 @@
       svg {
         flex-shrink: 0;
       }
+    }
+
+    .sold-out-title {
+      color: #a5a9ab !important;
+    }
+
+    .sold-out-content {
+      color: #c5ccd1 !important;
     }
   }
 }

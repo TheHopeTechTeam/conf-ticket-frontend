@@ -170,6 +170,13 @@
       gap: 8px;
       flex: 1;
       cursor: pointer;
+      color: #fff;
+    }
+
+    .disabled {
+      cursor: not-allowed;
+      background-color: #eceef0;
+      color: #000 !important;
     }
 
     .text {
