@@ -7,18 +7,22 @@ import {
   WarnDialog,
 } from '../../components/common/Dialog';
 import { NotificationMessage } from '../../components/common/Notification/Notification';
+import {
+  PhoneInput,
+  validatePhoneNumber,
+} from '../../components/common/PhoneInput';
 import { Select } from '../../components/common/Select/Select';
+import { Option } from '../../components/interface/Option';
 import { STATUS } from '../../constants/common';
 import {
   CHURCH_OPTIONS,
   GENDER_OPTIONS,
   ValidChurchType,
 } from '../../constants/profile';
-import { Option } from '../../components/interface/Option';
 import { ROUTES } from '../../constants/routes';
 import { useAuthContext } from '../../contexts/AuthContext';
-import './Profile.scss';
 import { useLoading } from '../../contexts/LoadingContext';
+import './Profile.scss';
 
 export const Profile: React.FC = () => {
   const [showNotification, setShowNotification] = useState('');
@@ -201,6 +205,12 @@ export const Profile: React.FC = () => {
       };
       return errorMessages[fieldName];
     }
+
+    // 特別驗證電話號碼格式
+    if (fieldName === 'tel' && !validatePhoneNumber(value)) {
+      return '請輸入有效的電話號碼';
+    }
+
     return '';
   };
 
@@ -297,17 +307,19 @@ export const Profile: React.FC = () => {
               <label htmlFor="tel">電話</label>
               <p className="invaild-text">必填</p>
             </div>
-            <input
-              id="tel"
-              className={`form-input ${errors.tel ? 'invalid' : 'valid'}`}
-              type="text"
-              onChange={handleFieldChange('tel')}
-              onBlur={handleFieldBlur('tel')}
+            <PhoneInput
+              country="tw"
               value={fields.tel}
+              onChange={value => {
+                setFields(prev => ({ ...prev, tel: value }));
+                if (errors.tel) {
+                  const requiredMsg = validateField(value, 'tel');
+                  setErrors(prev => ({ ...prev, tel: requiredMsg }));
+                }
+              }}
+              onBlur={handleFieldBlur('tel')}
+              hasError={!!errors.tel}
               placeholder="請輸入電話"
-              aria-label="請輸入電話"
-              aria-required
-              required
             />
             {errors.tel && <p className="invaild-text">{errors.tel}</p>}
           </div>
@@ -326,7 +338,7 @@ export const Profile: React.FC = () => {
           </div>
           <div className="form-item">
             <div className="form-label">
-              <label htmlFor="church">所屬教會</label>
+              <label htmlFor="church">所屬分部/教會</label>
               <p className="invaild-text">必填</p>
             </div>
             <Select

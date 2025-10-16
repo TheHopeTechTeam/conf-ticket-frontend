@@ -106,10 +106,21 @@ export const Login: React.FC = () => {
 
       showLoading('發送中...');
       // 調用發送 OTP 的 API
-      await apiService.memberAuthentication.postAuth({ email });
+      const res = await apiService.memberAuthentication.postAuth({ email });
       hideLoading();
+      console.log(res);
 
-      // 成功後切換到 OTP 輸入階段
+      // 檢查是否為測試帳號
+      if (res.isTapPayTestAccount && res.token && res.callbackUrl) {
+        // 測試帳號：直接導向 callbackUrl 並帶上 token
+        localStorage.setItem(EMAIL_KEY, email);
+        localStorage.setItem('token', res.token);
+        const url = new URL(res.callbackUrl, window.location.origin);
+        window.location.href = url.toString();
+        return;
+      }
+
+      // 一般流程：切換到 OTP 輸入階段
       setIsEmailSubmitted(true);
       resetTimer();
     } catch (error: any) {

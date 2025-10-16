@@ -156,13 +156,28 @@ export const Payment: React.FC = () => {
       }
 
       try {
+        console.log({
+          memberId: user.id,
+          prime: result.card.prime,
+          items: paymentData.tickets.map(ticket => ({
+            ticketTypeId: ticket.id,
+            quantity: ticket.selectedQuantity * (ticket.bundleSize || 1),
+            members: (paymentData.groupPassFormData[ticket.id] || []).map(
+              member => ({
+                ...member,
+                role: member.role,
+              })
+            ),
+          })),
+        });
+
         showLoading('處理付款中...');
         await apiService.orders.postOrderCreate({
           memberId: user.id,
           prime: result.card.prime,
           items: paymentData.tickets.map(ticket => ({
             ticketTypeId: ticket.id,
-            quantity: ticket.selectedQuantity,
+            quantity: ticket.selectedQuantity * (ticket.bundleSize || 1),
             members: (paymentData.groupPassFormData[ticket.id] || []).map(
               member => ({
                 ...member,

@@ -5,7 +5,7 @@
 }
 
 .select-button {
-  width: 90%;
+  width: 100%;
   padding: 10px 12px;
   text-align: left;
   background-color: white;
@@ -17,6 +17,7 @@
   transition: all 0.2s ease;
   cursor: pointer;
   outline: none;
+  box-sizing: border-box;
 
   &:hover {
     border-color: #9ca3af;

@@ -39,8 +39,6 @@ export const Tickets = () => {
     return allTickets.filter(ticket => {
       switch (status) {
         case TICKET_STATUS.PURCHASED:
-          console.log(ticket.order.id);
-
           // 已購買：票券所屬訂單完成且票券未取票
           return (
             (ticket.order?.status === 'completed' && !ticket.isRedeemed) ||

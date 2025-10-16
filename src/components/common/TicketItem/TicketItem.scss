@@ -100,7 +100,9 @@
     }
 
     .ticket-quantity {
+      color: #000;
       align-self: center;
+      font-weight: 600;
 
       .sold-out-alert {
         display: none;

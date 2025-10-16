@@ -106,12 +106,16 @@
 
   .tickets-content-container {
     margin: 48px auto;
-    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
 
     .no-ticket-text {
       color: #3c5464;
       font-size: 16px;
       font-weight: 600;
+      display: flex;
+      justify-content: center;
     }
   }
 
@@ -151,6 +155,7 @@
 
     .tickets-content-container {
       margin: 40px auto;
+      gap: 24px;
     }
   }
 }

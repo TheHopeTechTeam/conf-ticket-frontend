@@ -29,6 +29,32 @@
       img {
         padding-bottom: 3px;
       }
+
+      // 預設狀態：顯示黑色圖示，隱藏白色圖示
+      .icon-default {
+        display: block;
+      }
+
+      .icon-hover {
+        display: none;
+      }
+
+      &:hover {
+        background-color: #9eaab2;
+
+        p {
+          color: white;
+        }
+
+        // hover 狀態：隱藏黑色圖示，顯示白色圖示
+        .icon-default {
+          display: none;
+        }
+
+        .icon-hover {
+          display: block;
+        }
+      }
     }
   }
 }

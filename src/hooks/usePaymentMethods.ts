@@ -37,7 +37,7 @@ export const usePaymentMethods = (
           prime: prime,
           items: paymentData.tickets.map(ticket => ({
             ticketTypeId: ticket.id,
-            quantity: ticket.selectedQuantity,
+            quantity: ticket.selectedQuantity * (ticket.bundleSize || 1),
             members: (paymentData.groupPassFormData[ticket.id] || []).map(
               member => ({
                 ...member,

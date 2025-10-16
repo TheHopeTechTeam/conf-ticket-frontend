@@ -1,0 +1,155 @@
+// PhoneInput wrapper 容器
+.phone-input-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+// PhoneInput 樣式覆蓋，使其與 form-input 一致
+.react-tel-input {
+  .form-control {
+    width: 100%;
+    height: 46px;
+    padding: 10px 12px 10px 58px;
+    color: #111827;
+    background-color: white;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    transition: none;
+    outline: none;
+    font-size: 16px;
+    box-sizing: border-box;
+
+    &::placeholder {
+      color: #6b7280;
+    }
+
+    &:focus {
+      border-color: #000000;
+      box-shadow: none;
+    }
+
+    &:hover {
+      border-color: #d1d5db;
+    }
+
+    // invalid 狀態
+    &.invalid {
+      border-color: #ee1b0a !important;
+    }
+
+    // valid 狀態
+    &.valid {
+      border-color: #d1d5db !important;
+    }
+  }
+
+  .flag-dropdown {
+    border: 1px solid #d1d5db;
+    border-right: none;
+    border-radius: 8px 0 0 8px;
+    background-color: white;
+
+    &:hover,
+    &:focus {
+      border-color: #d1d5db;
+    }
+
+    &.open {
+      border-radius: 8px 0 0 8px;
+      background-color: white;
+
+      .selected-flag {
+        background-color: transparent;
+      }
+    }
+
+    .selected-flag {
+      padding: 0 0 0 12px;
+
+      &:hover,
+      &:focus {
+        background-color: transparent;
+      }
+    }
+  }
+
+  // 使用 buttonClass 直接控制 flag-dropdown 的樣式
+  .flag-button-invalid {
+    border: 1px solid #ee1b0a !important;
+    border-right: none !important;
+
+    &:hover,
+    &:focus {
+      border-color: #ee1b0a !important;
+    }
+  }
+
+  .flag-button-valid {
+    border: 1px solid #d1d5db !important;
+    border-right: none !important;
+
+    &:hover {
+      border-color: #d1d5db !important;
+    }
+
+    &:focus {
+      border-color: #000000 !important;
+    }
+
+    &.open {
+      border-radius: 8px 0 0 8px;
+    }
+  }
+
+  // 國家下拉選單樣式，與 Select.scss 的 dropdown-menu 一致
+  .phone-dropdown-menu {
+    background-color: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    box-shadow:
+      0 10px 15px -3px rgba(0, 0, 0, 0.1),
+      0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    padding: 8px 6px;
+    margin-top: 2px;
+
+    .country {
+      padding: 6px 12px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      color: #000;
+      border-radius: 6px;
+
+      &:hover {
+        background-color: #f3f4f6;
+      }
+
+      &.highlight {
+        background-color: #fbbf24;
+        color: #090c0e;
+        font-weight: 500;
+      }
+    }
+  }
+
+  // 搜尋框樣式
+  .phone-search-input {
+    width: 100%;
+    padding: 8px 12px;
+    margin-bottom: 8px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 14px;
+    outline: none;
+    transition: all 0.2s ease;
+
+    &:focus {
+      border-color: #000000;
+      box-shadow: 0 0 0 1px #000000;
+    }
+
+    &::placeholder {
+      color: #6b7280;
+    }
+  }
+}

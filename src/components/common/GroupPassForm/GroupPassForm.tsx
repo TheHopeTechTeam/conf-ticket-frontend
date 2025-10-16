@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { useFieldArray, useForm } from 'react-hook-form';
+import { Controller, useFieldArray, useForm } from 'react-hook-form';
 import { apiService } from '../../../api';
 import { Option } from '../../../components/interface/Option';
 import { MODE } from '../../../constants/common';
 import { GroupPassFormData } from '../../../types/payment';
+import { PhoneInput, validatePhoneNumber } from '../PhoneInput';
 import { Select } from '../Select/Select';
 import './GroupPassForm.scss';
 
@@ -282,7 +283,7 @@ export const GroupPassForm: React.FC<GroupPassFormProps> = ({
                         required: '請輸入電子郵件',
                         pattern: {
                           value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                          message: '請輸入有效的電子郵件格式',
+                          message: '輸入格式錯誤',
                         },
                       })}
                       onBlur={() => handleBlur(index, 'email')}
@@ -313,19 +314,31 @@ export const GroupPassForm: React.FC<GroupPassFormProps> = ({
                 </div>
                 {mode === MODE.EDIT ? (
                   <>
-                    <input
-                      id={`tel-${index}`}
-                      className={`form-input ${errors.users?.[index]?.tel ? 'error' : ''}`}
-                      type="tel"
-                      placeholder="請輸入所屬教會電話"
-                      {...register(`users.${index}.tel`, {
+                    <Controller
+                      name={`users.${index}.tel`}
+                      control={control}
+                      rules={{
                         required: '請輸入所屬教會電話',
-                        validate: value =>
-                          value?.trim() ? true : '請輸入所屬教會電話',
-                      })}
-                      onBlur={() => handleBlur(index, 'tel')}
-                      aria-label="請輸入所屬教會電話"
-                      aria-required
+                        validate: value => {
+                          if (!value || !value.trim()) {
+                            return '請輸入所屬教會電話';
+                          }
+                          if (!validatePhoneNumber(value)) {
+                            return '請輸入有效的電話號碼';
+                          }
+                          return true;
+                        },
+                      }}
+                      render={({ field }) => (
+                        <PhoneInput
+                          country="tw"
+                          value={field.value || ''}
+                          onChange={field.onChange}
+                          onBlur={() => handleBlur(index, 'tel')}
+                          hasError={!!errors.users?.[index]?.tel}
+                          placeholder="請輸入所屬教會電話"
+                        />
+                      )}
                     />
                     {errors.users?.[index]?.tel && (
                       <span className="error-message">

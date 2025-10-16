@@ -107,7 +107,6 @@ export const TicketItem: React.FC<TicketItemProps> = ({
                 <QuantitySelector
                   max={ticket.available ?? 0}
                   initialValue={quantity}
-                  step={ticket.bundleSize || 1}
                   onChange={handleQuantityChange}
                 />
                 {!ticket.available && (

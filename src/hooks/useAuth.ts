@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { apiService } from '../api';
 import { ROUTES } from '../constants/routes';
 import { useLoading } from '../contexts/LoadingContext';
-import { apiService } from '../api';
 
 interface AuthState {
   isLoading: boolean;
@@ -55,7 +55,7 @@ export const useAuth = () => {
       const token = localStorage.getItem('token');
       if (!token) {
         // 沒有 token，直接導向登入頁
-        navigate(ROUTES.LOGIN);
+        navigate(ROUTES.Introduction);
         return;
       }
 
@@ -93,7 +93,7 @@ export const useAuth = () => {
         memberData: null,
         error: 'Authentication failed',
       });
-      navigate(ROUTES.LOGIN);
+      navigate(ROUTES.Introduction);
     }
   };
 
@@ -106,7 +106,7 @@ export const useAuth = () => {
       memberData: null,
       error: null,
     });
-    navigate(ROUTES.LOGIN);
+    navigate(ROUTES.Introduction);
   };
 
   return {

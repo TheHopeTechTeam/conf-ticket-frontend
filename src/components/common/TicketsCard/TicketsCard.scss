@@ -9,11 +9,31 @@
     text-align: center;
     color: #000;
     font-family: 'Inter';
-    font-size: 16px;
+    font-size: 14px;
     font-weight: 600;
     line-height: 21px;
-    padding: 7px 0;
+    padding: 5px 20px;
     border-radius: 12px 12px 0 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    .ticket-card-title-alert {
+      display: flex;
+      gap: 2px;
+      background-color: #af8814;
+      border-radius: 40px;
+      align-items: center;
+      justify-content: center;
+      padding: 2px 10px;
+      p {
+        color: #fff;
+        font-family: 'Noto Sans TC';
+        font-size: 12px;
+        font-style: normal;
+        font-weight: 500;
+      }
+    }
   }
 
   .ticket-card-content {
@@ -31,7 +51,7 @@
 
       .ticket-card-info-time {
         display: flex;
-        padding: 10px 16px;
+        padding: 10px 16px 12px 16px;
         align-items: center;
         justify-content: space-between;
         background-color: #eceef0;
@@ -148,6 +168,10 @@
   .ticket-card-btns {
     display: flex;
 
+    svg {
+      margin-top: 2px;
+    }
+
     .distribution {
       padding: 8px 32px 11px 32px;
       width: 100%;
@@ -175,8 +199,11 @@
 
     .disabled {
       cursor: not-allowed;
-      background-color: #eceef0;
-      color: #000 !important;
+      background-color: #eceef0 !important;
+
+      .text {
+        color: #c5ccd1;
+      }
     }
 
     .text {
@@ -299,6 +326,7 @@
 
 .ticket-refund-card-container {
   .ticket-card-title {
+    font-size: 12px;
     background: #d2d4d5 !important;
     color: #777f82 !important;
   }

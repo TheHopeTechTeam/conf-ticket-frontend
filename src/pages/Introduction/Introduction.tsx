@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
-import './Introduction.scss';
 import { ROUTES } from '../../constants/routes';
+import './Introduction.scss';
 
 export const Introduction: React.FC = () => {
   const navigate = useNavigate();
@@ -14,11 +14,11 @@ export const Introduction: React.FC = () => {
       />
       <div className="introduction-content">
         <div className="introduction-title">
-          <h3>
+          <h1>
             The Hope Conference
             <br /> 2026《PRESENCE》
             <br /> 購票網站
-          </h3>
+          </h1>
         </div>
         <p className="introduction-text">
           在這為期三天的特會裡，你將會看見

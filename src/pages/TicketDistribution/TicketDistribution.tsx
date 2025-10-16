@@ -181,9 +181,13 @@ export const TicketDistribution: React.FC<TicketDistributionProps> = ({
             member.orders.forEach((order: any) => {
               if (!order.tickets?.length) return;
 
-              const distributedTickets = order.tickets.filter(
-                (ticket: any) => ticket.isRedeemed && member.id === ticket.user
-              );
+              const distributedTickets = order.tickets.filter((ticket: any) => {
+                return (
+                  ticket.isRedeemed &&
+                  member.id === ticket.user &&
+                  member.consentedAt
+                );
+              });
 
               if (
                 distributedTickets.length > 0 &&
@@ -348,9 +352,7 @@ export const TicketDistribution: React.FC<TicketDistributionProps> = ({
                     />
                     {hasError && (
                       <p className="error-text">
-                        {isDuplicate
-                          ? '此電子郵件已經使用過'
-                          : '請輸入有效的電子郵件格式'}
+                        {isDuplicate ? '此電子郵件已經使用過' : '輸入格式錯誤'}
                       </p>
                     )}
                   </div>

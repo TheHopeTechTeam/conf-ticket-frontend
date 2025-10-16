@@ -11,7 +11,7 @@ export const Header = () => {
     if (token) {
       // 登出：移除 token 並導向登入頁面
       localStorage.removeItem('token');
-      navigate(ROUTES.LOGIN);
+      navigate(ROUTES.Introduction);
     } else {
       // 前往票券系統：導向 Home 頁面
       navigate(ROUTES.HOME);
@@ -34,4 +34,3 @@ export const Header = () => {
     </>
   );
 };
-

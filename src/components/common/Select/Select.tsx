@@ -43,8 +43,15 @@ export const Select: React.FC<SelectProps> = ({
 
     if (isOpen) {
       document.addEventListener('mousedown', handleClickOutside);
-      return () =>
+      // 監聽視窗大小調整和滾動事件，更新下拉選單位置
+      window.addEventListener('resize', updateDropdownPosition);
+      window.addEventListener('scroll', updateDropdownPosition, true);
+
+      return () => {
         document.removeEventListener('mousedown', handleClickOutside);
+        window.removeEventListener('resize', updateDropdownPosition);
+        window.removeEventListener('scroll', updateDropdownPosition, true);
+      };
     }
   }, [isOpen]);
 
