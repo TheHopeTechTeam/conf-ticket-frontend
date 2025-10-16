@@ -64,7 +64,7 @@ export const TicketsCard: React.FC<TicketProps> = ({
         <p>{title}</p>
         {status === TICKET_STATUS.PURCHASED && remainingTickets <= quantity && (
           <div className="ticket-card-title-alert">
-            <p>剩餘 ${remainingTickets} 張未分出</p>
+            <p>剩餘 {remainingTickets} 張未分出</p>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="14"
