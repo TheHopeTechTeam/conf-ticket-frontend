@@ -69,7 +69,7 @@ export const Profile: React.FC = () => {
       setFields(prev => ({
         ...prev,
         fullName: user.name,
-        tel: user.tel,
+        tel: '+' + user.tel,
         gender: user.gender,
         churchIdentity: user.role,
         church: isValidChurch ? user.location : ValidChurchType.OTHER,
