@@ -23,6 +23,7 @@ interface TicketProps {
   ticketTypeId?: string;
   ticketImageUrl?: string;
   hasDistributedTicket?: boolean;
+  ticketCaption?: string;
 }
 
 export const TicketsCard: React.FC<TicketProps> = ({
@@ -30,6 +31,7 @@ export const TicketsCard: React.FC<TicketProps> = ({
   quantity,
   orderNumber,
   details,
+  ticketCaption,
   status,
   user,
   ticketIds,
@@ -118,7 +120,13 @@ export const TicketsCard: React.FC<TicketProps> = ({
               <p className="quantity">張數</p>
               <p className="number">{quantity}</p>
             </div>
-            <div className="ticket-card-info-oreder-number-item">
+            <div
+              className="ticket-card-info-oreder-number-item"
+              onClick={() => {
+                navigator.clipboard.writeText(orderNumber);
+              }}
+              style={{ cursor: 'pointer' }}
+            >
               <p className="order-number">訂單編號</p>
               <p className="number">{orderNumber.slice(-8)}</p>
             </div>
@@ -281,6 +289,7 @@ export const TicketsCard: React.FC<TicketProps> = ({
         </summary>
 
         <div className="details-content">
+          <p className="details-content-caption">※{ticketCaption}</p>
           {details.map((detail, index) => (
             <div key={index} className="detail-item">
               <span className="text">{detail}</span>
