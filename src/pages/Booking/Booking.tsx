@@ -1,7 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { apiService } from '../../api';
-import { WarnDialog } from '../../components/common/Dialog/WarnDialog';
 import { GroupPassForm } from '../../components/common/GroupPassForm/GroupPassForm';
 import { TicketItem } from '../../components/common/TicketItem/TicketItem';
 import { MODE } from '../../constants/common';
@@ -77,8 +76,6 @@ export const Booking: React.FC = () => {
   const [ticketFormData, setTicketFormData] = useState<TicketFormData>({});
   const [ticketValidationStates, setTicketValidationStates] =
     useState<TicketValidationState>({});
-  const [isWarnDialogOpen, setIsWarnDialogOpen] = useState(false);
-  const [warnMessage, setWarnMessage] = useState('');
 
   const handleQuantityChange = (ticketId: string, quantity: number) => {
     setTicketQuantities(prev => ({
@@ -194,51 +191,33 @@ export const Booking: React.FC = () => {
     };
   };
 
-  const handleNextStep = async () => {
+  const handleNextStep = () => {
     const ticketInfo = getSelectedTickets();
+    console.log(ticketInfo);
 
-    // 收集所有表單中的 email
-    const emailsToCheck: string[] = [];
-    Object.values(ticketInfo.groupPassFormData).forEach(formDataArray => {
-      formDataArray.forEach(formData => {
-        if (formData.email) {
-          emailsToCheck.push(formData.email);
-        }
-      });
+    // 檢查是否購買了多種不同類型的票券（翻譯機除外）
+    const nonTranslationTickets: string[] = [];
+
+    ticketInfo.tickets.forEach((ticket: any) => {
+      // 如果票券名稱包含「翻譯機」或「Translation」，則跳過檢查
+      const isTranslationTicket =
+        ticket.name.includes('翻譯機') ||
+        ticket.name.toLowerCase().includes('translation');
+
+      if (!isTranslationTicket) {
+        nonTranslationTickets.push(ticket.name);
+      }
     });
 
-    // 如果有 email 需要檢查，先檢查是否有重複資料
-    if (emailsToCheck.length > 0) {
-      try {
-        showLoading('檢查會員資料中...');
-        const response = await apiService.members.getMembers(emailsToCheck);
+    // 檢查是否有多種不同的票券類型
+    const uniqueTicketTypes = [...new Set(nonTranslationTickets)];
 
-        // 找出不在資料庫中的 email（不符合資格的）
-        const existingEmails =
-          response.docs?.map((member: any) => member.email) || [];
-        const invalidEmails = emailsToCheck.filter(
-          email => !existingEmails.includes(email)
-        );
-
-        if (invalidEmails.length > 0) {
-          // 有不符合資格的 email
-          hideLoading();
-          setWarnMessage(
-            `以下 email 不屬於主任牧師 牧師 傳道 事工團隊領袖 神學生：${invalidEmails.join(', ')}`
-          );
-          setIsWarnDialogOpen(true);
-          return; // 不繼續執行
-        }
-      } catch (error) {
-        hideLoading();
-        console.error('檢查會員資料失敗:', error);
-        alert('檢查會員資料時發生錯誤，請稍後再試');
-        return;
-      }
+    if (uniqueTicketTypes.length > 1) {
+      alert(
+        `不可同時購買多種不同類型的票券，目前選擇了：${uniqueTicketTypes.join('、')}`
+      );
+      return;
     }
-
-    // 沒有重複資料，繼續執行原本的邏輯
-    hideLoading();
 
     // 導航到付款頁面，直接傳遞票券資訊
     navigate(ROUTES.PAYMENT, {
@@ -321,11 +300,6 @@ export const Booking: React.FC = () => {
           返回票券系統
         </button>
       </div>
-      <WarnDialog
-        isOpen={isWarnDialogOpen}
-        onClose={() => setIsWarnDialogOpen(false)}
-        message={warnMessage}
-      />
     </div>
   );
 };

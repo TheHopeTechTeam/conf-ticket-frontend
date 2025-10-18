@@ -24,7 +24,13 @@
         gap: 12px;
         font-size: 14px;
 
-        div {
+        .contact-method-content {
+          display: flex;
+          align-items: center;
+          gap: 24px;
+        }
+
+        .follow-method-content {
           display: flex;
           align-items: center;
           gap: 16px;

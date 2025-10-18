@@ -10,6 +10,14 @@ export interface TicketInfo {
     tel: string;
   }>;
   ticketIds?: string[];
+  tickets?: Array<{
+    id: string;
+    user?: {
+      email: string;
+      consentedAt?: string;
+    };
+    isRedeemed: boolean;
+  }>;
 }
 
 export interface RecipientInfo {
@@ -17,6 +25,7 @@ export interface RecipientInfo {
   email: string;
   isSelected: boolean;
   isEmailValid: boolean;
+  isDisabled: boolean;
 }
 
 export interface DistributionFormData {

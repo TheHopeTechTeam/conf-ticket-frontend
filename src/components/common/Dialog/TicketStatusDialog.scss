@@ -1,0 +1,237 @@
+.ticket-status-dialog {
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  padding: 24px;
+  background: white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  max-width: 500px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  animation: slideIn 0.3s ease;
+  position: relative;
+
+  .dialog-close-btn {
+    position: absolute;
+    top: 24px;
+    right: 24px;
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #666;
+    padding: 0;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.2s;
+
+    &:hover {
+      background: #f5f5f5;
+      color: #333;
+    }
+  }
+
+  .ticket-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-right: 40px;
+
+    h3 {
+      flex: 1;
+      font-size: 20px;
+      font-weight: 600;
+      color: #333;
+      margin: 0;
+    }
+
+    .total-count {
+      font-size: 14px;
+      color: #666;
+      background: #f5f5f5;
+      padding: 6px 14px;
+      border-radius: 16px;
+      font-weight: 500;
+    }
+  }
+
+  .status-summary {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+
+    .status-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 12px;
+      background: #fafafa;
+      border-radius: 8px;
+      transition: background 0.2s;
+
+      &:hover {
+        background: #f0f0f0;
+      }
+
+      .status-dot {
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        flex-shrink: 0;
+        margin-top: 3px;
+
+        &.undistributed {
+          background: #bdbdbd;
+          box-shadow: 0 0 0 3px rgba(189, 189, 189, 0.2);
+        }
+
+        &.distributed {
+          background: #ff9800;
+          box-shadow: 0 0 0 3px rgba(255, 152, 0, 0.2);
+        }
+
+        &.activated {
+          background: #4caf50;
+          box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.2);
+        }
+      }
+
+      .status-content {
+        flex: 1;
+
+        .status-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 8px;
+
+          .label {
+            color: #333;
+            font-size: 15px;
+            font-weight: 500;
+          }
+
+          .count {
+            font-weight: 600;
+            color: #666;
+            font-size: 16px;
+          }
+        }
+
+        .user-list {
+          display: flex;
+          flex-direction: column;
+          gap: 6px;
+          margin-top: 8px;
+
+          .user-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 10px;
+            background: white;
+            border-radius: 6px;
+            font-size: 13px;
+            color: #666;
+
+            .user-icon {
+              width: 24px;
+              height: 24px;
+              flex-shrink: 0;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              color: #666;
+              font-size: 16px;
+            }
+
+            .user-email {
+              flex: 1;
+              font-weight: 400;
+              color: #333;
+              overflow: hidden;
+              text-overflow: ellipsis;
+              white-space: nowrap;
+            }
+
+            .user-status {
+              font-size: 11px;
+              padding: 2px 8px;
+              border-radius: 10px;
+              font-weight: 500;
+
+              &.pending {
+                background: #fff3e0;
+                color: #e65100;
+              }
+
+              &.active {
+                background: #e8f5e9;
+                color: #2e7d32;
+              }
+            }
+          }
+        }
+
+        .undistributed-note {
+          font-size: 13px;
+          color: #999;
+          padding: 6px 10px;
+          background: white;
+          border-radius: 6px;
+          margin-top: 8px;
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .ticket-status-dialog {
+    padding: 20px;
+
+    .ticket-header {
+      h3 {
+        font-size: 18px;
+      }
+    }
+
+    .status-summary {
+      .status-item {
+        .status-content {
+          .status-header {
+            .label {
+              font-size: 14px;
+            }
+
+            .count {
+              font-size: 15px;
+            }
+          }
+
+          .user-list {
+            .user-item {
+              font-size: 12px;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

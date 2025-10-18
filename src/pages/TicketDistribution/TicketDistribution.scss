@@ -81,8 +81,12 @@
       display: flex;
       gap: 8px;
 
+      &.disabled {
+        padding-left: 32px;
+      }
+
       .email-checkbox {
-        margin: 4px;
+        margin: 5px 4px 4px 4px;
       }
 
       .distribution-form-item-content {
@@ -149,7 +153,6 @@
       max-width: 350px;
       width: 100%;
       margin: 0 auto;
-      padding: 0 20px;
 
       .distribution-dialog-info-item {
         display: flex;
@@ -197,6 +200,10 @@
         .dialog-info {
           padding: 0 20px;
         }
+      }
+
+      .distribution-dialog-info {
+        padding: 0 20px;
       }
     }
   }

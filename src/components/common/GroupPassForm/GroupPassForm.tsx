@@ -99,7 +99,7 @@ export const GroupPassForm: React.FC<GroupPassFormProps> = ({
     const currentLength = fields.length;
 
     // 只有在數量真的變化時才處理
-    if (prevQuantityRef.current !== quantity && currentLength !== quantity) {
+    if (currentLength !== quantity) {
       if (quantity > currentLength) {
         // 增加欄位 - 使用 append 而不是 replace
         const toAdd = quantity - currentLength;

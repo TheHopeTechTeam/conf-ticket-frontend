@@ -2,8 +2,6 @@ import React from 'react';
 import { EXTRA_ROUTES } from '../../../constants/routes';
 import { PrivacyPolicyDialog, UserTermsDialog } from '../Dialog';
 import './Footer.scss';
-import { MAIL } from '../../../constants/common';
-
 export const Footer: React.FC = () => {
   const [isUserTermsDialogOpen, setUserTermsDialogOpen] = React.useState(false);
   const [isPrivacyPolicyDialogOpen, setPrivacyPolicyDialogOpen] =
@@ -19,11 +17,20 @@ export const Footer: React.FC = () => {
             <div className="contact-info-right">
               <div className="contact-method">
                 <p>聯繫我們</p>
-                <p>{MAIL.CONTACT_EMAIL}</p>
+                <div className="contact-method-content">
+                  <a
+                    href="https://lin.ee/zVP7wI8"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Line
+                  </a>
+                  <a href="mailto:conference@thehope.co">Email</a>
+                </div>
               </div>
               <div className="contact-method">
                 <p>追蹤我們</p>
-                <div>
+                <div className="follow-method-content">
                   <img
                     src="/images/ig-icon.svg"
                     alt="instagram"
@@ -39,7 +46,7 @@ export const Footer: React.FC = () => {
                     className="cursor-pointer"
                   />
                   <img
-                    src="/images/youtube-icon.png"
+                    src="/images/youtube-icon.svg"
                     alt="youtube"
                     onClick={() => window.open(EXTRA_ROUTES.YOUTUBE, '_blank')}
                     className="cursor-pointer"

@@ -148,8 +148,8 @@ export const Login: React.FC = () => {
           <div className="form-block">
             <h1 className="mb-16">請登入購票系統</h1>
             <p className="form-description">
-              請輸入您的電子郵件地址，並按下「發送電子郵件」，您將收到來自
-              {MAIL.NOREPLAY_EMAIL}寄送的一次性密碼。
+              請輸入你的電子郵件地址，您將收取來自 noreply@thehope.co
+              寄送的登入連結。
             </p>
             <div className="form-label">
               <label htmlFor="email">電子郵件</label>

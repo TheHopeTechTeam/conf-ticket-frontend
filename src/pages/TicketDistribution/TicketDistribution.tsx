@@ -32,8 +32,15 @@ export const TicketDistribution: React.FC<TicketDistributionProps> = ({
   // 動態生成取票者狀態
   const [recipients, setRecipients] = useState<RecipientInfo[]>(() =>
     Array.from({ length: currentTicketInfo?.ticketCount || 0 }, (_, index) => {
-      // 使用可選鏈操作符簡化檢查
-      const userEmail = currentTicketInfo?.user?.[index]?.email || '';
+      const ticket = currentTicketInfo?.tickets?.[index];
+      const userEmail = ticket?.user?.email || '';
+      const hasConsented = Boolean(ticket?.user?.consentedAt);
+      const isRedeemed = Boolean(ticket?.isRedeemed);
+
+      // distributedAndCollected: 已分出已取票 (有 consentedAt 且 isRedeemed = true) -> disabled
+      // distributedNotCollected: 已分出未取票 (無 consentedAt 且 isRedeemed = true) -> 預帶但不 disabled
+      // undistributed: 未分出 (isRedeemed = false) -> 不預帶
+      const shouldDisable = hasConsented && isRedeemed;
       const shouldAutoFill = Boolean(userEmail);
 
       return {
@@ -41,6 +48,7 @@ export const TicketDistribution: React.FC<TicketDistributionProps> = ({
         email: userEmail,
         isSelected: shouldAutoFill,
         isEmailValid: shouldAutoFill,
+        isDisabled: shouldDisable,
       };
     })
   );
@@ -79,15 +87,24 @@ export const TicketDistribution: React.FC<TicketDistributionProps> = ({
 
   // 處理郵件輸入變更
   const handleEmailChange = (recipientId: string, email: string) => {
-    const isEmailValid = validateEmail(email);
-    const isDuplicate = checkDuplicateEmail(email, recipientId);
-
     // 清除表單錯誤
     if (formError) setFormError('');
 
     setRecipients(prev =>
       prev.map(recipient => {
         if (recipient.id === recipientId) {
+          // 如果是 disabled 狀態，不進行驗證，只更新 email
+          if (recipient.isDisabled) {
+            return {
+              ...recipient,
+              email,
+            };
+          }
+
+          // 非 disabled 狀態才進行完整驗證
+          const isEmailValid = validateEmail(email);
+          const isDuplicate = checkDuplicateEmail(email, recipientId);
+
           // 如果郵件無效或重複，取消勾選 checkbox
           const shouldUncheck = !isEmailValid || isDuplicate;
           return {
@@ -121,9 +138,9 @@ export const TicketDistribution: React.FC<TicketDistributionProps> = ({
     );
   };
 
-  // 檢查是否至少有一個勾選的項目
+  // 檢查是否至少有一個勾選的項目（排除 disabled 的項目）
   const hasSelectedRecipients = recipients.some(
-    recipient => recipient.isSelected
+    recipient => recipient.isSelected && !recipient.isDisabled
   );
 
   // 檢查是否至少有一個有效的郵件（且沒有重複）
@@ -161,8 +178,10 @@ export const TicketDistribution: React.FC<TicketDistributionProps> = ({
     // 清除錯誤訊息
     setFormError('');
 
-    // 取得選中取票者的 email 陣列
-    const selectedEmails = selectedRecipients.map(recipient => recipient.email);
+    // 取得選中取票者的 email 陣列（排除 disabled 的項目）
+    const selectedEmails = selectedRecipients
+      .filter(recipient => !recipient.isDisabled)
+      .map(recipient => recipient.email);
 
     try {
       // 調用 getMembers API，不使用 role filter
@@ -324,17 +343,22 @@ export const TicketDistribution: React.FC<TicketDistributionProps> = ({
                 (!recipient.isEmailValid || isDuplicate);
 
               return (
-                <div key={recipient.id} className="distribution-form-item">
-                  <input
-                    id={`checkbox-${recipient.id}`}
-                    type="checkbox"
-                    className="email-checkbox"
-                    checked={recipient.isSelected}
-                    disabled={!recipient.isEmailValid || isDuplicate}
-                    onChange={e =>
-                      handleCheckboxChange(recipient.id, e.target.checked)
-                    }
-                  />
+                <div key={recipient.id} className={`distribution-form-item ${recipient.isDisabled ? 'disabled' : ''}`}>
+                  {!recipient.isDisabled && (
+                    <input
+                      id={`checkbox-${recipient.id}`}
+                      type="checkbox"
+                      className="email-checkbox"
+                      checked={recipient.isSelected}
+                      disabled={
+                        !recipient.isEmailValid ||
+                        isDuplicate
+                      }
+                      onChange={e =>
+                        handleCheckboxChange(recipient.id, e.target.checked)
+                      }
+                    />
+                  )}
                   <div className="distribution-form-item-content">
                     <label htmlFor={`checkbox-${recipient.id}`}>
                       取票者{index + 1}
@@ -348,6 +372,7 @@ export const TicketDistribution: React.FC<TicketDistributionProps> = ({
                       onChange={e =>
                         handleEmailChange(recipient.id, e.target.value)
                       }
+                      disabled={recipient.isDisabled}
                       aria-label={`取票者${index + 1}的電子郵件`}
                     />
                     {hasError && (
@@ -435,7 +460,7 @@ export const TicketDistribution: React.FC<TicketDistributionProps> = ({
           </div>
           <div className="distribution-dialog-info">
             {recipients
-              .filter(recipient => recipient.isSelected)
+              .filter(recipient => recipient.isSelected && !recipient.isDisabled)
               .map((recipient, index) => (
                 <div
                   key={recipient.id}

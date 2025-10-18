@@ -42,7 +42,8 @@ export const Tickets = () => {
           // 已購買：票券所屬訂單完成且票券未取票
           return (
             (ticket.order?.status === 'completed' && !ticket.isRedeemed) ||
-            (!ticket.user?.consentedAt && ticket.isRedeemed)
+            (!ticket.user?.consentedAt && ticket.isRedeemed) ||
+            (ticket.user?.consentedAt && ticket.isRedeemed)
           );
 
         case TICKET_STATUS.REFUNDED:
@@ -249,13 +250,37 @@ export const Tickets = () => {
                       ticketTypeData?.image?.url || '/images/ticket-sample.png';
 
                     // 檢查是否有任何一張票已經被分票（已取票且已同意）
-                    // 需要從該訂單的所有同類型票券中檢查，而非只從已過濾的 ticketGroup
+                    // 需要從該訂單的所有類型票券中檢查，而非只從已過濾的 ticketGroup
+                    console.log(
+                      order,
+                      'order',
+                      order?.tickets?.some(
+                        (ticket: any) =>
+                          ticket.user?.consentedAt && ticket.isRedeemed
+                      )
+                    );
+
                     const hasDistributedTicket = order?.tickets?.some(
                       (ticket: any) =>
-                        ticket.type?.id === ticketType?.id &&
-                        ticket.user?.consentedAt &&
-                        ticket.isRedeemed
+                        ticket.user?.consentedAt && ticket.isRedeemed
                     );
+
+                    // 分類票券狀態
+                    const ticketsByStatus = {
+                      undistributed: ticketGroup.filter(
+                        (ticket: any) =>
+                          ticket.order?.status === 'completed' &&
+                          !ticket.isRedeemed
+                      ),
+                      distributedNotCollected: ticketGroup.filter(
+                        (ticket: any) =>
+                          !ticket.user?.consentedAt && ticket.isRedeemed
+                      ),
+                      distributedAndCollected: ticketGroup.filter(
+                        (ticket: any) =>
+                          ticket.user?.consentedAt && ticket.isRedeemed
+                      ),
+                    };
 
                     return (
                       <TicketsCard
@@ -269,9 +294,7 @@ export const Tickets = () => {
                         status={activeStatus}
                         ticketIds={ticketIds}
                         updatedAt={order?.updatedAt}
-                        user={ticketGroup
-                          .map(ticket => ticket.user)
-                          .filter(u => u && typeof u === 'object' && u.email)}
+                        user={ticketsByStatus}
                         hasDistributedTicket={hasDistributedTicket}
                       />
                     );
