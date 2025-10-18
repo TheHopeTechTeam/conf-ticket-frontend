@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { apiService } from '../../api';
-import { MAIL } from '../../constants/common';
 import { useLoading } from '../../contexts/LoadingContext';
 import './Login.scss';
 
