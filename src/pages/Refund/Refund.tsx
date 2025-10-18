@@ -53,9 +53,11 @@ export const Refund: React.FC = () => {
       // 調用退票 API
       await ordersApi.postOrdersRefund(currentTicketInfo.orderNumber);
       // 退票成功
+      window.scrollTo({ top: 0, behavior: 'smooth' });
       setRefundStatus(STATUS.SUCCESS);
     } catch (error) {
       console.error('退票 API 失敗:', error);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
       // 錯誤訊息已由 service.ts 統一處理和顯示
       // 退票失敗，顯示錯誤頁面
       setRefundStatus(STATUS.ERROR);

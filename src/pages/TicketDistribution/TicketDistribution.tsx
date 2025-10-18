@@ -254,11 +254,13 @@ export const TicketDistribution: React.FC<TicketDistributionProps> = ({
       await apiService.tickets.postTicketsSplit(splitData);
       // 分票成功，關閉 dialog 並顯示成功頁面
       setTicketDistributionDialogOpen(false);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
       setDistributionStatus(STATUS.SUCCESS);
     } catch (error) {
       console.error('分票 API 失敗:', error);
       // 分票失敗，關閉 dialog 並顯示錯誤頁面
       setTicketDistributionDialogOpen(false);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
       setDistributionStatus(STATUS.ERROR);
     }
   };
@@ -343,17 +345,17 @@ export const TicketDistribution: React.FC<TicketDistributionProps> = ({
                 (!recipient.isEmailValid || isDuplicate);
 
               return (
-                <div key={recipient.id} className={`distribution-form-item ${recipient.isDisabled ? 'disabled' : ''}`}>
+                <div
+                  key={recipient.id}
+                  className={`distribution-form-item ${recipient.isDisabled ? 'disabled' : ''}`}
+                >
                   {!recipient.isDisabled && (
                     <input
                       id={`checkbox-${recipient.id}`}
                       type="checkbox"
                       className="email-checkbox"
                       checked={recipient.isSelected}
-                      disabled={
-                        !recipient.isEmailValid ||
-                        isDuplicate
-                      }
+                      disabled={!recipient.isEmailValid || isDuplicate}
                       onChange={e =>
                         handleCheckboxChange(recipient.id, e.target.checked)
                       }
@@ -460,7 +462,9 @@ export const TicketDistribution: React.FC<TicketDistributionProps> = ({
           </div>
           <div className="distribution-dialog-info">
             {recipients
-              .filter(recipient => recipient.isSelected && !recipient.isDisabled)
+              .filter(
+                recipient => recipient.isSelected && !recipient.isDisabled
+              )
               .map((recipient, index) => (
                 <div
                   key={recipient.id}

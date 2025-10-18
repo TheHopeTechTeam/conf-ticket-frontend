@@ -47,9 +47,11 @@ export const usePaymentMethods = (
           })),
         });
         hideLoading();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
         setPaymentStatus(STATUS.SUCCESS);
       } catch (error) {
         hideLoading();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
         console.error('Payment failed:', error);
         setPaymentStatus(STATUS.ERROR);
       }
