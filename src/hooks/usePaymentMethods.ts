@@ -19,7 +19,8 @@ export const usePaymentMethods = (
   user: any,
   navigate: (route: string) => void,
   setWarnMessage: (message: string) => void,
-  setIsWarnDialogOpen: (isOpen: boolean) => void
+  setIsWarnDialogOpen: (isOpen: boolean) => void,
+  setErrorDetails?: (details: string) => void
 ) => {
   const { showLoading, hideLoading } = useLoading();
   const processPayment = useCallback(
@@ -175,6 +176,12 @@ export const usePaymentMethods = (
         console.error('Error status:', result.status);
         console.error('Error message:', result.msg);
         console.log(import.meta.env.VITE_APPLE_MERCHANT_ID);
+
+        // 設定詳細錯誤資訊
+        const errorDetails = `Apple Pay Error:\nStatus: ${result.status}\nMessage: ${result.msg}\nMerchant ID: ${import.meta.env.VITE_APPLE_MERCHANT_ID}`;
+        if (setErrorDetails) {
+          setErrorDetails(errorDetails);
+        }
 
         // 根據不同錯誤給出不同提示
         if (result.status === 403) {

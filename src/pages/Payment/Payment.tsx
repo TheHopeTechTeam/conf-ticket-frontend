@@ -36,6 +36,7 @@ export const Payment: React.FC = () => {
   const { showLoading, hideLoading } = useLoading();
   const [isWarnDialogOpen, setIsWarnDialogOpen] = useState(false);
   const [warnMessage, setWarnMessage] = useState('');
+  const [errorDetails, setErrorDetails] = useState('');
 
   const [creditCardStatus, setCreditCardStatus] = useState<CreditCardStatus>({
     number: '',
@@ -65,7 +66,8 @@ export const Payment: React.FC = () => {
     user,
     navigate,
     setWarnMessage,
-    setIsWarnDialogOpen
+    setIsWarnDialogOpen,
+    setErrorDetails
   );
 
   // 當付款方式改變時，檢查相應付款方法的可用性
@@ -333,7 +335,11 @@ export const Payment: React.FC = () => {
       {paymentStatus === STATUS.ERROR && (
         <SuccessOrError
           type={STATUS.ERROR}
-          message="系統發生錯誤，請再試一次。"
+          message={
+            errorDetails
+              ? `系統發生錯誤，請再試一次。<br/><br/><small style="font-size: 0.8em; white-space: pre-wrap;">${errorDetails}</small>`
+              : '系統發生錯誤，請再試一次。'
+          }
           titlePrefix="購買"
           errorText="失敗"
           retryButtonText="前往購買票券"
