@@ -115,6 +115,7 @@ export const TicketItem: React.FC<TicketItemProps> = ({
                     max={max}
                     initialValue={quantity}
                     onChange={handleQuantityChange}
+                    step={ticket.bundleSize}
                   />
                   {!ticket.available && (
                     <p className="sold-out-alert-mobile">
