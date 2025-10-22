@@ -331,7 +331,7 @@ export const Payment: React.FC = () => {
           onSuccessClick={() => navigate(ROUTES.TICKETS)}
         />
       )}
-
+      <p>{errorDetails}</p>
       {paymentStatus === STATUS.ERROR && (
         <SuccessOrError
           type={STATUS.ERROR}
