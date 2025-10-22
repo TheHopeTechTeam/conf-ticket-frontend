@@ -193,9 +193,16 @@ export const Payment: React.FC = () => {
         setPaymentStatus(STATUS.SUCCESS);
         sessionStorage.removeItem('ticketOrderData');
         window.scrollTo({ top: 0, behavior: 'smooth' });
-      } catch (error) {
+      } catch (error: any) {
         hideLoading();
         console.error('Payment failed:', error);
+
+        // 捕捉後端錯誤訊息
+        const backendError = error?.response?.data?.message || error?.message || '';
+        if (backendError) {
+          setErrorDetails(`Payment API Error:\n${backendError}`);
+        }
+
         setPaymentStatus(STATUS.ERROR);
         window.scrollTo({ top: 0, behavior: 'smooth' });
       }
