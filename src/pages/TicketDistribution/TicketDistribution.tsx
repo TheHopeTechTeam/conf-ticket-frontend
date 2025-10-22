@@ -254,14 +254,14 @@ export const TicketDistribution: React.FC<TicketDistributionProps> = ({
       await apiService.tickets.postTicketsSplit(splitData);
       // 分票成功，關閉 dialog 並顯示成功頁面
       setTicketDistributionDialogOpen(false);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
       setDistributionStatus(STATUS.SUCCESS);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     } catch (error) {
       console.error('分票 API 失敗:', error);
       // 分票失敗，關閉 dialog 並顯示錯誤頁面
       setTicketDistributionDialogOpen(false);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
       setDistributionStatus(STATUS.ERROR);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
 

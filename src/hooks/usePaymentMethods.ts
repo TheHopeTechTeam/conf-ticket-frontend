@@ -47,13 +47,13 @@ export const usePaymentMethods = (
           })),
         });
         hideLoading();
-        window.scrollTo({ top: 0, behavior: 'smooth' });
         setPaymentStatus(STATUS.SUCCESS);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
       } catch (error) {
         hideLoading();
-        window.scrollTo({ top: 0, behavior: 'smooth' });
         console.error('Payment failed:', error);
         setPaymentStatus(STATUS.ERROR);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
       }
     },
     [setPaymentStatus, paymentData, user, navigate]

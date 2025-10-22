@@ -188,14 +188,14 @@ export const Payment: React.FC = () => {
         });
 
         hideLoading();
-        window.scrollTo({ top: 0, behavior: 'smooth' });
         setPaymentStatus(STATUS.SUCCESS);
         sessionStorage.removeItem('ticketOrderData');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
       } catch (error) {
         hideLoading();
-        window.scrollTo({ top: 0, behavior: 'smooth' });
         console.error('Payment failed:', error);
         setPaymentStatus(STATUS.ERROR);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
       }
     });
   };
