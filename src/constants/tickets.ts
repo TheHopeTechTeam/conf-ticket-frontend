@@ -56,8 +56,12 @@ export interface TicketInfo {
   caption?: string;
   description: any[];
   isMemberInfoRequired: boolean;
+
+  /** 單張票價 */
   price: number;
-  bundleSize: number; // 套票人數 - 票種需以此人數的倍數購買
+
+  /** 套票人數 - 若不為 `1` ，則該票種需以此人數的倍數購買 */
+  bundleSize: number;
   updatedBy: User;
   deletedAt: string | null;
   deletedBy: User | null;
