@@ -52,7 +52,8 @@ export const TicketItem: React.FC<TicketItemProps> = ({
                   <span
                     className={`${mode === MODE.EDIT ? 'edit-title' : 'record-title'} ${!ticket.available ? 'sold-out-title' : ''}`}
                   >
-                    ${ticket.price.toLocaleString()}
+                    $
+                    {(ticket.price * (ticket.bundleSize || 1)).toLocaleString()}
                   </span>
                 </div>
                 {!ticket.available && (
@@ -137,7 +138,12 @@ export const TicketItem: React.FC<TicketItemProps> = ({
               ))
             ) : (
               <p>
-                {quantity}張，小計${(quantity * ticket.price).toLocaleString()}
+                {quantity}張，小計$
+                {(
+                  quantity *
+                  ticket.price *
+                  (ticket.bundleSize || 1)
+                ).toLocaleString()}
                 元
               </p>
             )}

@@ -145,10 +145,11 @@ export const Booking: React.FC = () => {
       .filter(([, quantity]) => quantity > 0)
       .map(([ticketId, quantity]) => {
         const ticket = ticketTypes.find(t => t.id === ticketId);
+        const bundleSize = ticket?.bundleSize || 1;
         return {
           ...ticket,
           selectedQuantity: quantity,
-          totalPrice: (ticket?.price || 0) * quantity,
+          totalPrice: (ticket?.price || 0) * quantity * bundleSize,
         };
       });
 
