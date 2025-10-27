@@ -15,20 +15,14 @@
       font-family: 'Noto Sans TC';
       font-size: 16px;
       font-weight: 600;
-      margin-bottom: 48px;
-      ul {
-        li {
-          display: flex;
-          gap: 2px;
-        }
-      }
+      margin-bottom: 40px;
     }
 
     .distribution-header-content {
       display: flex;
       flex-direction: column;
       gap: 12px;
-      margin-bottom: 48px;
+      margin-bottom: 40px;
 
       .distribution-header-content-title {
         font-size: 18px;
@@ -81,10 +75,6 @@
       display: flex;
       gap: 8px;
 
-      &.disabled {
-        padding-left: 32px;
-      }
-
       .email-checkbox {
         margin: 5px 4px 4px 4px;
       }
@@ -94,8 +84,13 @@
         flex-direction: column;
         gap: 6px;
         width: 100%;
+        padding-top: 1px;
         label {
+          font-size: 14px;
           padding-left: 2px;
+          &.status-collected {
+            color: #778793;
+          }
         }
         .error-text {
           color: #ee1b0a;
@@ -186,11 +181,11 @@
 
     .distribution-header {
       .distribution-header-content-alert {
-        margin-bottom: 40px;
+        margin-bottom: 48px;
       }
 
       .distribution-header-content {
-        margin-bottom: 40px;
+        margin-bottom: 48px;
       }
     }
   }

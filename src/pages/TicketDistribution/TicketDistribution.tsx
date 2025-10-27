@@ -146,6 +146,14 @@ export const TicketDistribution: React.FC<TicketDistributionProps> = ({
   // 檢查是否至少有一個有效的郵件（且沒有重複）
   const hasValidEmail = recipients.some(recipient => recipient.isEmailValid);
 
+  // 計算未分出的票券數量
+  const undistributedCount = useMemo(() => {
+    return (
+      currentTicketInfo?.tickets?.filter(ticket => !ticket.isRedeemed).length ||
+      0
+    );
+  }, [currentTicketInfo]);
+
   // 表單提交處理
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -237,17 +245,23 @@ export const TicketDistribution: React.FC<TicketDistributionProps> = ({
   // Dialog 確認處理 - 執行分票 API
   const handleDialogConfirm = async () => {
     const selectedRecipients = recipients.filter(
-      recipient => recipient.isSelected
+      recipient => recipient.isSelected && !recipient.isDisabled
     );
 
     try {
       // 準備 patchTicketsSplit 的資料
       const splitData = {
         memberId: user.id, // 需要從 currentTicketInfo 或其他地方取得
-        tickets: selectedRecipients.map((recipient, index) => ({
-          ticketId: currentTicketInfo.ticketIds?.[index] || '', // 從 ticketIds 取得對應的 ticketId
-          email: recipient.email,
-        })),
+        tickets: selectedRecipients.map(recipient => {
+          // 找到該 recipient 在原始 recipients 陣列中的索引
+          const originalIndex = recipients.findIndex(
+            r => r.id === recipient.id
+          );
+          return {
+            ticketId: currentTicketInfo.ticketIds?.[originalIndex] || '', // 從 ticketIds 取得對應的 ticketId
+            email: recipient.email,
+          };
+        }),
       };
 
       // 調用分票 API
@@ -285,16 +299,7 @@ export const TicketDistribution: React.FC<TicketDistributionProps> = ({
           <div className="distribution-header">
             <h1>填寫取票者資訊</h1>
             <div className="distribution-header-content-alert">
-              請注意：
-              <ul>
-                <li>
-                  <span>1.</span>分票後，此筆內的所有票券將無法退票或退款。
-                </li>
-                <li>
-                  <span>2.</span>
-                  已填寫取票者資訊的票券，一旦分出，將歸戶至取票者帳戶，無法再次分票或申請退票。
-                </li>
-              </ul>
+              請注意：一旦分票後，此筆內的所有票券將無法申請退票與退款。
             </div>
             <div className="distribution-header-content">
               <p className="distribution-header-content-title">
@@ -315,6 +320,11 @@ export const TicketDistribution: React.FC<TicketDistributionProps> = ({
                   </p>
                   <p className="distribution-header-content-info-item-content">
                     {currentTicketInfo.ticketCount}
+                    {currentTicketInfo.ticketCount !== undistributedCount && (
+                      <span className="undistributed-count">
+                        （尚有 {undistributedCount} 張未分出）
+                      </span>
+                    )}
                   </p>
                 </div>
                 <div className="distribution-header-content-info-item">
@@ -349,21 +359,45 @@ export const TicketDistribution: React.FC<TicketDistributionProps> = ({
                   key={recipient.id}
                   className={`distribution-form-item ${recipient.isDisabled ? 'disabled' : ''}`}
                 >
-                  {!recipient.isDisabled && (
-                    <input
-                      id={`checkbox-${recipient.id}`}
-                      type="checkbox"
-                      className="email-checkbox"
-                      checked={recipient.isSelected}
-                      disabled={!recipient.isEmailValid || isDuplicate}
-                      onChange={e =>
-                        handleCheckboxChange(recipient.id, e.target.checked)
-                      }
-                    />
-                  )}
+                  <input
+                    id={`checkbox-${recipient.id}`}
+                    type="checkbox"
+                    className="email-checkbox"
+                    checked={recipient.isSelected}
+                    disabled={
+                      recipient.isDisabled ||
+                      !recipient.isEmailValid ||
+                      isDuplicate
+                    }
+                    onChange={e =>
+                      handleCheckboxChange(recipient.id, e.target.checked)
+                    }
+                  />
                   <div className="distribution-form-item-content">
-                    <label htmlFor={`checkbox-${recipient.id}`}>
+                    <label
+                      htmlFor={`checkbox-${recipient.id}`}
+                      className={(() => {
+                        const ticket = currentTicketInfo?.tickets?.[index];
+                        const hasConsented = Boolean(ticket?.user?.consentedAt);
+                        const isRedeemed = Boolean(ticket?.isRedeemed);
+                        return hasConsented && isRedeemed
+                          ? 'status-collected'
+                          : '';
+                      })()}
+                    >
                       取票者{index + 1}
+                      {(() => {
+                        const ticket = currentTicketInfo?.tickets?.[index];
+                        const hasConsented = Boolean(ticket?.user?.consentedAt);
+                        const isRedeemed = Boolean(ticket?.isRedeemed);
+
+                        if (hasConsented && isRedeemed) {
+                          return '（已分出已取票）';
+                        } else if (isRedeemed && !hasConsented) {
+                          return '（已分出未取票，可重新分票）';
+                        }
+                        return '';
+                      })()}
                     </label>
                     <input
                       id={`email-${recipient.id}`}
@@ -457,7 +491,7 @@ export const TicketDistribution: React.FC<TicketDistributionProps> = ({
             <img className="dialog-icon" src="/images/warn.svg" alt="" />
             <h1>確認取票者資訊</h1>
             <p className="dialog-info">
-              請注意：分票後，此筆票券內的所有票將無法退票或退款；若票券已填寫取票者資訊，一旦分出，將歸戶至取票者帳戶，並無法再次分票或申請退票。
+              請注意：一旦分票後，此筆內的所有票券將無法申請退票與退款。
             </p>
           </div>
           <div className="distribution-dialog-info">

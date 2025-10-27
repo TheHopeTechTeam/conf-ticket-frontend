@@ -287,7 +287,13 @@ export const Booking: React.FC = () => {
 
   return (
     <div className="form-container booking-container">
-      <h1 className="booking-title">選擇票券類型與數量</h1>
+      <div className="booking-title">
+        <h1>選擇票券類型與數量</h1>
+        <p className="booking-title-warn">
+          每筆訂單限購一種票券，翻譯機則不限數量。
+        </p>
+      </div>
+
       <div className="booking-content">
         {ticketTypes.map(ticket => {
           if (ticket.isMemberInfoRequired) {

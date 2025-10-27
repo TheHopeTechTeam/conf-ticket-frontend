@@ -3,7 +3,19 @@
   padding: 36px 40px 52px 40px !important;
 
   .booking-title {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
     margin-bottom: 48px;
+
+    .booking-title-warn {
+      color: #ee1b0a;
+      text-align: center;
+      font-family: 'Noto Sans TC';
+      font-size: 16px;
+      font-weight: 600;
+      line-height: 24px;
+    }
   }
 
   .booking-content {
@@ -45,7 +57,13 @@
     }
 
     .booking-title {
-      margin-bottom: 24px;
+      gap: 6px;
+      margin-bottom: 40px;
+
+      .booking-title-warn {
+        font-size: 14px;
+        line-height: 20px;
+      }
     }
 
     .booking-button {
