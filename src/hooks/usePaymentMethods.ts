@@ -55,7 +55,8 @@ export const usePaymentMethods = (
         console.error('Payment failed:', error);
 
         // 捕捉後端錯誤訊息
-        const backendError = error?.response?.data?.message || error?.message || '';
+        const backendError =
+          error?.response?.data?.message || error?.message || '';
         if (backendError && setErrorDetails) {
           setErrorDetails(`Payment API Error:\n${backendError}`);
         }
@@ -130,8 +131,6 @@ export const usePaymentMethods = (
       countryCode: 'TW',
     });
 
-    console.log(import.meta.env.VITE_APPLE_MERCHANT_ID);
-
     // 設定付款請求但不立即觸發
     const paymentRequest = {
       supportedNetworks: SUPPORTED_NETWORKS.COMMON,
@@ -182,7 +181,6 @@ export const usePaymentMethods = (
         console.error('Apple Pay getPrime error:', result);
         console.error('Error status:', result.status);
         console.error('Error message:', result.msg);
-        console.log(import.meta.env.VITE_APPLE_MERCHANT_ID);
 
         // 設定詳細錯誤資訊
         const errorDetails = `Apple Pay Error:\nStatus: ${result.status}\nMessage: ${result.msg}\nMerchant ID: ${import.meta.env.VITE_APPLE_MERCHANT_ID}`;

@@ -147,6 +147,9 @@ export const TicketsCard: React.FC<TicketProps> = ({
                 ...user.undistributed,
               ];
 
+              // 設置 sessionStorage 標記,允許訪問分票頁面
+              sessionStorage.setItem('canAccessTicketDistribution', 'true');
+
               navigate(ROUTES.TICKET_DISTRIBUTION, {
                 state: {
                   ticketInfo: {
@@ -214,6 +217,9 @@ export const TicketsCard: React.FC<TicketProps> = ({
               className="text"
               onClick={() => {
                 if (canRefund() && !hasDistributedTicket) {
+                  // 設置 sessionStorage 標記,允許訪問退票頁面
+                  sessionStorage.setItem('canAccessRefund', 'true');
+
                   navigate(ROUTES.REFUND, {
                     state: {
                       ticketInfo: {

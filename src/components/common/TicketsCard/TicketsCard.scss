@@ -433,6 +433,9 @@
 
 @media screen and (max-width: 768px) {
   .ticket-card-container {
+    .ticket-card-title {
+      padding: 5px 24px;
+    }
     .ticket-card-content {
       flex-direction: column;
 

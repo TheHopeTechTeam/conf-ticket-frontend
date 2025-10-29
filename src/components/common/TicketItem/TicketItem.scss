@@ -1,3 +1,21 @@
+// 分隔線樣式
+.ticket-divider {
+  border: none;
+  border-top: 1px solid #e8eaea;
+  margin-bottom: 60px;
+}
+
+// 加購項目標題樣式
+.ticket-section-title {
+  color: #000;
+  text-align: center;
+  font-family: 'Noto Sans TC';
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 28px;
+  margin-bottom: 24px;
+}
+
 .booking-content-item {
   display: flex;
   gap: 16px;
@@ -120,6 +138,10 @@
 }
 
 @media screen and (max-width: 768px) {
+  .ticket-section-title {
+    margin-bottom: 28px;
+  }
+
   .booking-content-item {
     gap: 12px;
 

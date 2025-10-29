@@ -88,11 +88,8 @@ export const Tickets = () => {
               apiService.ticketsTypes.getTicketsTypes(),
             ]);
 
-          hideLoading();
-
           const orders = ordersResponse.docs || [];
           const tickets = ticketsResponse.docs || [];
-          console.log(orders, tickets, 'sss');
 
           const ticketTypes = ticketTypesResponse.docs || [];
 
@@ -120,6 +117,8 @@ export const Tickets = () => {
           } else {
             setActiveStatus(TICKET_STATUS.COLLECTED);
           }
+
+          hideLoading();
         } catch (error) {
           hideLoading();
           console.error('Failed to fetch orders:', error);
@@ -248,17 +247,6 @@ export const Tickets = () => {
                     const ticketTypeData = ticketTypesMap.get(ticketType?.id);
                     const ticketImageUrl =
                       ticketTypeData?.image?.url || '/images/ticket-sample.png';
-
-                    // 檢查是否有任何一張票已經被分票（已取票且已同意）
-                    // 需要從該訂單的所有類型票券中檢查，而非只從已過濾的 ticketGroup
-                    console.log(
-                      order,
-                      'order',
-                      order?.tickets?.some(
-                        (ticket: any) =>
-                          ticket.user?.consentedAt && ticket.isRedeemed
-                      )
-                    );
 
                     const hasDistributedTicket = order?.tickets?.some(
                       (ticket: any) =>

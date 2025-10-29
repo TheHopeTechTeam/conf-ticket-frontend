@@ -158,21 +158,6 @@ export const Payment: React.FC = () => {
       }
 
       try {
-        console.log({
-          memberId: user.id,
-          prime: result.card.prime,
-          items: paymentData.tickets.map(ticket => ({
-            ticketTypeId: ticket.id,
-            quantity: ticket.selectedQuantity * (ticket.bundleSize || 1),
-            members: (paymentData.groupPassFormData[ticket.id] || []).map(
-              member => ({
-                ...member,
-                role: member.role,
-              })
-            ),
-          })),
-        });
-
         showLoading('處理付款中...');
         await apiService.orders.postOrderCreate({
           memberId: user.id,
@@ -198,7 +183,8 @@ export const Payment: React.FC = () => {
         console.error('Payment failed:', error);
 
         // 捕捉後端錯誤訊息
-        const backendError = error?.response?.data?.message || error?.message || '';
+        const backendError =
+          error?.response?.data?.message || error?.message || '';
         if (backendError) {
           setErrorDetails(`Payment API Error:\n${backendError}`);
         }
@@ -275,7 +261,7 @@ export const Payment: React.FC = () => {
 
             <div className="order-summary">
               <p className="order-summary-title">
-                共{paymentData?.summary.totalQuantity}張，總計
+                總計
                 {paymentData?.summary.totalAmount.toLocaleString()}元
               </p>
             </div>

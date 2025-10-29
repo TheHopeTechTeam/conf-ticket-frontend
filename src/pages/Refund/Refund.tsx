@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { ordersApi } from '../../api/index';
 import Dialog from '../../components/common/Dialog/Dialog';
@@ -16,6 +16,19 @@ export const Refund: React.FC = () => {
   const [refundStatus, setRefundStatus] = useState<
     'form' | 'success' | 'error'
   >(STATUS.FORM);
+
+  // 檢查是否有訪問權限，沒有則導回首頁
+  useEffect(() => {
+    const canAccess = sessionStorage.getItem('canAccessRefund');
+
+    if (canAccess === 'true') {
+      // 立即清除標記，確保只能使用一次
+      sessionStorage.removeItem('canAccessRefund');
+    } else {
+      // 如果沒有訪問標記，導回首頁
+      navigate(ROUTES.TICKETS);
+    }
+  }, [navigate]);
 
   // 從路由狀態獲取票券資訊
   const currentTicketInfo = useMemo(() => {
@@ -200,7 +213,7 @@ export const Refund: React.FC = () => {
               <ul className="dialog-content-list">
                 <li>
                   <span className="number">• </span>
-                  若活動於 2025 年 5 月 1 日起始，則最晚退票時間為 2025 年 4 月
+                  若活動於 2025 年 4 月 30 日起始，則最晚退票時間為 2025 年 4 月
                   20 日 23:59。
                 </li>
                 <li>

@@ -9,6 +9,7 @@ export const Select: React.FC<SelectProps> = ({
   value,
   onChange,
   placeholder = '請選擇...',
+  hasError = false,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [dropdownPosition, setDropdownPosition] = useState({
@@ -89,7 +90,7 @@ export const Select: React.FC<SelectProps> = ({
         ref={buttonRef}
         type="button"
         onClick={handleButtonClick}
-        className={`select-button ${isOpen ? 'select-button-open' : ''}`}
+        className={`select-button ${isOpen ? 'select-button-open' : ''} ${hasError ? 'select-button-error' : ''}`}
       >
         <span className={selectedOption ? 'selected-text' : 'placeholder-text'}>
           {selectedOption ? selectedOption.label : placeholder}

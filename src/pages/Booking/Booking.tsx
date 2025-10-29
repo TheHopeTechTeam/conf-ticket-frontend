@@ -194,46 +194,6 @@ export const Booking: React.FC = () => {
 
   const handleNextStep = () => {
     const ticketInfo = getSelectedTickets();
-    console.log(ticketInfo);
-
-    // 檢查是否購買了多種不同類型的票券（翻譯機除外）
-    const nonTranslationTickets: string[] = [];
-
-    ticketInfo.tickets.forEach((ticket: any) => {
-      // 如果票券名稱包含「翻譯機」或「Translation」，則跳過檢查
-      const isTranslationTicket =
-        ticket.name.includes('翻譯機') ||
-        ticket.name.toLowerCase().includes('translation');
-
-      if (!isTranslationTicket) {
-        nonTranslationTickets.push(ticket.name);
-      }
-    });
-
-    // 檢查是否有多種不同的票券類型
-    const uniqueTicketTypes = [...new Set(nonTranslationTickets)];
-
-    if (uniqueTicketTypes.length > 1) {
-      alert(
-        `不可同時購買多種不同類型的票券，目前選擇了：${uniqueTicketTypes.join('、')}`
-      );
-
-      // 將所有翻譯機票券數量歸零
-      setTicketQuantities(prev => {
-        const updated = { ...prev };
-        ticketTypes.forEach(ticket => {
-          const isTranslationTicket =
-            ticket.name.includes('翻譯機') ||
-            ticket.name.toLowerCase().includes('translation');
-          if (isTranslationTicket) {
-            updated[ticket.id] = 0;
-          }
-        });
-        return updated;
-      });
-
-      return;
-    }
 
     // 導航到付款頁面，直接傳遞票券資訊
     navigate(ROUTES.PAYMENT, {
@@ -258,22 +218,22 @@ export const Booking: React.FC = () => {
   // 2. 有選擇需要會員資訊的票券但表單無效
   const isNextButtonDisabled = getTotalQuantity() === 0 || !areAllFormsValid();
 
-  // 計算翻譯機票券的最大數量
+  // 計算口譯機票券的最大數量
   const getMaxQuantityForTicket = (ticket: TicketInfo) => {
     const isTranslationTicket =
-      ticket.name.includes('翻譯機') ||
-      ticket.name.toLowerCase().includes('translation');
+      ticket.name.includes('口譯機') ||
+      ticket.name.toLowerCase().includes('Interpretation');
 
     if (!isTranslationTicket) {
       return ticket.available ?? 0;
     }
 
-    // 計算所有非翻譯機票券的總人數（票券數量 × bundleSize）
+    // 計算所有非口譯機票券的總人數（票券數量 × bundleSize）
     const totalPeople = ticketTypes.reduce((total, t) => {
-      const isNonTranslation =
-        !t.name.includes('翻譯機') &&
-        !t.name.toLowerCase().includes('translation');
-      if (isNonTranslation) {
+      const isTranslationTicket =
+        t.name.includes('口譯機') ||
+        t.name.toLowerCase().includes('Interpretation');
+      if (!isTranslationTicket) {
         const quantity = ticketQuantities[t.id] || 0;
         const bundleSize = t.bundleSize || 1;
         return total + quantity * bundleSize;
@@ -281,8 +241,37 @@ export const Booking: React.FC = () => {
       return total;
     }, 0);
 
-    // 翻譯機的最大數量 = 總人數 × 翻譯機的 bundleSize
+    // 口譯機的最大數量 = 總人數 × 口譯機的 bundleSize
     return totalPeople * (ticket.bundleSize || 1);
+  };
+
+  // 檢查票券是否應該被 disabled（口譯機除外）
+  const isTicketDisabled = (ticket: TicketInfo) => {
+    // 口譯機票券永遠不會被 disabled
+    const isTranslationTicket =
+      ticket.name.includes('口譯機') ||
+      ticket.name.toLowerCase().includes('interpretation');
+
+    if (isTranslationTicket) {
+      return false;
+    }
+
+    // 檢查是否已經選擇了其他非口譯機票券
+    const hasOtherTicketSelected = ticketTypes.some(t => {
+      const isOtherTranslation =
+        t.name.includes('口譯機') ||
+        t.name.toLowerCase().includes('interpretation');
+
+      // 跳過口譯機和當前票券本身
+      if (isOtherTranslation || t.id === ticket.id) {
+        return false;
+      }
+
+      // 檢查是否有選擇數量
+      return (ticketQuantities[t.id] || 0) > 0;
+    });
+
+    return hasOtherTicketSelected;
   };
 
   return (
@@ -290,7 +279,7 @@ export const Booking: React.FC = () => {
       <div className="booking-title">
         <h1>選擇票券類型與數量</h1>
         <p className="booking-title-warn">
-          每筆訂單限購一種票券，翻譯機則不限數量。
+          每筆訂單限購一種票券，口譯機則不限數量。
         </p>
       </div>
 
@@ -306,6 +295,7 @@ export const Booking: React.FC = () => {
                   quantity={currentTicketQuantity}
                   onQuantityChange={handleQuantityChange}
                   maxQuantity={getMaxQuantityForTicket(ticket)}
+                  disabled={isTicketDisabled(ticket)}
                 />
                 {currentTicketQuantity > 0 && ticketHandlers[ticket.id] && (
                   <GroupPassForm
@@ -332,6 +322,7 @@ export const Booking: React.FC = () => {
               quantity={ticketQuantities[ticket.id] || 0}
               onQuantityChange={handleQuantityChange}
               maxQuantity={getMaxQuantityForTicket(ticket)}
+              disabled={isTicketDisabled(ticket)}
             />
           );
         })}

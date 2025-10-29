@@ -35,8 +35,10 @@ export const GroupPassForm: React.FC<GroupPassFormProps> = ({
     trigger,
     getValues,
     setValue,
+    clearErrors,
   } = useForm<FormData>({
-    mode: 'onChange', // 改為 onChange 以即時更新 isValid
+    mode: 'onTouched', // 只在用戶觸碰欄位後才驗證
+    reValidateMode: 'onChange', // 觸碰後則即時驗證
     defaultValues: {
       users: Array.from(
         { length: quantity },
@@ -47,6 +49,7 @@ export const GroupPassForm: React.FC<GroupPassFormProps> = ({
             location: '',
             tel: '',
             role: '',
+            dietary: '',
           }
       ),
     },
@@ -101,7 +104,7 @@ export const GroupPassForm: React.FC<GroupPassFormProps> = ({
     // 只有在數量真的變化時才處理
     if (currentLength !== quantity) {
       if (quantity > currentLength) {
-        // 增加欄位 - 使用 append 而不是 replace
+        // 增加欄位 - 使用 append 保留現有資料
         const toAdd = quantity - currentLength;
         for (let i = 0; i < toAdd; i++) {
           append({
@@ -110,19 +113,23 @@ export const GroupPassForm: React.FC<GroupPassFormProps> = ({
             location: '',
             tel: '',
             role: '',
+            dietary: '',
           });
         }
       } else if (quantity < currentLength) {
-        // 減少欄位 - 使用 remove 而不是 replace
+        // 減少欄位 - 使用 remove 保留前面的資料
         const toRemove = currentLength - quantity;
         for (let i = 0; i < toRemove; i++) {
           remove(currentLength - 1 - i); // 從後面開始移除
         }
       }
 
+      // 清除所有錯誤狀態（但保留已填寫的值）
+      clearErrors();
+
       prevQuantityRef.current = quantity;
     }
-  }, [quantity, fields.length, append, remove]);
+  }, [quantity, fields.length, append, remove, clearErrors]);
 
   // 單獨處理 formData 恢復
   useEffect(() => {
@@ -170,7 +177,7 @@ export const GroupPassForm: React.FC<GroupPassFormProps> = ({
 
   const handleBlur = async (
     index: number,
-    field: 'name' | 'email' | 'location' | 'tel' | 'role'
+    field: 'name' | 'email' | 'location' | 'tel' | 'role' | 'dietary'
   ) => {
     await trigger(`users.${index}.${field}` as any);
   };
@@ -310,45 +317,37 @@ export const GroupPassForm: React.FC<GroupPassFormProps> = ({
                 <div
                   className={`form-label ${mode !== MODE.EDIT && 'form-record-label'}`}
                 >
-                  <label htmlFor={`tel-${index}`}>所屬教會電話</label>
+                  <label htmlFor={`dietary-${index}`}>餐食選擇</label>
                 </div>
                 {mode === MODE.EDIT ? (
                   <>
-                    <Controller
-                      name={`users.${index}.tel`}
-                      control={control}
-                      rules={{
-                        required: '請輸入所屬教會電話',
-                        validate: value => {
-                          if (!value || !value.trim()) {
-                            return '請輸入所屬教會電話';
-                          }
-                          if (!validatePhoneNumber(value)) {
-                            return '請輸入有效的電話號碼';
-                          }
-                          return true;
-                        },
-                      }}
-                      render={({ field }) => (
-                        <PhoneInput
-                          country="tw"
-                          value={field.value || ''}
-                          onChange={field.onChange}
-                          onBlur={() => handleBlur(index, 'tel')}
-                          hasError={!!errors.users?.[index]?.tel}
-                          placeholder="請輸入所屬教會電話"
-                        />
-                      )}
+                    <input
+                      type="hidden"
+                      {...register(`users.${index}.dietary`, {
+                        required: '請選擇餐食偏好',
+                      })}
                     />
-                    {errors.users?.[index]?.tel && (
+                    <Select
+                      options={[
+                        { id: 'meat', label: '葷食' },
+                        { id: 'vegetarian', label: '素食' },
+                      ]}
+                      value={watchedUsers?.[index]?.dietary || ''}
+                      onChange={handleSelectChange(index, 'dietary')}
+                      placeholder="請選擇葷/素"
+                      hasError={!!errors.users?.[index]?.dietary}
+                    />
+                    {errors.users?.[index]?.dietary && (
                       <span className="error-message">
-                        {errors.users[index].tel?.message}
+                        {errors.users[index].dietary?.message}
                       </span>
                     )}
                   </>
                 ) : (
                   <p className="form-record-item">
-                    {watchedUsers?.[index]?.tel}
+                    {watchedUsers?.[index]?.dietary === 'meat'
+                      ? '葷食'
+                      : '素食'}
                   </p>
                 )}
               </div>
@@ -388,7 +387,7 @@ export const GroupPassForm: React.FC<GroupPassFormProps> = ({
                   </p>
                 )}
               </div>
-              <div className="form-item">
+              <div className="form-item form-item-role">
                 <div
                   className={`form-label ${mode !== MODE.EDIT && 'form-record-label'}`}
                 >
@@ -407,6 +406,7 @@ export const GroupPassForm: React.FC<GroupPassFormProps> = ({
                       value={watchedUsers?.[index]?.role || ''}
                       onChange={handleSelectChange(index, 'role')}
                       placeholder="請選擇"
+                      hasError={!!errors.users?.[index]?.role}
                     />
                     {errors.users?.[index]?.role && (
                       <span className="error-message">
@@ -419,6 +419,52 @@ export const GroupPassForm: React.FC<GroupPassFormProps> = ({
                     {churchIdentityOptions.find(
                       option => option.id === watchedUsers?.[index]?.role
                     )?.label || watchedUsers?.[index]?.role}
+                  </p>
+                )}
+              </div>
+              <div className="form-item">
+                <div
+                  className={`form-label ${mode !== MODE.EDIT && 'form-record-label'}`}
+                >
+                  <label htmlFor={`tel-${index}`}>所屬教會電話</label>
+                </div>
+                {mode === MODE.EDIT ? (
+                  <>
+                    <Controller
+                      name={`users.${index}.tel`}
+                      control={control}
+                      rules={{
+                        required: '請輸入所屬教會電話',
+                        validate: value => {
+                          if (!value || !value.trim()) {
+                            return '請輸入所屬教會電話';
+                          }
+                          if (!validatePhoneNumber(value)) {
+                            return '請輸入有效的電話號碼';
+                          }
+                          return true;
+                        },
+                      }}
+                      render={({ field }) => (
+                        <PhoneInput
+                          country="tw"
+                          value={field.value || ''}
+                          onChange={field.onChange}
+                          onBlur={() => handleBlur(index, 'tel')}
+                          hasError={!!errors.users?.[index]?.tel}
+                          placeholder="請輸入所屬教會電話"
+                        />
+                      )}
+                    />
+                    {errors.users?.[index]?.tel && (
+                      <span className="error-message">
+                        {errors.users[index].tel?.message}
+                      </span>
+                    )}
+                  </>
+                ) : (
+                  <p className="form-record-item">
+                    {watchedUsers?.[index]?.tel}
                   </p>
                 )}
               </div>

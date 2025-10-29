@@ -107,7 +107,6 @@ export const Login: React.FC = () => {
       // 調用發送 OTP 的 API
       const res = await apiService.memberAuthentication.postAuth({ email });
       hideLoading();
-      console.log(res);
 
       // 檢查是否為測試帳號
       if (res.isTapPayTestAccount && res.token && res.callbackUrl) {

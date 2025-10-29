@@ -19,8 +19,9 @@
     gap: 12px;
     margin-bottom: 16px;
 
-    &.open {
-      padding: 10px 10px 20px 12px;
+    // 當內部的 group-pass-form-content 有 open class 時
+    &:has(.group-pass-form-content.open) {
+      padding: 12px 20px 24px 20px;
     }
 
     &:last-child {
@@ -55,7 +56,6 @@
 
   .group-pass-form-content {
     display: flex;
-    gap: 24px;
     max-height: 0;
     overflow: hidden;
     opacity: 0;
@@ -63,7 +63,7 @@
     transition: all 0.2s ease-in-out;
 
     &.open {
-      margin: 12px 0;
+      margin-top: 12px;
       max-height: 500px;
       opacity: 1;
       transform: translateY(0);
@@ -80,6 +80,11 @@
 
     .form-item {
       position: relative;
+      padding-right: 24px;
+
+      &.form-item-role {
+        margin-bottom: 39px;
+      }
       .form-label {
         margin-bottom: 6px;
         padding-left: 2px;
@@ -145,14 +150,23 @@
 
     .group-pass-form-content {
       flex-direction: column;
+      gap: 16px;
+
       .form-item {
-        padding-right: 24px;
+        &.form-item-role {
+          margin-bottom: 0px !important;
+        }
       }
     }
 
     /* 手機版本調整動畫高度 */
     .group-pass-form-content.open {
       max-height: 800px;
+    }
+
+    /* 手機版本：當 group-pass-form-content 有 open 時的 padding */
+    .group-pass-form-details:has(.group-pass-form-content.open) {
+      padding: 10px 10px 20px 12px;
     }
   }
 }

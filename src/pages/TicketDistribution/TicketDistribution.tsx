@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { apiService } from '../../api';
 import Dialog from '../../components/common/Dialog/Dialog';
@@ -28,6 +28,26 @@ export const TicketDistribution: React.FC<TicketDistributionProps> = ({
   const currentTicketInfo: TicketInfo = useMemo(() => {
     return ticketInfo || location.state?.ticketInfo;
   }, [ticketInfo, location.state]);
+
+  // 檢查是否有訪問權限，沒有則導回首頁
+  useEffect(() => {
+    const canAccess = sessionStorage.getItem('canAccessTicketDistribution');
+
+    if (canAccess === 'true') {
+      // 立即清除標記，確保只能使用一次
+      sessionStorage.removeItem('canAccessTicketDistribution');
+    } else {
+      // 如果沒有訪問標記，導回首頁
+      navigate(ROUTES.TICKETS);
+    }
+  }, [navigate]);
+
+  // 檢查是否有票券資訊，沒有則導回首頁
+  useEffect(() => {
+    if (!currentTicketInfo) {
+      navigate(ROUTES.TICKETS);
+    }
+  }, [currentTicketInfo, navigate]);
 
   // 動態生成取票者狀態
   const [recipients, setRecipients] = useState<RecipientInfo[]>(() =>
@@ -147,6 +167,7 @@ export const TicketDistribution: React.FC<TicketDistributionProps> = ({
   const hasValidEmail = recipients.some(recipient => recipient.isEmailValid);
 
   // 計算未分出的票券數量
+  // eslint-disable-next-line react-hooks/rules-of-hooks
   const undistributedCount = useMemo(() => {
     return (
       currentTicketInfo?.tickets?.filter(ticket => !ticket.isRedeemed).length ||
