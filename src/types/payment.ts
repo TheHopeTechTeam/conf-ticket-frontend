@@ -15,7 +15,7 @@ export interface GroupPassFormData {
   role?: string;
   location: string;
   tel: string;
-  dietary?: string;
+  dietaryRequirement?: string;
 }
 
 export interface PaymentData {

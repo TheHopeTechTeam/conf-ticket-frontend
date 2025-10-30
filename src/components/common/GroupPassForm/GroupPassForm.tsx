@@ -49,7 +49,7 @@ export const GroupPassForm: React.FC<GroupPassFormProps> = ({
             location: '',
             tel: '',
             role: '',
-            dietary: '',
+            dietaryRequirement: '',
           }
       ),
     },
@@ -113,7 +113,7 @@ export const GroupPassForm: React.FC<GroupPassFormProps> = ({
             location: '',
             tel: '',
             role: '',
-            dietary: '',
+            dietaryRequirement: '',
           });
         }
       } else if (quantity < currentLength) {
@@ -177,7 +177,7 @@ export const GroupPassForm: React.FC<GroupPassFormProps> = ({
 
   const handleBlur = async (
     index: number,
-    field: 'name' | 'email' | 'location' | 'tel' | 'role' | 'dietary'
+    field: 'name' | 'email' | 'location' | 'tel' | 'role' | 'dietaryRequirement'
   ) => {
     await trigger(`users.${index}.${field}` as any);
   };
@@ -317,35 +317,37 @@ export const GroupPassForm: React.FC<GroupPassFormProps> = ({
                 <div
                   className={`form-label ${mode !== MODE.EDIT && 'form-record-label'}`}
                 >
-                  <label htmlFor={`dietary-${index}`}>餐食選擇</label>
+                  <label htmlFor={`dietaryRequirement-${index}`}>
+                    餐食選擇
+                  </label>
                 </div>
                 {mode === MODE.EDIT ? (
                   <>
                     <input
                       type="hidden"
-                      {...register(`users.${index}.dietary`, {
+                      {...register(`users.${index}.dietaryRequirement`, {
                         required: '請選擇餐食偏好',
                       })}
                     />
                     <Select
                       options={[
-                        { id: 'meat', label: '葷食' },
-                        { id: 'vegetarian', label: '素食' },
+                        { id: '葷食', label: '葷食' },
+                        { id: '素食', label: '素食' },
                       ]}
-                      value={watchedUsers?.[index]?.dietary || ''}
-                      onChange={handleSelectChange(index, 'dietary')}
+                      value={watchedUsers?.[index]?.dietaryRequirement || ''}
+                      onChange={handleSelectChange(index, 'dietaryRequirement')}
                       placeholder="請選擇葷/素"
-                      hasError={!!errors.users?.[index]?.dietary}
+                      hasError={!!errors.users?.[index]?.dietaryRequirement}
                     />
-                    {errors.users?.[index]?.dietary && (
+                    {errors.users?.[index]?.dietaryRequirement && (
                       <span className="error-message">
-                        {errors.users[index].dietary?.message}
+                        {errors.users[index].dietaryRequirement?.message}
                       </span>
                     )}
                   </>
                 ) : (
                   <p className="form-record-item">
-                    {watchedUsers?.[index]?.dietary === 'meat'
+                    {watchedUsers?.[index]?.dietaryRequirement === '葷食'
                       ? '葷食'
                       : '素食'}
                   </p>
@@ -387,7 +389,9 @@ export const GroupPassForm: React.FC<GroupPassFormProps> = ({
                   </p>
                 )}
               </div>
-              <div className="form-item form-item-role">
+              <div
+                className={`form-item ${mode === MODE.EDIT && 'form-item-role'}`}
+              >
                 <div
                   className={`form-label ${mode !== MODE.EDIT && 'form-record-label'}`}
                 >
