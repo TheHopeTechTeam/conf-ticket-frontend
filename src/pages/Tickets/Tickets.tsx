@@ -41,9 +41,9 @@ export const Tickets = () => {
         case TICKET_STATUS.PURCHASED:
           // 已購買：票券所屬訂單完成且票券未取票
           return (
-            (ticket.order?.status === 'completed' && !ticket.isRedeemed) ||
-            (!ticket.user?.consentedAt && ticket.isRedeemed) ||
-            (ticket.user?.consentedAt && ticket.isRedeemed)
+            ticket.order?.status !== 'refunded' &&
+            ((ticket.order?.status === 'completed' && !ticket.isRedeemed) ||
+              ticket.isRedeemed)
           );
 
         case TICKET_STATUS.REFUNDED:
