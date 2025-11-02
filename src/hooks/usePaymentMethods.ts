@@ -114,7 +114,7 @@ export const usePaymentMethods = (
     });
   }, [paymentData, processPayment, setPaymentStatus]);
 
-  const checkApplePayAvailability = useCallback(() => {
+  const checkApplePayAvailability = useCallback(async () => {
     if (!paymentData) return;
 
     // 首先檢查瀏覽器和設備支援度
@@ -154,17 +154,28 @@ export const usePaymentMethods = (
     };
 
     // 驗證付款能力
-    window.TPDirect.paymentRequestApi.setupPaymentRequest(
-      paymentRequest,
-      (result: any) => {
-        if (
-          result.browserSupportPaymentRequest &&
-          result.canMakePaymentWithActiveCard
-        ) {
-          updatePaymentReady({ isApplePayReady: true });
-        }
-      }
-    );
+    const result: {
+      browserSupportPaymentRequest: boolean,
+      canMakePaymentWithActiveCard: boolean
+    } = await new Promise((resolve) => {
+      window.TPDirect.paymentRequestApi.setupPaymentRequest(paymentRequest, resolve);
+    });
+
+    if (!result.browserSupportPaymentRequest) {
+      updatePaymentReady({ isApplePayReady: false });
+      setWarnMessage("此裝置不支援 Apple Pay");
+      setIsWarnDialogOpen(true);
+      return;
+    }
+
+    if (!result.canMakePaymentWithActiveCard) {
+      updatePaymentReady({ isApplePayReady: false });
+      setWarnMessage("此裝置沒有支援的卡片可以付款");
+      setIsWarnDialogOpen(true);
+      return;
+    }
+
+    updatePaymentReady({ isApplePayReady: true });
   }, [paymentData, updatePaymentReady, setWarnMessage, setIsWarnDialogOpen]);
 
   const setupApplePay = useCallback(() => {
