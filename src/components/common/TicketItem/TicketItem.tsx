@@ -57,12 +57,12 @@ export const TicketItem: React.FC<TicketItemProps> = ({
       <div className="booking-content-item">
         <div className="booking-content-item-left">
           <img
-            // "url": "/api/v1/media/file/shibainu-2.png",
             src={ticket.image?.url}
             alt={ticket.image?.alt || 'Ticket Image'}
             className={
               mode === MODE.EDIT ? 'edit-ticket-pic' : 'record-ticket-pic'
             }
+            loading="lazy"
           />
         </div>
         <div className="booking-content-item-right">

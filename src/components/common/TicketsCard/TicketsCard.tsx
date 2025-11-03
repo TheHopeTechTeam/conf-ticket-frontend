@@ -95,6 +95,7 @@ export const TicketsCard: React.FC<TicketProps> = ({
           src={ticketImageUrl}
           alt={title}
           className={`ticket-card-pic ${status === TICKET_STATUS.REFUNDED ? 'refund' : ''}`}
+          loading="lazy"
         />
         <div className="ticket-card-info">
           <div className="ticket-card-info-time">
