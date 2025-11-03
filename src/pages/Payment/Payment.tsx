@@ -36,7 +36,6 @@ export const Payment: React.FC = () => {
   const { showLoading, hideLoading } = useLoading();
   const [isWarnDialogOpen, setIsWarnDialogOpen] = useState(false);
   const [warnMessage, setWarnMessage] = useState('');
-  const [errorDetails, setErrorDetails] = useState('');
 
   const [creditCardStatus, setCreditCardStatus] = useState<CreditCardStatus>({
     number: '',
@@ -67,7 +66,6 @@ export const Payment: React.FC = () => {
     navigate,
     setWarnMessage,
     setIsWarnDialogOpen,
-    setErrorDetails
   );
 
   // 當付款方式改變時，檢查相應付款方法的可用性
@@ -181,13 +179,6 @@ export const Payment: React.FC = () => {
       } catch (error: any) {
         hideLoading();
         console.error('Payment failed:', error);
-
-        // 捕捉後端錯誤訊息
-        const backendError =
-          error?.response?.data?.message || error?.message || '';
-        if (backendError) {
-          setErrorDetails(`Payment API Error:\n${backendError}`);
-        }
 
         setPaymentStatus(STATUS.ERROR);
         window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -324,15 +315,10 @@ export const Payment: React.FC = () => {
           onSuccessClick={() => navigate(ROUTES.TICKETS)}
         />
       )}
-      <p>{errorDetails}</p>
       {paymentStatus === STATUS.ERROR && (
         <SuccessOrError
           type={STATUS.ERROR}
-          message={
-            errorDetails
-              ? `系統發生錯誤，請再試一次。<br/><br/><small style="font-size: 0.8em; white-space: pre-wrap;">${errorDetails}</small>`
-              : '系統發生錯誤，請再試一次。'
-          }
+          message="系統發生錯誤，請再試一次。"
           titlePrefix="購買"
           errorText="失敗"
           retryButtonText="前往購買票券"
