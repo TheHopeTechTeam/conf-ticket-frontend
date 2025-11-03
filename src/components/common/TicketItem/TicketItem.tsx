@@ -31,7 +31,7 @@ export const TicketItem: React.FC<TicketItemProps> = ({
   // 判斷是否為口譯機票券
   const isTranslationTicket =
     ticket.name.includes('口譯機') ||
-    ticket.name.toLowerCase().includes('interpretation');
+    ticket.name.toLowerCase().includes('Interpretation');
 
   // 判斷單位（團體/雙人/口譯機使用「組」，其他使用「張」）
   const getTicketUnit = () => {

@@ -247,10 +247,10 @@ export const Tickets = () => {
                     const ticketTypeData = ticketTypesMap.get(ticketType?.id);
                     const ticketImageUrl =
                       ticketTypeData?.image?.url || '/images/ticket-sample.png';
+                    const bundleSize = ticketTypeData?.bundleSize || 1;
 
                     const hasDistributedTicket = order?.tickets?.some(
-                      (ticket: any) =>
-                        ticket.user?.consentedAt && ticket.isRedeemed
+                      (ticket: any) => ticket.isRedeemed
                     );
 
                     // 分類票券狀態
@@ -285,6 +285,7 @@ export const Tickets = () => {
                         updatedAt={order?.updatedAt}
                         user={ticketsByStatus}
                         hasDistributedTicket={hasDistributedTicket}
+                        bundleSize={bundleSize}
                       />
                     );
                   }

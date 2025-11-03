@@ -250,7 +250,7 @@ export const Booking: React.FC = () => {
     // 口譯機票券永遠不會被 disabled
     const isTranslationTicket =
       ticket.name.includes('口譯機') ||
-      ticket.name.toLowerCase().includes('interpretation');
+      ticket.name.toLowerCase().includes('Interpretation');
 
     if (isTranslationTicket) {
       return false;
@@ -260,7 +260,7 @@ export const Booking: React.FC = () => {
     const hasOtherTicketSelected = ticketTypes.some(t => {
       const isOtherTranslation =
         t.name.includes('口譯機') ||
-        t.name.toLowerCase().includes('interpretation');
+        t.name.toLowerCase().includes('Interpretation');
 
       // 跳過口譯機和當前票券本身
       if (isOtherTranslation || t.id === ticket.id) {
