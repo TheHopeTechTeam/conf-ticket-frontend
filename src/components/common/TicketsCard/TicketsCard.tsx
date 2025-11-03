@@ -73,6 +73,7 @@ export const TicketsCard: React.FC<TicketProps> = ({
             style={{ cursor: 'pointer' }}
           >
             <div className="detail-btn">
+              <p className="detail-title">查看分票狀態</p>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="14"

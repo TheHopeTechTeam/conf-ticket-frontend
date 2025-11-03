@@ -279,7 +279,7 @@ export const Booking: React.FC = () => {
       <div className="booking-title">
         <h1>選擇票券類型與數量</h1>
         <p className="booking-title-warn">
-          每筆訂單限購一種票券，口譯機則不限數量。
+          每筆訂單限購一種票券，一張票券僅可加購一台口譯機。
         </p>
       </div>
 

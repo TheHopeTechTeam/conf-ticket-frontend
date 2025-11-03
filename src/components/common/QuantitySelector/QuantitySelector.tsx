@@ -70,18 +70,18 @@ export const QuantitySelector: React.FC<QuantitySelectorProps> = ({
     </svg>
   );
 
-  const PlusIcon = () => (
+  const PlusIcon: React.FC<MinusIconProps> = ({ disabled }) => (
     <svg
       xmlns="http://www.w3.org/2000/svg"
       width="24"
       height="24"
       viewBox="0 0 24 24"
       fill="none"
-      className="icon"
+      className={`icon ${disabled ? 'disabled' : ''}`}
     >
       <path
         d="M19 12.998H13V18.998H11V12.998H5V10.998H11V4.99805H13V10.998H19V12.998Z"
-        fill={!max ? '#A5A9AB' : 'black'}
+        fill={disabled ? '#A5A9AB' : 'black'}
       />
     </svg>
   );
@@ -112,7 +112,7 @@ export const QuantitySelector: React.FC<QuantitySelectorProps> = ({
         disabled={quantity >= max}
         type="button"
       >
-        <PlusIcon />
+        <PlusIcon disabled={quantity >= max} />
       </button>
     </div>
   );

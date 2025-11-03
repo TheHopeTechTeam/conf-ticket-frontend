@@ -25,6 +25,15 @@
       display: flex;
       align-items: center;
       justify-content: center;
+      gap: 2px;
+      .detail-title {
+        color: #fff;
+        font-family: 'Noto Sans TC';
+        font-size: 12px;
+        font-style: normal;
+        font-weight: 500;
+        line-height: 18px; /* 150% */
+      }
     }
 
     .ticket-card-title-alert {
