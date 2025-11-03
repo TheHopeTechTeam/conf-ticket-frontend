@@ -60,6 +60,13 @@
     .ticket-card-pic {
       width: 237px;
       height: 140px;
+      object-fit: cover;
+      object-position: 50% 50%;
+
+      &.refund {
+        filter: grayscale(100%);
+        opacity: 0.6;
+      }
     }
 
     .ticket-card-info {
