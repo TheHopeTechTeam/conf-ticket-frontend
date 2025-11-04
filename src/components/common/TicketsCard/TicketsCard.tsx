@@ -228,33 +228,29 @@ export const TicketsCard: React.FC<TicketProps> = ({
           </div>
           <div
             className={`refund ${!canRefund() || hasDistributedTicket ? 'refund-disabled' : ''}`}
-          >
-            <p
-              className="text"
-              onClick={() => {
-                if (canRefund() && !hasDistributedTicket) {
-                  // 設置 sessionStorage 標記,允許訪問退票頁面
-                  sessionStorage.setItem('canAccessRefund', 'true');
+            onClick={() => {
+              if (canRefund() && !hasDistributedTicket) {
+                // 設置 sessionStorage 標記,允許訪問退票頁面
+                sessionStorage.setItem('canAccessRefund', 'true');
 
-                  navigate(ROUTES.REFUND, {
-                    state: {
-                      ticketInfo: {
-                        ticketType: title,
-                        ticketCount: quantity,
-                        orderNumber: orderNumber,
-                        details: details,
-                        status: status,
-                        user: user,
-                        ticketIds: ticketIds,
-                        useDate: '2026.04.30-2026.05.02',
-                      },
+                navigate(ROUTES.REFUND, {
+                  state: {
+                    ticketInfo: {
+                      ticketType: title,
+                      ticketCount: quantity,
+                      orderNumber: orderNumber,
+                      details: details,
+                      status: status,
+                      user: user,
+                      ticketIds: ticketIds,
+                      useDate: '2026.04.30-2026.05.02',
                     },
-                  });
-                }
-              }}
-            >
-              申請退票
-            </p>
+                  },
+                });
+              }
+            }}
+          >
+            <p className="text">申請退票</p>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="18"

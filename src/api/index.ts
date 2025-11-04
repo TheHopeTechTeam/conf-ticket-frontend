@@ -69,6 +69,10 @@ export const ordersApi = {
     );
   },
 
+  getOrdersByOrderId: async (orderId: string) => {
+    return await httpClient.get(`/v1/orders/${orderId}`);
+  },
+
   createOrder: async (data: PostOrderCreateRequest) => {
     return await httpClient.post('/v1/orders/create', data);
   },
@@ -104,6 +108,7 @@ export const apiService = {
   },
   orders: {
     getOrders: ordersApi.getOrdersByMember,
+    getOrdersByOrderId: ordersApi.getOrdersByOrderId,
     postOrderCreate: ordersApi.createOrder,
     postOrdersRefund: ordersApi.postOrdersRefund,
   },

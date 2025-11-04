@@ -12,6 +12,7 @@ import {
 import { STATUS } from '../../constants/common';
 import { ROUTES } from '../../constants/routes';
 import { useAuthContext } from '../../contexts/AuthContext';
+import { useLoading } from '../../contexts/LoadingContext';
 import './TicketDistribution.scss';
 
 export const TicketDistribution: React.FC<TicketDistributionProps> = ({
@@ -23,6 +24,7 @@ export const TicketDistribution: React.FC<TicketDistributionProps> = ({
   const [distributionStatus, setDistributionStatus] = useState<
     'form' | 'success' | 'error'
   >(STATUS.FORM);
+  const { showLoading, hideLoading } = useLoading();
 
   // 從路由狀態或 props 獲取票券資訊
   const currentTicketInfo: TicketInfo = useMemo(() => {
@@ -228,7 +230,6 @@ export const TicketDistribution: React.FC<TicketDistributionProps> = ({
           if (member.orders && member.orders.length > 0) {
             member.orders.forEach((order: any) => {
               if (!order.tickets?.length) return;
-
               const distributedTickets = order.tickets.filter((ticket: any) => {
                 return (
                   ticket.isRedeemed &&
@@ -286,11 +287,13 @@ export const TicketDistribution: React.FC<TicketDistributionProps> = ({
       };
 
       // 調用分票 API
+      showLoading('分票中...');
       await apiService.tickets.postTicketsSplit(splitData);
       // 分票成功，關閉 dialog 並顯示成功頁面
       setTicketDistributionDialogOpen(false);
       setDistributionStatus(STATUS.SUCCESS);
       window.scrollTo({ top: 0, behavior: 'smooth' });
+      hideLoading();
     } catch (error) {
       console.error('分票 API 失敗:', error);
       // 分票失敗，關閉 dialog 並顯示錯誤頁面

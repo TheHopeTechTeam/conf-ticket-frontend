@@ -31,6 +31,7 @@ class FetchService {
 
     //  從 localStorage 取得 token
     const token = this.getToken();
+    const loginEmail = localStorage.getItem('loginEmail');
 
     // 預設設定
     const defaultOptions: RequestInit = {
@@ -44,6 +45,7 @@ class FetchService {
       defaultOptions.headers = {
         ...defaultOptions.headers,
         Authorization: `Bearer ${token}`,
+        'x-member-auth': loginEmail || '',
       };
     }
 

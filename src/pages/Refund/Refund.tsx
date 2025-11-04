@@ -5,17 +5,24 @@ import Dialog from '../../components/common/Dialog/Dialog';
 import { SuccessOrError } from '../../components/common/SuccessOrError/SuccessOrError';
 import { MAIL, STATUS } from '../../constants/common';
 import { ROUTES } from '../../constants/routes';
+import { useLoading } from '../../contexts/LoadingContext';
 import './Refund.scss';
 
 export const Refund: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
-
+  const { showLoading, hideLoading } = useLoading();
   const [isRefundDialogOpen, setRefundDialogOpen] = React.useState(false);
   const [isCheckboxChecked, setIsCheckboxChecked] = React.useState(false);
   const [refundStatus, setRefundStatus] = useState<
     'form' | 'success' | 'error'
   >(STATUS.FORM);
+  const [uniqueTickets, setUniqueTickets] = useState<any[]>([]);
+
+  // 從路由狀態獲取票券資訊
+  const currentTicketInfo = useMemo(() => {
+    return location.state?.ticketInfo;
+  }, [location.state]);
 
   // 檢查是否有訪問權限，沒有則導回首頁
   useEffect(() => {
@@ -24,16 +31,53 @@ export const Refund: React.FC = () => {
     if (canAccess === 'true') {
       // 立即清除標記，確保只能使用一次
       sessionStorage.removeItem('canAccessRefund');
+
+      // 取得訂單資料並過濾 tickets
+      showLoading('載入票券名稱中...');
+      const fetchOrderData = async () => {
+        try {
+          const orderData = await ordersApi.getOrdersByOrderId(
+            currentTicketInfo.orderNumber
+          );
+
+          // 從訂單中取出 tickets
+          const tickets = orderData?.tickets || [];
+
+          // 根據 type.name 過濾，只保留唯一的 type，並計算每個 type 的數量
+          const filteredTypes = tickets.reduce((acc: any[], ticket: any) => {
+            const type = ticket?.type;
+            const typeName = type?.name;
+
+            if (type) {
+              // 檢查是否已經存在相同的 type.name
+              const existingType = acc.find((t: any) => t?.name === typeName);
+
+              if (existingType) {
+                // 如果已存在，數量 +1
+                existingType.quantity += 1;
+              } else {
+                // 如果不存在，新增並設定數量為 1
+                acc.push({ ...type, quantity: 1 });
+              }
+            }
+
+            return acc;
+          }, []);
+
+          setUniqueTickets(filteredTypes);
+          hideLoading();
+          console.log('過濾後的 types:', filteredTypes);
+        } catch (error) {
+          console.error('取得訂單資料失敗:', error);
+        }
+      };
+
+      fetchOrderData();
     } else {
       // 如果沒有訪問標記，導回首頁
       navigate(ROUTES.TICKETS);
     }
-  }, [navigate]);
-
-  // 從路由狀態獲取票券資訊
-  const currentTicketInfo = useMemo(() => {
-    return location.state?.ticketInfo;
-  }, [location.state]);
+  }, [navigate, currentTicketInfo?.orderNumber]);
 
   // 如果沒有票券資訊，導回票券頁面
   if (!currentTicketInfo) {
@@ -64,16 +108,19 @@ export const Refund: React.FC = () => {
   const handleRefund = async () => {
     try {
       // 調用退票 API
+      showLoading('退票中...');
       await ordersApi.postOrdersRefund(currentTicketInfo.orderNumber);
       // 退票成功
       setRefundStatus(STATUS.SUCCESS);
       window.scrollTo({ top: 0, behavior: 'smooth' });
+      hideLoading();
     } catch (error) {
       console.error('退票 API 失敗:', error);
       // 錯誤訊息已由 service.ts 統一處理和顯示
       // 退票失敗，顯示錯誤頁面
       setRefundStatus(STATUS.ERROR);
       window.scrollTo({ top: 0, behavior: 'smooth' });
+      hideLoading();
     }
   };
 
@@ -116,15 +163,22 @@ export const Refund: React.FC = () => {
             <div className="refund-content-info">
               <div className="refund-content-info-item">
                 <p className="refund-content-info-item-label">票券票種</p>
-                <p className="refund-content-info-item-content">
-                  {currentTicketInfo.ticketType}
-                </p>
-              </div>
-              <div className="refund-content-info-item">
-                <p className="refund-content-info-item-label">票券張數</p>
-                <p className="refund-content-info-item-content">
-                  {currentTicketInfo.ticketCount}
-                </p>
+                <div className="refund-content-info-item-content">
+                  {uniqueTickets.map((element, index) => {
+                    const count = element.quantity / element.bundleSize;
+                    const unit =
+                      element.bundleSize > 1 ||
+                      element.name?.includes('口譯機') ||
+                      element.name?.includes('Interpretation')
+                        ? '組'
+                        : '張';
+                    return (
+                      <div key={element.id || index}>
+                        {element.name} {count} {unit}
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
               <div className="refund-content-info-item">
                 <p className="refund-content-info-item-label">訂單編號</p>
