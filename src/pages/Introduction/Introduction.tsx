@@ -8,7 +8,7 @@ export const Introduction: React.FC = () => {
   return (
     <div className="form-container introduction-container">
       <img
-        src="/images/intro-banner.png"
+        src="/images/intro-banner.webp"
         alt=""
         className="introduction-image"
       />
