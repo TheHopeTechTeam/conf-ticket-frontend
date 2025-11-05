@@ -59,9 +59,7 @@ export const TicketItem: React.FC<TicketItemProps> = ({
           <img
             src={ticket.image?.url}
             alt={ticket.image?.alt || 'Ticket Image'}
-            className={
-              mode === MODE.EDIT ? 'edit-ticket-pic' : 'record-ticket-pic'
-            }
+            className={`${mode === MODE.EDIT ? 'edit-ticket-pic' : 'record-ticket-pic'} ${!ticket.available ? 'refund' : ''}`}
             loading="lazy"
           />
         </div>

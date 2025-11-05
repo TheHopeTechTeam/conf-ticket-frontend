@@ -307,7 +307,9 @@ export const TicketsCard: React.FC<TicketProps> = ({
         </summary>
 
         <div className="details-content">
-          <p className="details-content-caption">※{ticketCaption}</p>
+          {ticketCaption && (
+            <p className="details-content-caption">※{ticketCaption}</p>
+          )}
           {details.map((detail, index) => (
             <div key={index} className="detail-item">
               <span className="text">{detail}</span>

@@ -138,7 +138,8 @@ export const Refund: React.FC = () => {
               <div>
                 <ul className="refund-header-content-list">
                   <li className="highlight">
-                    <span className="number">1.</span>退款將會酌收10%手續費
+                    <span className="number">1.</span>退票將會酌收每張票 10%
+                    票價之手續費
                   </li>
                   <li>
                     <span className="number">2.</span>將於 20

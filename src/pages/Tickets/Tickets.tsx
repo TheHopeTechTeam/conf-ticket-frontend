@@ -274,9 +274,9 @@ export const Tickets = () => {
                       <TicketsCard
                         key={`${order?.id}-${ticketType?.id}-${groupIndex}`}
                         ticketTypeId={ticketType?.id || 'N/A'}
-                        ticketCaption={ticketType?.caption || '票券'}
+                        ticketCaption={ticketType?.caption || ''}
                         ticketImageUrl={ticketImageUrl}
-                        title={ticketType?.name || '票券'}
+                        title={ticketType?.name || ''}
                         quantity={quantity}
                         orderNumber={order?.id || 'N/A'}
                         details={ticketDetails}

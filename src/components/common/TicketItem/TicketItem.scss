@@ -26,13 +26,23 @@
       height: 130px;
       object-fit: cover;
       object-position: 50% 50%;
+
+      &.refund {
+        filter: grayscale(100%);
+        opacity: 0.6;
+      }
     }
 
     .record-ticket-pic {
-      width: 126px;
-      height: 91px;
+      width: 180px;
+      height: 130px;
       object-fit: cover;
       object-position: 50% 50%;
+
+      &.refund {
+        filter: grayscale(100%);
+        opacity: 0.6;
+      }
     }
   }
 
@@ -46,7 +56,7 @@
       display: flex;
       flex-direction: column;
       gap: 12px;
-      max-width: 430px;
+      max-width: 370px;
       width: 100%;
 
       .ticket-info-title-container {
@@ -154,11 +164,21 @@
       .edit-ticket-pic {
         width: 108px;
         height: 108px;
+
+        &.refund {
+          filter: grayscale(100%);
+          opacity: 0.6;
+        }
       }
 
       .record-ticket-pic {
-        width: 90px;
-        height: 65px;
+        width: 108px;
+        height: 108px;
+
+        &.refund {
+          filter: grayscale(100%);
+          opacity: 0.6;
+        }
       }
     }
 

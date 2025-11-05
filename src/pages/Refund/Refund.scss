@@ -1,7 +1,7 @@
 .refund-container {
   max-width: 386px;
   background-color: #fff;
-  padding: 28px 32px 40px 32px !important;
+  padding: 28px 31px 40px 32px !important;
 
   .refund-header {
     display: flex;
@@ -54,11 +54,11 @@
     .refund-content-info {
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 20px;
 
       .refund-content-info-item {
         display: flex;
-        gap: 16px;
+        flex-direction: column;
 
         .refund-content-info-item-label {
           font-size: 16px;
@@ -71,7 +71,6 @@
           font-size: 16px;
           font-weight: 600;
           line-height: 24px;
-          max-width: 200px;
           width: 100%;
         }
       }
