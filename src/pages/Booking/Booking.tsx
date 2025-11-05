@@ -308,6 +308,7 @@ export const Booking: React.FC = () => {
                     onValidationChange={
                       ticketHandlers[ticket.id].onValidationChange
                     }
+                    ticketName={ticket.name}
                   />
                 )}
               </div>

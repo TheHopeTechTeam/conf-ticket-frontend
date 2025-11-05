@@ -14,6 +14,7 @@ interface GroupPassFormProps {
   onFormDataChange?: (index: number, formData: GroupPassFormData) => void;
   onValidationChange?: (isValid: boolean) => void;
   formData?: GroupPassFormData[];
+  ticketName?: string;
 }
 
 interface FormData {
@@ -26,6 +27,7 @@ export const GroupPassForm: React.FC<GroupPassFormProps> = ({
   onFormDataChange,
   onValidationChange,
   formData,
+  ticketName,
 }) => {
   const {
     register,
@@ -73,13 +75,18 @@ export const GroupPassForm: React.FC<GroupPassFormProps> = ({
     const loadChurchIdentityOptions = async () => {
       try {
         const response = await apiService.members.getMembersRoles();
-        const filteredResponse = (response || []).filter(
-          (item: { label: string; value: string }) =>
-            item.value !== 'pastor' &&
-            item.value !== 'staff' &&
-            item.value !== 'seminarian' &&
-            item.value !== 'default'
-        );
+
+        // 只有當 ticketName 包含 'LEADERSHIP' 時才進行過濾
+        const filteredResponse = ticketName?.includes('LEADERSHIP')
+          ? (response || []).filter(
+              (item: { label: string; value: string }) =>
+                item.value !== 'pastor' &&
+                item.value !== 'staff' &&
+                item.value !== 'seminarian' &&
+                item.value !== 'default'
+            )
+          : response || [];
+
         const transformedOptions = filteredResponse.map(
           (item: { label: string; value: string }) => ({
             id: item.value,
@@ -93,7 +100,7 @@ export const GroupPassForm: React.FC<GroupPassFormProps> = ({
     };
 
     loadChurchIdentityOptions();
-  }, []);
+  }, [ticketName]);
 
   // 當 quantity 變化時智能更新表單（使用 append/remove 保持 details 狀態）
   const prevQuantityRef = React.useRef(quantity);
@@ -302,10 +309,12 @@ export const GroupPassForm: React.FC<GroupPassFormProps> = ({
                         {errors.users[index].email?.message}
                       </span>
                     )}
-                    <p className="form-tip">
-                      請填寫實際使用此票券者的電子郵件，每個電子郵件限購一張
-                      Leadership Pass
-                    </p>
+                    {ticketName?.includes('LEADERSHIP') && (
+                      <p className="form-tip">
+                        請填寫實際使用此票券者的電子郵件，每個電子郵件限購一張
+                        Leadership Pass
+                      </p>
+                    )}
                   </>
                 ) : (
                   <p className="form-record-item">
@@ -390,7 +399,7 @@ export const GroupPassForm: React.FC<GroupPassFormProps> = ({
                 )}
               </div>
               <div
-                className={`form-item ${mode === MODE.EDIT && 'form-item-role'}`}
+                className={`form-item ${mode === MODE.EDIT && ticketName?.includes('LEADERSHIP') && 'form-item-role'}`}
               >
                 <div
                   className={`form-label ${mode !== MODE.EDIT && 'form-record-label'}`}

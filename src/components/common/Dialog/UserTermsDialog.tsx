@@ -148,7 +148,7 @@ export const UserTermsDialog: React.FC<UserTermsDialogProps> = ({
         <ul className="dialog-content-list">
           <li>
             <span className="number">1.</span>
-            退票需收取 10% 手續費。
+            退票需收取 10% 手續費。同一張訂單只能整筆退，不接受部分退票。
           </li>
           <li>
             <span className="number">2.</span>
