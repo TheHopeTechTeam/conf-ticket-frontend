@@ -163,7 +163,7 @@ export const Refund: React.FC = () => {
             <p className="refund-content-title">請確認您欲申請退票之資訊：</p>
             <div className="refund-content-info">
               <div className="refund-content-info-item">
-                <p className="refund-content-info-item-label">票券票種</p>
+                <p className="refund-content-info-item-label">票種與數量</p>
                 <div className="refund-content-info-item-content">
                   {uniqueTickets.map((element, index) => {
                     const count = element.quantity / element.bundleSize;
