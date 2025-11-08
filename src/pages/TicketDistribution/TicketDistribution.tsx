@@ -216,16 +216,19 @@ export const TicketDistribution: React.FC<TicketDistributionProps> = ({
 
     try {
       // 調用 getMembers API，不使用 role filter
-      const membersResponse = await apiService.members.getMembers(
-        selectedEmails,
-        false
-      );
+      const membersResponse =
+        await apiService.members.getMembers(selectedEmails);
 
       // 判斷分票邏輯
       let hasDistributedTickets = false;
       const distributedMembers: string[] = [];
 
-      if (membersResponse && membersResponse.docs) {
+      // 如果是口譯機票券，跳過已取票檢查
+      const isInterpretationTicket =
+        currentTicketInfo.ticketType.includes('口譯機') ||
+        currentTicketInfo.ticketType.includes('Interpretation');
+
+      if (!isInterpretationTicket && membersResponse && membersResponse.docs) {
         membersResponse.docs.forEach((member: any) => {
           if (member.orders && member.orders.length > 0) {
             member.orders.forEach((order: any) => {
@@ -300,6 +303,7 @@ export const TicketDistribution: React.FC<TicketDistributionProps> = ({
       setTicketDistributionDialogOpen(false);
       setDistributionStatus(STATUS.ERROR);
       window.scrollTo({ top: 0, behavior: 'smooth' });
+      hideLoading();
     }
   };
 

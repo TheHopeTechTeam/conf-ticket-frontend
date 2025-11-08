@@ -128,13 +128,17 @@ export const TicketsCard: React.FC<TicketProps> = ({
           <div className="ticket-card-info-quantity-order">
             <div className="ticket-card-info-quantity-item">
               <p className="quantity">
-                {bundleSize > 1 ||
-                title.includes('口譯機') ||
-                title.includes('Interpretation')
-                  ? '組數'
-                  : '張數'}
+                {status === TICKET_STATUS.COLLECTED
+                  ? '張數'
+                  : bundleSize > 1 ||
+                      title.includes('口譯機') ||
+                      title.includes('Interpretation')
+                    ? '組數'
+                    : '張數'}
               </p>
-              <p className="number">{quantity / bundleSize}</p>
+              <p className="number">
+                {status === TICKET_STATUS.COLLECTED ? 1 : quantity / bundleSize}
+              </p>
             </div>
             <div
               className="ticket-card-info-oreder-number-item"

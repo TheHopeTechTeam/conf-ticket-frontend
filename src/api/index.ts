@@ -39,12 +39,9 @@ export const membersApi = {
     return await httpClient.patch(`/v1/members/${id}`, data);
   },
 
-  getMembersByEmail: async (emails: string[], filterByRole: boolean = true) => {
+  getMembersByEmail: async (emails: string[]) => {
     const baseQuery = `where[and][1][email][in]=${emails.join(',')}`;
-    const roleFilter = filterByRole
-      ? '&where[and][0][role][in]=pastor,senior-pastor,minister,ministry-leader,seminarian'
-      : '';
-    return await httpClient.get(`/v1/members?${baseQuery}${roleFilter}`);
+    return await httpClient.get(`/v1/members?${baseQuery}`);
   },
 
   getMemberRoles: async () => {
