@@ -33,14 +33,9 @@ export const TicketItem: React.FC<TicketItemProps> = ({
     ticket.name.includes('口譯機') ||
     ticket.name.toLowerCase().includes('Interpretation');
 
-  // 判斷單位（團體/雙人/口譯機使用「組」，其他使用「張」）
+  // 判斷單位（bundleSize > 1 或口譯機使用「組」，其他使用「張」）
   const getTicketUnit = () => {
-    const name = ticket.name;
-    if (
-      name.includes('團體') ||
-      name.includes('雙人') ||
-      name.includes('口譯機')
-    ) {
+    if ((ticket.bundleSize || 1) > 1 || ticket.name.includes('口譯機')) {
       return '組';
     }
     return '張';
