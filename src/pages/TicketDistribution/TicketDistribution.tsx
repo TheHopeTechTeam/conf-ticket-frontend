@@ -2,7 +2,6 @@ import { useEffect, useMemo, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { apiService } from '../../api';
 import Dialog from '../../components/common/Dialog/Dialog';
-import { WarnDialog } from '../../components/common/Dialog/WarnDialog';
 import { SuccessOrError } from '../../components/common/SuccessOrError/SuccessOrError';
 import {
   RecipientInfo,
@@ -78,8 +77,6 @@ export const TicketDistribution: React.FC<TicketDistributionProps> = ({
   // Dialog 狀態
   const [isTicketDistributionDialogOpen, setTicketDistributionDialogOpen] =
     useState(false);
-  const [isWarnDialogOpen, setIsWarnDialogOpen] = useState(false);
-  const [warnMessage, setWarnMessage] = useState('');
 
   // 表單錯誤狀態
   const [formError, setFormError] = useState('');
@@ -196,7 +193,7 @@ export const TicketDistribution: React.FC<TicketDistributionProps> = ({
   };
 
   // 表單驗證和分票邏輯檢查
-  const handleTicketDistributionConfirm = async () => {
+  const handleTicketDistributionConfirm = () => {
     const selectedRecipients = recipients.filter(
       recipient => recipient.isSelected
     );
@@ -206,65 +203,9 @@ export const TicketDistribution: React.FC<TicketDistributionProps> = ({
       return;
     }
 
-    // 清除錯誤訊息
+    // 清除錯誤訊息並打開確認 dialog
     setFormError('');
-
-    // 取得選中取票者的 email 陣列（排除 disabled 的項目）
-    const selectedEmails = selectedRecipients
-      .filter(recipient => !recipient.isDisabled)
-      .map(recipient => recipient.email);
-
-    try {
-      // 調用 getMembers API，不使用 role filter
-      const membersResponse =
-        await apiService.members.getMembers(selectedEmails);
-
-      // 判斷分票邏輯
-      let hasDistributedTickets = false;
-      const distributedMembers: string[] = [];
-
-      // 如果是口譯機票券，跳過已取票檢查
-      const isInterpretationTicket =
-        currentTicketInfo.ticketType.includes('口譯機') ||
-        currentTicketInfo.ticketType.includes('Interpretation');
-
-      if (!isInterpretationTicket && membersResponse && membersResponse.docs) {
-        membersResponse.docs.forEach((member: any) => {
-          if (member.orders && member.orders.length > 0) {
-            member.orders.forEach((order: any) => {
-              if (!order.tickets?.length) return;
-              const distributedTickets = order.tickets.filter((ticket: any) => {
-                return (
-                  ticket.isRedeemed &&
-                  member.id === ticket.user &&
-                  member.consentedAt
-                );
-              });
-
-              if (
-                distributedTickets.length > 0 &&
-                !distributedMembers.includes(member.email)
-              ) {
-                hasDistributedTickets = true;
-                distributedMembers.push(member.email);
-              }
-            });
-          }
-        });
-
-        // 統一顯示已取票會員
-        if (distributedMembers.length > 0) {
-          setWarnMessage(`以下會員已取票：\n${distributedMembers.join('\n')}`);
-          setIsWarnDialogOpen(true);
-        }
-      }
-      // 如果分票邏輯檢查通過，打開確認 dialog
-      if (!hasDistributedTickets) {
-        setTicketDistributionDialogOpen(true);
-      }
-    } catch (error) {
-      console.error('取得會員資料失敗:', error);
-    }
+    setTicketDistributionDialogOpen(true);
   };
 
   // Dialog 確認處理 - 執行分票 API
@@ -543,12 +484,6 @@ export const TicketDistribution: React.FC<TicketDistributionProps> = ({
           </div>
         </div>
       </Dialog>
-
-      <WarnDialog
-        isOpen={isWarnDialogOpen}
-        onClose={() => setIsWarnDialogOpen(false)}
-        message={warnMessage}
-      />
     </>
   );
 };
