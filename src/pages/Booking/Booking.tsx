@@ -57,6 +57,7 @@ export const Booking: React.FC = () => {
             updatedAt: ticket.updatedAt,
             createdAt: ticket.createdAt,
             maxTickets: ticket.maxTickets,
+            meta: ticket.meta,
           }))
         );
         hideLoading();
@@ -78,10 +79,31 @@ export const Booking: React.FC = () => {
     useState<TicketValidationState>({});
 
   const handleQuantityChange = (ticketId: string, quantity: number) => {
-    setTicketQuantities(prev => ({
-      ...prev,
-      [ticketId]: quantity,
-    }));
+    setTicketQuantities(prev => {
+      const updated = {
+        ...prev,
+        [ticketId]: quantity,
+      };
+
+      // 計算所有非 addon 票券的總數量
+      const nonAddonTotal = ticketTypes.reduce((total, t) => {
+        if (!t.meta?.isAddon) {
+          return total + (updated[t.id] || 0);
+        }
+        return total;
+      }, 0);
+
+      // 如果所有非 addon 票券都是 0，則將所有 addon 票券也設為 0
+      if (nonAddonTotal === 0) {
+        ticketTypes.forEach(t => {
+          if (t.meta?.isAddon) {
+            updated[t.id] = 0;
+          }
+        });
+      }
+
+      return updated;
+    });
   };
 
   const handleFormDataChange = useCallback(
@@ -220,20 +242,13 @@ export const Booking: React.FC = () => {
 
   // 計算口譯機票券的最大數量
   const getMaxQuantityForTicket = (ticket: TicketInfo) => {
-    const isTranslationTicket =
-      ticket.name.includes('口譯機') ||
-      ticket.name.toLowerCase().includes('Interpretation');
-
-    if (!isTranslationTicket) {
+    if (!ticket.meta?.isAddon) {
       return ticket.available ?? 0;
     }
 
     // 計算所有非口譯機票券的總人數（票券數量 × bundleSize）
     const totalPeople = ticketTypes.reduce((total, t) => {
-      const isTranslationTicket =
-        t.name.includes('口譯機') ||
-        t.name.toLowerCase().includes('Interpretation');
-      if (!isTranslationTicket) {
+      if (!t.meta?.isAddon) {
         const quantity = ticketQuantities[t.id] || 0;
         const bundleSize = t.bundleSize || 1;
         return total + quantity * bundleSize;
@@ -247,23 +262,14 @@ export const Booking: React.FC = () => {
 
   // 檢查票券是否應該被 disabled（口譯機除外）
   const isTicketDisabled = (ticket: TicketInfo) => {
-    // 口譯機票券永遠不會被 disabled
-    const isTranslationTicket =
-      ticket.name.includes('口譯機') ||
-      ticket.name.toLowerCase().includes('Interpretation');
-
-    if (isTranslationTicket) {
+    if (ticket.meta?.isAddon) {
       return false;
     }
 
     // 檢查是否已經選擇了其他非口譯機票券
     const hasOtherTicketSelected = ticketTypes.some(t => {
-      const isOtherTranslation =
-        t.name.includes('口譯機') ||
-        t.name.toLowerCase().includes('Interpretation');
-
       // 跳過口譯機和當前票券本身
-      if (isOtherTranslation || t.id === ticket.id) {
+      if (t.meta?.isAddon || t.id === ticket.id) {
         return false;
       }
 

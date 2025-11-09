@@ -28,14 +28,9 @@ export const TicketItem: React.FC<TicketItemProps> = ({
   // 如果被 disabled，則 max 設為 0；否則使用傳入的 maxQuantity 或 ticket.available
   const max = disabled ? 0 : (maxQuantity ?? ticket.available ?? 0);
 
-  // 判斷是否為口譯機票券
-  const isTranslationTicket =
-    ticket.name.includes('口譯機') ||
-    ticket.name.toLowerCase().includes('Interpretation');
-
   // 判斷單位（bundleSize > 1 或口譯機使用「組」，其他使用「張」）
   const getTicketUnit = () => {
-    if ((ticket.bundleSize || 1) > 1 || ticket.name.includes('口譯機')) {
+    if ((ticket.bundleSize || 1) > 1 || ticket.meta?.isAddon) {
       return '組';
     }
     return '張';
@@ -43,7 +38,7 @@ export const TicketItem: React.FC<TicketItemProps> = ({
 
   return (
     <div>
-      {isTranslationTicket && mode === MODE.EDIT && (
+      {ticket.meta?.isAddon && mode === MODE.EDIT && (
         <>
           <hr className="ticket-divider" />
           <h2 className="ticket-section-title">加購項目</h2>

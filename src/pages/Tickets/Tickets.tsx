@@ -118,7 +118,9 @@ export const Tickets = () => {
             setActiveStatus(TICKET_STATUS.COLLECTED);
           }
 
-          hideLoading();
+          setTimeout(() => {
+            hideLoading();
+          });
         } catch (error) {
           hideLoading();
           console.error('Failed to fetch orders:', error);
@@ -276,6 +278,7 @@ export const Tickets = () => {
                         ticketTypeId={ticketType?.id || 'N/A'}
                         ticketCaption={ticketType?.caption || ''}
                         ticketImageUrl={ticketImageUrl}
+                        ticketMeta={ticketType.meta || ''}
                         title={ticketType?.name || ''}
                         quantity={quantity}
                         orderNumber={order?.id || 'N/A'}

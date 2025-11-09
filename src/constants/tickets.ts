@@ -58,6 +58,7 @@ export interface TicketInfo {
   isMemberInfoRequired: boolean;
   price: number;
   bundleSize: number; // 套票人數 - 票種需以此人數的倍數購買
+  quantity?: number;
   updatedBy: User;
   deletedAt: string | null;
   deletedBy: User | null;
@@ -65,6 +66,10 @@ export interface TicketInfo {
   createdAt: string;
   available?: number;
   maxTickets?: number;
+  meta?: {
+    knownField?: string;
+    [key: string]: any;
+  };
 }
 
 export interface TicketTypesResponse {

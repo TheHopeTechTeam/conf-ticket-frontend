@@ -66,7 +66,6 @@ export const Refund: React.FC = () => {
 
           setUniqueTickets(filteredTypes);
           hideLoading();
-          console.log('過濾後的 types:', filteredTypes);
         } catch (error) {
           console.error('取得訂單資料失敗:', error);
         }
@@ -168,9 +167,7 @@ export const Refund: React.FC = () => {
                   {uniqueTickets.map((element, index) => {
                     const count = element.quantity / element.bundleSize;
                     const unit =
-                      element.bundleSize > 1 ||
-                      element.name?.includes('口譯機') ||
-                      element.name?.includes('Interpretation')
+                      element.bundleSize > 1 || element?.meta?.isAddon
                         ? '組'
                         : '張';
                     return (

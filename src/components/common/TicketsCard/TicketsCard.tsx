@@ -25,6 +25,10 @@ interface TicketProps {
   hasDistributedTicket?: boolean;
   ticketCaption?: string;
   bundleSize?: number;
+  ticketMeta?: {
+    knownField?: string;
+    [key: string]: any;
+  };
 }
 
 export const TicketsCard: React.FC<TicketProps> = ({
@@ -40,6 +44,7 @@ export const TicketsCard: React.FC<TicketProps> = ({
   ticketImageUrl = '/images/ticket-sample.png',
   hasDistributedTicket = false,
   bundleSize = 1,
+  ticketMeta,
 }) => {
   const navigate = useNavigate();
   const [isStatusDialogOpen, setIsStatusDialogOpen] = useState(false);
@@ -130,9 +135,7 @@ export const TicketsCard: React.FC<TicketProps> = ({
               <p className="quantity">
                 {status === TICKET_STATUS.COLLECTED
                   ? '張數'
-                  : bundleSize > 1 ||
-                      title.includes('口譯機') ||
-                      title.includes('Interpretation')
+                  : bundleSize > 1 || ticketMeta?.isAddon
                     ? '組數'
                     : '張數'}
               </p>
