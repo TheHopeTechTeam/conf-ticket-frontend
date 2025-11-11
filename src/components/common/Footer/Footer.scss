@@ -13,6 +13,7 @@
   .contact-info {
     display: flex;
     justify-content: space-between;
+
     .contact-info-right {
       display: flex;
       gap: 80px;
@@ -88,31 +89,31 @@
         justify-content: start;
       }
     }
+  }
 
-    .footer-info {
-      padding: 10px 16px;
+  .footer-info {
+    padding: 10px 16px;
 
-      .footer-links {
-        gap: 10px;
+    .footer-links {
+      gap: 10px;
 
-        p {
-          cursor: pointer;
-        }
+      p {
+        cursor: pointer;
       }
     }
   }
+}
 
-  @media screen and (max-width: 390px) {
-    .footer-content {
-      .contact-info {
-        flex-direction: column;
-        gap: 24px;
-      }
+@media screen and (max-width: 390px) {
+  .footer-content {
+    .contact-info {
+      flex-direction: column;
+      gap: 24px;
     }
+  }
 
-    .footer-info {
-      padding: 10px 16px;
-      flex-wrap: wrap;
-    }
+  .footer-info {
+    padding: 10px 16px;
+    flex-wrap: wrap;
   }
 }
