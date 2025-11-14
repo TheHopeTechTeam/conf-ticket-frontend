@@ -16,6 +16,12 @@ export const Login: React.FC = () => {
 
   // 初始化計時器和 email
   useEffect(() => {
+    console.log(
+      import.meta.env.VITE_TAPPAY_APP_ID,
+      import.meta.env.VITE_TAPPAY_APP_KEY,
+      import.meta.env.VITE_APPLE_MERCHANT_ID,
+      import.meta.env.VITE_GOOGLE_MERCHANT_ID
+    );
     const savedEndTime = localStorage.getItem(OTP_TIMER_KEY);
     const savedEmail = localStorage.getItem(EMAIL_KEY);
 
