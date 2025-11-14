@@ -94,7 +94,8 @@ export const TicketItem: React.FC<TicketItemProps> = ({
                 <li
                   className={`ticket-info-remark ${!ticket.available ? 'sold-out-title' : ''}`}
                 >
-                  ※{ticket.caption}
+                  <p>※</p>
+                  <p>{ticket.caption}</p>
                 </li>
               )}
               {ticket.description.map((feature, index) => (
@@ -167,7 +168,8 @@ export const TicketItem: React.FC<TicketItemProps> = ({
           <li
             className={`ticket-info-remark ${!ticket.available ? 'sold-out-title' : ''}`}
           >
-            ※{ticket.caption}
+            <p>※</p>
+            <p>{ticket.caption}</p>
           </li>
         )}
         {ticket.description.map((feature, index) => (

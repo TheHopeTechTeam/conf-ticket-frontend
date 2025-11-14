@@ -345,6 +345,7 @@
       animation: slideDown 0.3s ease;
 
       .details-content-caption {
+        display: flex;
         color: #ee1b0a;
         font-size: 12px;
         font-weight: 600;

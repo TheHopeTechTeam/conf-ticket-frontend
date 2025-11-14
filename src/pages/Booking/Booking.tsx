@@ -189,10 +189,12 @@ export const Booking: React.FC = () => {
     ticketTypes.forEach(ticket => {
       if (ticket.isMemberInfoRequired) {
         const quantity = ticketQuantities[ticket.id] || 0;
+        const bundleSize = ticket.bundleSize || 1;
+        const totalForms = quantity * bundleSize;
         const formData = ticketFormData[ticket.id] || [];
         const validFormData: GroupPassFormData[] = [];
 
-        for (let i = 0; i < quantity; i++) {
+        for (let i = 0; i < totalForms; i++) {
           if (formData[i]) {
             validFormData.push(formData[i]);
           }
@@ -306,7 +308,7 @@ export const Booking: React.FC = () => {
                 {currentTicketQuantity > 0 && ticketHandlers[ticket.id] && (
                   <GroupPassForm
                     mode={MODE.EDIT}
-                    quantity={currentTicketQuantity}
+                    quantity={currentTicketQuantity * (ticket.bundleSize || 1)}
                     formData={ticketFormData[ticket.id] || []}
                     onFormDataChange={
                       ticketHandlers[ticket.id].onFormDataChange

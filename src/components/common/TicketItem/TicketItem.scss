@@ -104,6 +104,7 @@
         gap: 6px;
 
         .ticket-info-remark {
+          display: flex;
           color: #ee1b0a;
           font-size: 12px;
           font-weight: 600;
@@ -238,6 +239,7 @@
     margin-top: 8px;
 
     .ticket-info-remark {
+      display: flex;
       color: #ee1b0a;
       font-size: 12px;
       font-weight: 600;
