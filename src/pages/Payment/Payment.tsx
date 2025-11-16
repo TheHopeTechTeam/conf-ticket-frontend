@@ -25,6 +25,11 @@ import { useAuthContext } from '../../contexts/AuthContext';
 import { useLoading } from '../../contexts/LoadingContext';
 import './Payment.scss';
 
+/** Make credit card paymetn unavaiable till "3D驗證" feature completes */
+const isCreditCardPaymentSupported = false;
+const messageCreditCardPaymentUnavailable =
+  '信用卡功能修復中，請先使用 Apple Pay ， Google Pay ， Samsung Pay 購票，謝謝！!';
+
 export const Payment: React.FC = () => {
   const { user } = useAuthContext();
   const navigate = useNavigate();
@@ -333,14 +338,17 @@ export const Payment: React.FC = () => {
               value={paymentType}
               onChange={handlePaymentTypeChange}
             />
-            {paymentType === PAYMENT_TYPES.CREDIT_CARD && (
-              <CreditCard
-                paymentType={paymentType}
-                register={register}
-                errors={errors}
-                creditCardStatus={creditCardStatus}
-              />
-            )}
+            {paymentType === PAYMENT_TYPES.CREDIT_CARD &&
+              (isCreditCardPaymentSupported ? (
+                <CreditCard
+                  paymentType={paymentType}
+                  register={register}
+                  errors={errors}
+                  creditCardStatus={creditCardStatus}
+                />
+              ) : (
+                messageCreditCardPaymentUnavailable
+              ))}
           </div>
 
           {/* 按鈕區 */}
@@ -349,6 +357,7 @@ export const Payment: React.FC = () => {
               <button
                 className="btn send-btn"
                 onClick={handleCreditCardPayment}
+                disabled={!isCreditCardPaymentSupported}
               >
                 前往付款
               </button>
