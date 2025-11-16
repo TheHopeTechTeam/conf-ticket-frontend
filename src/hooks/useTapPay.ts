@@ -36,7 +36,7 @@ export const useTapPay = (
       });
 
       const googlePaySetting = {
-        // googleMerchantId: config.googleMerchantId,
+        googleMerchantId: config.googleMerchantId,
         allowedCardAuthMethods: ['PAN_ONLY', 'CRYPTOGRAM_3DS'],
         merchantName: 'The Hope',
       };
