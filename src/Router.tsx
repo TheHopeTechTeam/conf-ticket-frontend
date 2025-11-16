@@ -12,7 +12,6 @@ import { Booking } from './pages/Booking/Booking';
 import { Login } from './pages/Login/Login';
 import { Main } from './pages/Main/Main';
 import { Payment } from './pages/Payment/Payment';
-import { PaymentCallback } from './pages/PaymentCallback/PaymentCallback';
 import { Profile } from './pages/Profile/Profile';
 import { Refund } from './pages/Refund/Refund';
 import { TicketDistribution } from './pages/TicketDistribution/TicketDistribution';
@@ -88,14 +87,6 @@ const AppRouter = () => {
               element={
                 <Layout showBreadCrumbs={true}>
                   <Payment />
-                </Layout>
-              }
-            />
-            <Route
-              path={ROUTES.PAYMENT_CALLBACK}
-              element={
-                <Layout showBreadCrumbs={true}>
-                  <PaymentCallback />
                 </Layout>
               }
             />

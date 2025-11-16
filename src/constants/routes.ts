@@ -6,7 +6,6 @@ export const ROUTES = {
   BOOKING: '/conf-ticket/booking',
   TICKETS: '/conf-ticket/tickets',
   PAYMENT: '/conf-ticket/payment',
-  PAYMENT_CALLBACK: '/conf-ticket/payment/callback',
   REFUND: '/conf-ticket/refund',
   TICKET_DISTRIBUTION: '/conf-ticket/ticket-distribution',
   Introduction: '/conf-ticket/introduction',

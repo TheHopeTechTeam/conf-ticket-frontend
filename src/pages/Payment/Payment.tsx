@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import CreditCard from '../../components/common/CreditCard/CreditCard';
 import { GroupPassForm } from '../../components/common/GroupPassForm/GroupPassForm';
 import PayButton from '../../components/common/PayButton/PayButton';
@@ -29,6 +29,7 @@ export const Payment: React.FC = () => {
   const { user } = useAuthContext();
   const navigate = useNavigate();
   const location = useLocation();
+  const [searchParams] = useSearchParams();
   const [paymentData, setPaymentData] = useState<PaymentData | null>(null);
   const [paymentStatus, setPaymentStatus] = useState<
     'form' | 'success' | 'error'
@@ -97,6 +98,32 @@ export const Payment: React.FC = () => {
   } = useForm({
     mode: 'onChange',
   });
+
+  // 檢查是否為 3D 驗證回調
+  useEffect(() => {
+    const status = searchParams.get('status');
+
+    if (status !== null) {
+      console.log('[3D 驗證回調] 收到 status:', status);
+
+      if (status === '0') {
+        console.log('[3D 驗證回調] 付款成功');
+
+        // 清除暫存資料
+        sessionStorage.removeItem('pending3DPayment');
+        sessionStorage.removeItem('ticketOrderData');
+
+        setPaymentStatus(STATUS.SUCCESS);
+      } else {
+        console.error('[3D 驗證回調] 付款失敗，status:', status);
+
+        // 清除暫存資料
+        sessionStorage.removeItem('pending3DPayment');
+
+        setPaymentStatus(STATUS.ERROR);
+      }
+    }
+  }, [searchParams]);
 
   // 載入訂單資料
   useEffect(() => {
