@@ -28,7 +28,7 @@ import './Payment.scss';
 /** Make credit card paymetn unavaiable till "3D驗證" feature completes */
 const isCreditCardPaymentSupported = false;
 const messageCreditCardPaymentUnavailable =
-  '信用卡功能修復中，請先使用 Apple Pay ， Google Pay ， Samsung Pay 購票，謝謝！';
+  '信用卡功能修復中，請先使用 Apple Pay ， Google Pay 或 Samsung Pay 購票，謝謝！';
 
 export const Payment: React.FC = () => {
   const { user } = useAuthContext();
