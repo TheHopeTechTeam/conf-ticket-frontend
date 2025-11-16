@@ -186,6 +186,7 @@ export const Booking: React.FC = () => {
 
     // 收集所有票券的表單資料，按票券 ID 分組
     const groupedFormData: { [ticketId: string]: GroupPassFormData[] } = {};
+    console.dir({ ticketTypes }, { depth: null });
     ticketTypes.forEach(ticket => {
       if (ticket.isMemberInfoRequired) {
         const quantity = ticketQuantities[ticket.id] || 0;
@@ -219,6 +220,8 @@ export const Booking: React.FC = () => {
   const handleNextStep = () => {
     const ticketInfo = getSelectedTickets();
 
+    console.log('handleNextStep ticketInfo');
+    console.dir(ticketInfo, { depth: null });
     // 導航到付款頁面，直接傳遞票券資訊
     navigate(ROUTES.PAYMENT, {
       state: { ticketOrderData: ticketInfo },

@@ -130,6 +130,7 @@ export const Payment: React.FC = () => {
     const loadPaymentData = () => {
       // 先嘗試從 location.state 取得資料
       const stateData = location.state?.ticketOrderData;
+      console.dir({ tag: 'Payment.tsx', stateData }, { depth: null });
 
       if (stateData) {
         setPaymentData(stateData as PaymentData);
@@ -147,6 +148,7 @@ export const Payment: React.FC = () => {
 
       try {
         const data = JSON.parse(storedData) as PaymentData;
+        console.dir({ tag: 'Payment.tsx', data }, { depth: null });
         setPaymentData(data);
       } catch (error) {
         console.error('解析訂單資料失敗:', error);
