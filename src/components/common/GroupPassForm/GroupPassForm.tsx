@@ -439,7 +439,7 @@ export const GroupPassForm: React.FC<GroupPassFormProps> = ({
                 <div
                   className={`form-label ${mode !== MODE.EDIT && 'form-record-label'}`}
                 >
-                  <label htmlFor={`tel-${index}`}>所屬教會電話</label>
+                  <label htmlFor={`tel-${index}`}>行動電話</label>
                 </div>
                 {mode === MODE.EDIT ? (
                   <>
@@ -447,10 +447,10 @@ export const GroupPassForm: React.FC<GroupPassFormProps> = ({
                       name={`users.${index}.tel`}
                       control={control}
                       rules={{
-                        required: '請輸入所屬教會電話',
+                        required: '請輸入行動電話',
                         validate: value => {
                           if (!value || !value.trim()) {
-                            return '請輸入所屬教會電話';
+                            return '請輸入行動電話';
                           }
                           if (!validatePhoneNumber(value)) {
                             return '請輸入有效的電話號碼';
@@ -465,7 +465,7 @@ export const GroupPassForm: React.FC<GroupPassFormProps> = ({
                           onChange={field.onChange}
                           onBlur={() => handleBlur(index, 'tel')}
                           hasError={!!errors.users?.[index]?.tel}
-                          placeholder="請輸入所屬教會電話"
+                          placeholder="請輸入行動電話"
                         />
                       )}
                     />

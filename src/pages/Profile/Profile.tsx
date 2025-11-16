@@ -197,7 +197,7 @@ export const Profile: React.FC = () => {
     if (!value.trim()) {
       const errorMessages = {
         fullName: '請輸入姓名',
-        tel: '請輸入電話',
+        tel: '請輸入行動電話',
         churchName: '請輸入教會名稱',
         gender: '請選擇性別',
         church: '請選擇所屬教會',
@@ -304,7 +304,7 @@ export const Profile: React.FC = () => {
           </div>
           <div className="form-item">
             <div className="form-label">
-              <label htmlFor="tel">電話</label>
+              <label htmlFor="tel">行動電話</label>
               <p className="invaild-text">必填</p>
             </div>
             <PhoneInput
@@ -319,7 +319,7 @@ export const Profile: React.FC = () => {
               }}
               onBlur={handleFieldBlur('tel')}
               hasError={!!errors.tel}
-              placeholder="請輸入電話"
+              placeholder="請輸入行動電話"
             />
             {errors.tel && <p className="invaild-text">{errors.tel}</p>}
           </div>
