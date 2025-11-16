@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { NotificationMessage } from '../../components/common/Notification/Notification';
-import { STATUS } from '../../constants/common';
+import { RECRUIT_MESSAGES, STATUS } from '../../constants/common';
 import { ROUTES } from '../../constants/routes';
 import './Main.scss';
 
@@ -56,6 +56,11 @@ export const Main: React.FC = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    // Print recruit message only once upon initial frontend load */
+    RECRUIT_MESSAGES.forEach(message => {
+      console.log(message);
+    });
+
     const fromProfile = sessionStorage.getItem('fromProfile');
 
     if (fromProfile === 'true') {
