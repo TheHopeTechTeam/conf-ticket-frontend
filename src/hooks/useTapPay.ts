@@ -19,6 +19,9 @@ export const useTapPay = (
       googleMerchantId: import.meta.env.VITE_GOOGLE_MERCHANT_ID || '',
     };
 
+    console.log('@@@@@@@@@@@@@@@@@@@@@');
+    console.log({ config });
+
     if (!config.appId || !config.appKey) {
       console.error('Missing TapPay configuration in environment variables.');
       return false;
@@ -36,7 +39,7 @@ export const useTapPay = (
       });
 
       const googlePaySetting = {
-        // googleMerchantId: config.googleMerchantId,
+        googleMerchantId: config.googleMerchantId,
         allowedCardAuthMethods: ['PAN_ONLY', 'CRYPTOGRAM_3DS'],
         merchantName: 'The Hope',
       };
