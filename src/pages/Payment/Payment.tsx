@@ -298,7 +298,9 @@ export const Payment: React.FC = () => {
                         {ticketFormData.length > 0 && (
                           <GroupPassForm
                             mode={MODE.VIEW}
-                            quantity={ticket.selectedQuantity}
+                            quantity={
+                              ticket.selectedQuantity * (ticket.bundleSize || 1)
+                            }
                             formData={ticketFormData}
                           />
                         )}
