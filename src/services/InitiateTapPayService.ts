@@ -4,9 +4,6 @@ export type InitiateTapPayServiceArgs = {
   /** TapPay Partner Key */
   partnerKey: string;
 
-  /** TapPay Merchant ID, depending on the payment method */
-  merchantId: string;
-
   /** TapPay REST API endpoint */
   tapPayEndpoint: string;
 
@@ -18,6 +15,9 @@ export type InitiateTapPayServiceArgs = {
 };
 
 export type InitiateTapPayPaymentInput = {
+  /** TapPay Merchant ID, depending on the payment method */
+  merchantId: string;
+
   /**
    * The order to pay for.
    * Must correspond to an existing order with status 'pending'.
@@ -37,14 +37,12 @@ export type InitiateTapPayPaymentInput = {
  */
 export class InitiateTapPayService {
   #partnerKey: string;
-  #merchantId: string;
   #tapPayEndpoint: string;
   #frontendRedirectUrl: string;
   #backendNotifyUrl: string;
 
   constructor(params: InitiateTapPayServiceArgs) {
     this.#partnerKey = params.partnerKey;
-    this.#merchantId = params.merchantId;
     this.#tapPayEndpoint = params.tapPayEndpoint;
     this.#frontendRedirectUrl = params.frontendRedirectUrl;
     this.#backendNotifyUrl = params.backendNotifyUrl;
@@ -53,9 +51,9 @@ export class InitiateTapPayService {
   async execute(input: InitiateTapPayPaymentInput): Promise<boolean> {
     const tapPayRequest = toTapPayPayByPrimeParams({
       partnerKey: this.#partnerKey,
-      merchantId: this.#merchantId,
       frontendRedirectUrl: this.#frontendRedirectUrl,
       backendNotifyUrl: this.#backendNotifyUrl,
+      merchantId: input.merchantId,
       prime: input.prime,
       order: input.order,
     });

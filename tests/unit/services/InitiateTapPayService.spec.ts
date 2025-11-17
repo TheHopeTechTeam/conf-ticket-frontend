@@ -11,19 +11,18 @@ global.fetch = mockFetch;
 
 describe('InitiateTapPayService', () => {
   const stubPartnerKey = 'mock_partner_key';
-  const stubMerchantId = 'mock_merchant_id';
   const stubTapPayEndpoint = 'https://mock.tappay.endpoint/payment';
   const stubFrontendRedirectUrl = 'https://mock.frontend.com/redirect';
   const stubBackendNotifyUrl = 'https://mock.backend.com/notify';
 
   const sturServiceArgs: InitiateTapPayServiceArgs = {
     partnerKey: stubPartnerKey,
-    merchantId: stubMerchantId,
     tapPayEndpoint: stubTapPayEndpoint,
     frontendRedirectUrl: stubFrontendRedirectUrl,
     backendNotifyUrl: stubBackendNotifyUrl,
   };
 
+  const stubMerchantId = 'mock_merchant_id';
   const stubOrder: Order = {
     id: 'mock_order_123',
     total: 1_000,
@@ -56,6 +55,7 @@ describe('InitiateTapPayService', () => {
     });
 
     const result = await service.execute({
+      merchantId: stubMerchantId,
       order: stubOrder,
       prime: stubPrime,
     });
@@ -73,6 +73,7 @@ describe('InitiateTapPayService', () => {
     });
 
     const result = await service.execute({
+      merchantId: stubMerchantId,
       order: stubOrder,
       prime: stubPrime,
     });
@@ -85,6 +86,7 @@ describe('InitiateTapPayService', () => {
     mockFetch.mockRejectedValueOnce(new Error('Network error'));
 
     const result = await service.execute({
+      merchantId: stubMerchantId,
       order: stubOrder,
       prime: stubPrime,
     });
@@ -99,6 +101,7 @@ describe('InitiateTapPayService', () => {
     });
 
     const result = await service.execute({
+      merchantId: stubMerchantId,
       order: stubOrder,
       prime: stubPrime,
     });
@@ -112,7 +115,11 @@ describe('InitiateTapPayService', () => {
       json: () => Promise.resolve({ msg: 'Success', status: 0 }),
     });
 
-    await service.execute({ order: stubOrder, prime: stubPrime });
+    await service.execute({
+      merchantId: stubMerchantId,
+      order: stubOrder,
+      prime: stubPrime,
+    });
 
     expect(mockFetch).toHaveBeenCalledWith(
       stubTapPayEndpoint,
