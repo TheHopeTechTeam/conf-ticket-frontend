@@ -189,6 +189,11 @@ export interface PostOrderCreateRequest {
   }[];
 }
 
+// 建立訂單回覆介面
+export interface PostOrderCreateResponse {
+  order: Order;
+}
+
 // 分票請求介面
 export interface TicketSplitRequest {
   memberId: string;
