@@ -9,9 +9,12 @@ export default defineConfig({
     EnvironmentPlugin(
       {
         VITE_TAPPAY_APP_KEY: '',
+        VITE_TAPPAY_PARTNER_KEY: '',
         VITE_TAPPAY_APP_ID: '',
+        VITE_TAPPAY_CREDIT_CARD_MERCHANT_ID: '',
         VITE_APPLE_MERCHANT_ID: '',
         VITE_GOOGLE_MERCHANT_ID: '',
+        VITE_TAPPAY_BACKEND_NOTIFY_URL: '',
       },
       { defineOn: 'import.meta.env' }
     ),
@@ -46,4 +49,3 @@ export default defineConfig({
     },
   },
 });
-
