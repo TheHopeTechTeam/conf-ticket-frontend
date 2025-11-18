@@ -1,8 +1,8 @@
 .header {
-  padding: 8px 40px;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  padding: 8px 40px;
   background: #fff;
   box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.06);
   position: fixed;
@@ -10,18 +10,48 @@
   cursor: pointer;
   z-index: 100;
 
-  img {
-    max-width: 172px;
-    width: 100%;
-    height: 44px;
+  .header-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    img {
+      max-width: 172px;
+      width: 100%;
+      height: 44px;
+    }
+    // 手機版導航（768px 以下顯示）
+    .header-mobile {
+      display: none;
+      text-align: right;
+
+      .hamburger-btn {
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+    }
   }
 
-  p {
-    color: #000;
-    font-family: 'Noto Sans TC';
-    font-size: 16px;
-    font-style: normal;
-    font-weight: 400;
+  // 桌面版導航（768px 以上顯示）
+  .header-right {
+    display: flex;
+    gap: 28px;
+
+    p {
+      color: #000;
+      font-family: 'Noto Sans TC';
+      font-size: 16px;
+      font-style: normal;
+      font-weight: 400;
+    }
+  }
+
+  .mobile-menu {
+    display: none;
   }
 }
 
@@ -29,8 +59,42 @@
   cursor: pointer;
 }
 
+// 手機版樣式
 @media screen and (max-width: 768px) {
   .header {
+    display: block;
     padding: 8px 20px;
+
+    // 隱藏桌面版導航
+    .header-right {
+      display: none;
+    }
+
+    // 顯示手機版導航
+    .header-top {
+      .header-mobile {
+        display: block;
+      }
+    }
+
+    .mobile-menu {
+      display: flex;
+      flex-direction: column;
+      gap: 28px;
+      align-items: end;
+      padding: 20px 0 32px 0;
+      animation: slideDown 150ms ease-out;
+    }
+
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-8px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
   }
 }
