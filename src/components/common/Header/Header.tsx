@@ -30,7 +30,7 @@ export const Header = () => {
         The Hope 特會
       </p>
       <p onClick={handleClick} className="cursor-pointer">
-        {token ? '登出' : '前往票券系統'}
+        {token ? '登出' : '登入購票系統'}
       </p>
     </>
   );
