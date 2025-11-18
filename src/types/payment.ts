@@ -147,8 +147,14 @@ export interface Ticket {
 }
 
 // 完整訂單介面
+/**
+ * 會眾票券訂單
+ */
 export interface Order {
   id: string;
+  /**
+   * 創建此訂單的會眾
+   */
   member: {
     id: string;
     email: string;
@@ -166,10 +172,25 @@ export interface Order {
     updatedAt: string;
     createdAt: string;
   };
-  status: string;
+  /**
+   * 訂單目前的狀態
+   */
+  status: 'pending' | 'completed' | 'failed' | 'refunded';
+  /**
+   * 訂單的總金額（以新台幣為單位）
+   */
   total: number;
+  /**
+   * TapPay 交易成功後回傳的 rec_trade_id，可以用於退款操作
+   */
   tapPayTradeId?: string | null;
+  /**
+   * 此訂單包含的票券項目，每項包含了票種與數量
+   */
   items: OrderItem[];
+  /**
+   * 此訂單包含的所有票券
+   */
   tickets: Ticket[];
   updatedBy?: string | null;
   deletedAt?: string | null;
