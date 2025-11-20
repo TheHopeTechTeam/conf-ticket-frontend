@@ -42,10 +42,6 @@ export const useTapPay = (
       };
       window.TPDirect.googlePay.setupGooglePay(googlePaySetting);
 
-      window.TPDirect.samsungPay.setup({
-        country_code: 'tw',
-      });
-
       return true;
     } catch (error) {
       console.error('TapPay initialization failed:', error);

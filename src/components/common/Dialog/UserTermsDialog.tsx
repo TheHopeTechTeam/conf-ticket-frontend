@@ -134,8 +134,7 @@ export const UserTermsDialog: React.FC<UserTermsDialogProps> = ({
         <ul className="dialog-content-list">
           <li>
             <span className="number">1.</span>
-            可使用之支付方式：信用卡、Apple Pay、Google Pay、Samsung Pay
-            等數位支付。
+            可使用之支付方式：信用卡、Apple Pay、Google Pay 等數位支付。
           </li>
           <li>
             <span className="number">2.</span>

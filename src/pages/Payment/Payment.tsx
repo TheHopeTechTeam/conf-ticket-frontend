@@ -28,7 +28,7 @@ import './Payment.scss';
 /** Make credit card paymetn unavaiable till "3D驗證" feature completes */
 const isCreditCardPaymentSupported = false;
 const messageCreditCardPaymentUnavailable =
-  '信用卡功能修復中，請先使用 Apple Pay ， Google Pay 或 Samsung Pay 購票，謝謝！';
+  '信用卡功能修復中，請先使用 Apple Pay 或 Google Pay 購票，謝謝！';
 
 export const Payment: React.FC = () => {
   const { user } = useAuthContext();
@@ -41,6 +41,11 @@ export const Payment: React.FC = () => {
   const { showLoading, hideLoading } = useLoading();
   const [isWarnDialogOpen, setIsWarnDialogOpen] = useState(false);
   const [warnMessage, setWarnMessage] = useState('');
+
+  // 千分位格式化函數
+  const formatNumber = (num: number): string => {
+    return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  };
 
   const [creditCardStatus, setCreditCardStatus] = useState<CreditCardStatus>({
     number: '',
@@ -59,10 +64,8 @@ export const Payment: React.FC = () => {
   const {
     setupGooglePay,
     setupApplePay,
-    setupSamsungPay,
     checkApplePayAvailability,
     checkGooglePayAvailability,
-    checkSamsungPayAvailability,
   } = usePaymentMethods(
     paymentData!,
     updatePaymentReady,
@@ -84,16 +87,12 @@ export const Payment: React.FC = () => {
       case PAYMENT_TYPES.GOOGLE_PAY:
         checkGooglePayAvailability();
         break;
-      case PAYMENT_TYPES.SAMSUNG_PAY:
-        checkSamsungPayAvailability();
-        break;
     }
   }, [
     paymentType,
     paymentData,
     checkApplePayAvailability,
     checkGooglePayAvailability,
-    checkSamsungPayAvailability,
   ]);
 
   const {
@@ -328,7 +327,9 @@ export const Payment: React.FC = () => {
             <div className="order-summary">
               <p className="order-summary-title">
                 總計
-                {paymentData?.summary.totalAmount.toLocaleString()}元
+                {paymentData?.summary.totalAmount &&
+                  formatNumber(paymentData.summary.totalAmount)}
+                元
               </p>
             </div>
           </div>
@@ -367,10 +368,8 @@ export const Payment: React.FC = () => {
                   paymentType={paymentType}
                   setupGooglePay={setupGooglePay}
                   setupApplePay={setupApplePay}
-                  setupSamsungPay={setupSamsungPay}
                   isApplePayReady={paymentReady.isApplePayReady}
                   isGooglePayReady={paymentReady.isGooglePayReady}
-                  isSamsungPayReady={paymentReady.isSamsungPayReady}
                 />
               </div>
             )}

@@ -25,6 +25,11 @@ export const TicketItem: React.FC<TicketItemProps> = ({
     onQuantityChange?.(ticket.id, newQuantity);
   };
 
+  // 千分位格式化函數
+  const formatNumber = (num: number): string => {
+    return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  };
+
   // 如果被 disabled，則 max 設為 0；否則使用傳入的 maxQuantity 或 ticket.available
   const max = disabled ? 0 : (maxQuantity ?? ticket.available ?? 0);
 
@@ -66,8 +71,7 @@ export const TicketItem: React.FC<TicketItemProps> = ({
                   <span
                     className={`${mode === MODE.EDIT ? 'edit-title' : 'record-title'} ${!ticket.available ? 'sold-out-title' : ''}`}
                   >
-                    $
-                    {(ticket.price * (ticket.bundleSize || 1)).toLocaleString()}
+                    ${formatNumber(ticket.price * (ticket.bundleSize || 1))}
                   </span>
                 </div>
                 {!ticket.available && (
@@ -152,11 +156,9 @@ export const TicketItem: React.FC<TicketItemProps> = ({
               <p>
                 {quantity}
                 {getTicketUnit()}，小計$
-                {(
-                  quantity *
-                  ticket.price *
-                  (ticket.bundleSize || 1)
-                ).toLocaleString()}
+                {formatNumber(
+                  quantity * ticket.price * (ticket.bundleSize || 1)
+                )}
                 元
               </p>
             )}

@@ -1,4 +1,3 @@
-
 .pay-button {
   background-size: contain;
   background-repeat: no-repeat;
@@ -11,7 +10,7 @@
 
 .apple-pay-button {
   background-image: url('/images/apple-pay-icon.webp');
-  
+
   &:disabled {
     opacity: 0.6;
     cursor: not-allowed;
@@ -21,9 +20,4 @@
 
 .google-pay-button {
   background-image: url('/images/google-pay-icon.webp');
-}
-
-.samsung-pay-button {
-  background-size: 55% !important;
-  background-image: url('/images/samsung-pay-icon.png');
 }

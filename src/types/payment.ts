@@ -36,7 +36,6 @@ export interface CreditCardStatus {
 export interface PaymentReadyState {
   isApplePayReady: boolean;
   isGooglePayReady: boolean;
-  isSamsungPayReady: boolean;
 }
 
 export interface TapPayEnvironment {

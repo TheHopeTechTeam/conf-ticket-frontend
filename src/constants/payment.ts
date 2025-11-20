@@ -1,7 +1,6 @@
 export const PAYMENT_TYPES = {
   APPLE_PAY: 'apple-pay',
   GOOGLE_PAY: 'google-pay',
-  SAMSUNG_PAY: 'samsung-pay',
   CREDIT_CARD: 'credit-card',
 } as const;
 
@@ -18,5 +17,4 @@ export const CREDIT_CARD_STATUS_MESSAGES = {
 
 export const SUPPORTED_NETWORKS = {
   COMMON: ['AMEX', 'JCB', 'MASTERCARD', 'VISA'],
-  SAMSUNG_LIMITED: ['MASTERCARD', 'VISA'],
 } as const;

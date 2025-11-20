@@ -155,22 +155,25 @@ export const usePaymentMethods = (
 
     // 驗證付款能力
     const result: {
-      browserSupportPaymentRequest: boolean,
-      canMakePaymentWithActiveCard: boolean
-    } = await new Promise((resolve) => {
-      window.TPDirect.paymentRequestApi.setupPaymentRequest(paymentRequest, resolve);
+      browserSupportPaymentRequest: boolean;
+      canMakePaymentWithActiveCard: boolean;
+    } = await new Promise(resolve => {
+      window.TPDirect.paymentRequestApi.setupPaymentRequest(
+        paymentRequest,
+        resolve
+      );
     });
 
     if (!result.browserSupportPaymentRequest) {
       updatePaymentReady({ isApplePayReady: false });
-      setWarnMessage("此裝置不支援 Apple Pay");
+      setWarnMessage('此裝置不支援 Apple Pay');
       setIsWarnDialogOpen(true);
       return;
     }
 
     if (!result.canMakePaymentWithActiveCard) {
       updatePaymentReady({ isApplePayReady: false });
-      setWarnMessage("此裝置沒有支援的卡片可以付款");
+      setWarnMessage('此裝置沒有支援的卡片可以付款');
       setIsWarnDialogOpen(true);
       return;
     }
@@ -211,55 +214,10 @@ export const usePaymentMethods = (
     });
   }, [paymentData, processPayment, setPaymentStatus]);
 
-  const checkSamsungPayAvailability = useCallback(() => {
-    if (!paymentData) return;
-
-    const paymentRequest = {
-      supportedNetworks: SUPPORTED_NETWORKS.SAMSUNG_LIMITED,
-      total: {
-        label: 'The Hope',
-        amount: {
-          currency: 'TWD',
-          value: paymentData.summary.totalAmount.toString(),
-        },
-      },
-    };
-
-    try {
-      window.TPDirect.samsungPay.setupPaymentRequest(paymentRequest);
-      updatePaymentReady({ isSamsungPayReady: true });
-    } catch (error) {
-      console.error('Samsung Pay setup error:', error);
-      updatePaymentReady({ isSamsungPayReady: false });
-      setWarnMessage('此裝置不支援 Samsung Pay');
-      setIsWarnDialogOpen(true);
-    }
-  }, [paymentData, updatePaymentReady, setWarnMessage, setIsWarnDialogOpen]);
-
-  const setupSamsungPay = useCallback(() => {
-    if (!paymentData) return;
-
-    window.TPDirect.samsungPay.getPrime(function (result: any) {
-      if (result.status !== 0) {
-        console.error('Samsung Pay error:', result);
-        setWarnMessage('此裝置不支援 Samsung Pay');
-        setIsWarnDialogOpen(true);
-        setPaymentStatus(STATUS.ERROR);
-        return;
-      }
-
-      processPayment(result.prime).catch(error => {
-        console.error('Samsung Pay processPayment error:', error);
-      });
-    });
-  }, [paymentData, processPayment, setPaymentStatus]);
-
   return {
     setupGooglePay,
     setupApplePay,
-    setupSamsungPay,
     checkApplePayAvailability,
     checkGooglePayAvailability,
-    checkSamsungPayAvailability,
   };
 };

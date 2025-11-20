@@ -7,7 +7,6 @@ export const usePaymentState = () => {
   const [paymentReady, setPaymentReady] = useState<PaymentReadyState>({
     isApplePayReady: false,
     isGooglePayReady: false,
-    isSamsungPayReady: false,
   });
 
   const handlePaymentTypeChange = useCallback((selectedType: string) => {
@@ -16,7 +15,6 @@ export const usePaymentState = () => {
     const newPaymentReady: PaymentReadyState = {
       isApplePayReady: selectedType === PAYMENT_TYPES.APPLE_PAY,
       isGooglePayReady: selectedType === PAYMENT_TYPES.GOOGLE_PAY,
-      isSamsungPayReady: selectedType === PAYMENT_TYPES.SAMSUNG_PAY,
     };
 
     setPaymentReady(newPaymentReady);
