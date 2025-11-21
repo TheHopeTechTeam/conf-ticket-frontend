@@ -37,7 +37,7 @@ export const useTapPay = (
 
       const googlePaySetting = {
         googleMerchantId: config.googleMerchantId,
-        allowedCardAuthMethods: ['PAN_ONLY', 'CRYPTOGRAM_3DS'],
+        allowedCardAuthMethods: ['CRYPTOGRAM_3DS'],
         merchantName: 'The Hope',
       };
       window.TPDirect.googlePay.setupGooglePay(googlePaySetting);
