@@ -36,6 +36,7 @@ export interface CreditCardStatus {
 export interface PaymentReadyState {
   isApplePayReady: boolean;
   isGooglePayReady: boolean;
+  isSamsungPayReady: boolean;
 }
 
 export interface TapPayEnvironment {
@@ -201,7 +202,7 @@ export interface Order {
 // 建立訂單請求介面
 export interface PostOrderCreateRequest {
   memberId: string;
-  prime: string;
+  prime?: string;
   items: {
     ticketTypeId: string;
     quantity: number;

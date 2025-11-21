@@ -91,6 +91,13 @@ export const ticketApi = {
   },
 };
 
+// Tappay 相關 API
+export const paymentApi = {
+  postPayment: async (data: any) => {
+    return await httpClient.post('/v1/payment/create', data);
+  },
+};
+
 // 匯出所有 API（向後兼容）
 export const apiService = {
   memberAuthentication: authApi,
@@ -112,6 +119,9 @@ export const apiService = {
   tickets: {
     postTicketsSplit: ticketApi.postTicketsSplit,
     getTickets: ticketApi.getTickets,
+  },
+  payment: {
+    postPayment: paymentApi.postPayment,
   },
 };
 
