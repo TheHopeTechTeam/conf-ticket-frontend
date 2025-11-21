@@ -249,7 +249,7 @@ export const Payment: React.FC = () => {
       });
 
       // 確認有 orderId
-      if (!response.data?.orderId) {
+      if (!response.orderId) {
         hideLoading();
         setWarnMessage('建立訂單失敗，請重試');
         setIsWarnDialogOpen(true);
@@ -258,8 +258,8 @@ export const Payment: React.FC = () => {
       }
 
       // 儲存 orderId
-      setOrderId(response.data.orderId);
-      console.log('訂單建立成功，orderId:', response.data.orderId);
+      setOrderId(response.orderId);
+      console.log('訂單建立成功，orderId:', response.orderId);
 
       // 取得 Prime
       showLoading('處理付款中...');
