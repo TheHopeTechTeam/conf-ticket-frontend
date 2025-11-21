@@ -25,8 +25,7 @@ import { useAuthContext } from '../../contexts/AuthContext';
 import { useLoading } from '../../contexts/LoadingContext';
 import './Payment.scss';
 
-/** Make credit card paymetn unavaiable till "3D驗證" feature completes */
-const isCreditCardPaymentSupported = false;
+const isCreditCardPaymentSupported = true;
 const messageCreditCardPaymentUnavailable =
   '信用卡功能修復中，請先使用 Apple Pay 或 Google Pay 購票，謝謝！';
 
@@ -41,7 +40,7 @@ export const Payment: React.FC = () => {
   const { showLoading, hideLoading } = useLoading();
   const [isWarnDialogOpen, setIsWarnDialogOpen] = useState(false);
   const [warnMessage, setWarnMessage] = useState('');
-
+  const [orderId, setOrderId] = useState<string>('');
   // 千分位格式化函數
   const formatNumber = (num: number): string => {
     return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
@@ -135,9 +134,85 @@ export const Payment: React.FC = () => {
     loadPaymentData();
   }, [navigate, location.state]);
 
-  const handleCreditCardPayment = () => {
+  // 處理 3D 驗證回傳
+  useEffect(() => {
+    const handleThreeDSecureCallback = async () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const orderNumber = urlParams.get('order_number');
+      const status = urlParams.get('status');
+
+      // 如果 URL 中有 order_number 和 status，表示是從 3D 驗證頁面返回
+      if (orderNumber && status !== null) {
+        showLoading('確認付款結果...');
+
+        try {
+          if (status === '0') {
+            // 3D 驗證成功，使用 order_number 確認訂單
+            const orderResponse =
+              await apiService.orders.getOrdersByOrderId(orderNumber);
+            console.log('3D 驗證訂單回應:', orderResponse);
+
+            // 檢查訂單狀態是否為 completed
+            if (orderResponse.status === 'completed') {
+              hideLoading();
+
+              // 清除暫存資料
+              sessionStorage.removeItem('ticketOrderData');
+
+              setPaymentStatus(STATUS.SUCCESS);
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+
+              // 清除 URL 參數
+              window.history.replaceState({}, '', window.location.pathname);
+            } else {
+              // 訂單狀態不是 completed
+              hideLoading();
+              setWarnMessage(
+                `訂單狀態異常：${orderResponse.status || '未知狀態'}`
+              );
+              setIsWarnDialogOpen(true);
+              setPaymentStatus(STATUS.ERROR);
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+
+              // 清除 URL 參數
+              window.history.replaceState({}, '', window.location.pathname);
+            }
+          } else {
+            // 3D 驗證失敗
+            hideLoading();
+            setWarnMessage('3D 驗證失敗，請重新嘗試');
+            setIsWarnDialogOpen(true);
+            setPaymentStatus(STATUS.ERROR);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+
+            // 清除 URL 參數
+            window.history.replaceState({}, '', window.location.pathname);
+          }
+        } catch (error) {
+          console.error('3D 驗證後訂單確認失敗', error);
+          hideLoading();
+          setWarnMessage('付款確認失敗，請聯繫客服');
+          setIsWarnDialogOpen(true);
+          setPaymentStatus(STATUS.ERROR);
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+      }
+    };
+
+    handleThreeDSecureCallback();
+  }, [navigate, showLoading, hideLoading]);
+
+  const handleCreditCardPayment = async () => {
     if (!paymentData || !user) {
       setPaymentStatus(STATUS.ERROR);
+      return;
+    }
+
+    // 取得持卡人姓名
+    const cardholderName = getValues('name');
+    if (!cardholderName?.trim()) {
+      setWarnMessage('請輸入持卡人姓名');
+      setIsWarnDialogOpen(true);
       return;
     }
 
@@ -154,108 +229,98 @@ export const Payment: React.FC = () => {
       return;
     }
 
-    // 使用 3D 驗證流程
-    TPDirect.card.createToken(async (tokenResult: any) => {
-      console.log('[3D 驗證] Step 1: createToken result', tokenResult);
+    try {
+      showLoading('建立訂單中...');
+      console.log('開始建立訂單');
 
-      if (tokenResult.status !== 0) {
-        console.error('[3D 驗證] Step 1 失敗: createToken failed', tokenResult);
-        setWarnMessage('信用卡資訊驗證失敗，請重新檢查');
+      // 先建立訂單
+      const response = await apiService.orders.postOrderCreate({
+        memberId: user.id,
+        items: paymentData.tickets.map(ticket => ({
+          ticketTypeId: ticket.id,
+          quantity: ticket.selectedQuantity * (ticket.bundleSize || 1),
+          members: (paymentData.groupPassFormData[ticket.id] || []).map(
+            member => ({
+              ...member,
+              role: member.role,
+            })
+          ),
+        })),
+      });
+
+      // 確認有 orderId
+      if (!response.data?.orderId) {
+        hideLoading();
+        setWarnMessage('建立訂單失敗，請重試');
         setIsWarnDialogOpen(true);
         setPaymentStatus(STATUS.ERROR);
         return;
       }
 
-      console.log('[3D 驗證] Step 1 成功: Token created');
+      // 儲存 orderId
+      setOrderId(response.data.orderId);
+      console.log('訂單建立成功，orderId:', response.data.orderId);
 
-      // 準備 3D 驗證所需資料
-      const formValues = getValues();
-      const threeDSecureData = {
-        cardNumber: tokenResult.card.number,
-        cardholderName: formValues.name || '',
-        cardExpiryDate: tokenResult.card.expiry_date,
-        amount: paymentData.summary.totalAmount,
-        currency: 'TWD',
-      };
+      // 取得 Prime
+      showLoading('處理付款中...');
+      TPDirect.card.getPrime(async (result: any) => {
+        console.log('getPrime result', result);
 
-      // 儲存用戶資訊到 sessionStorage，以防 3D 驗證跳轉後遺失
-      sessionStorage.setItem(
-        'pending3DPayment',
-        JSON.stringify({
-          userId: user.id,
-          paymentData: paymentData,
-          timestamp: Date.now(),
-        })
-      );
+        if (result.status !== 0) {
+          console.error('getPrime failed', result);
+          hideLoading();
+          setWarnMessage('取得付款資訊失敗，請重新檢查信用卡資訊');
+          setIsWarnDialogOpen(true);
+          setPaymentStatus(STATUS.ERROR);
+          return;
+        }
 
-      showLoading('準備進行 3D 驗證...');
-      console.log('[3D 驗證] Step 2: 開始 3D 驗證', threeDSecureData);
+        try {
+          console.log('開始處理付款，prime:', result.card.prime);
 
-      // 執行 3D 驗證
-      TPDirect.threeDomainSecure.getPrime(
-        threeDSecureData,
-        async (threeDResult: any) => {
-          console.log('[3D 驗證] Step 2: getPrime result', threeDResult);
+          // 呼叫付款 API
+          const response = await apiService.payment.postPayment({
+            prime: result.card.prime,
+            orderId: orderId,
+            payer: {
+              name: cardholderName,
+              email: user.email,
+              tel: user.tel,
+            },
+          });
 
-          if (threeDResult.status !== 0) {
-            console.error('[3D 驗證] Step 2 失敗: 3D 驗證失敗', threeDResult);
+          // 檢查是否有 redirectUrl
+          if (response.redirectUrl) {
+            // 有 redirectUrl，導向到 3D 驗證頁面
+            console.log('導向 3D 驗證頁面:', response.redirectUrl);
+            window.location.href = response.redirectUrl;
+            return;
+          } else {
+            // 沒有 redirectUrl，表示付款失敗
+            console.error('付款失敗：未取得 3D 驗證頁面');
             hideLoading();
-
-            // 清除暫存資料
-            sessionStorage.removeItem('pending3DPayment');
-
-            setWarnMessage('3D 驗證失敗，請重試或聯繫發卡銀行');
+            setWarnMessage('付款處理異常，請重試或聯繫客服');
             setIsWarnDialogOpen(true);
             setPaymentStatus(STATUS.ERROR);
-            return;
-          }
-
-          console.log(
-            '[3D 驗證] Step 2 成功: 3D 驗證通過，Prime:',
-            threeDResult.card.prime
-          );
-
-          try {
-            showLoading('處理付款中...');
-            console.log('[3D 驗證] Step 3: 開始呼叫後端 API');
-            await apiService.orders.postOrderCreate({
-              memberId: user.id,
-              prime: threeDResult.card.prime,
-              items: paymentData.tickets.map(ticket => ({
-                ticketTypeId: ticket.id,
-                quantity: ticket.selectedQuantity * (ticket.bundleSize || 1),
-                members: (paymentData.groupPassFormData[ticket.id] || []).map(
-                  member => ({
-                    ...member,
-                    role: member.role,
-                  })
-                ),
-              })),
-            });
-
-            console.log('[3D 驗證] Step 3 成功: 訂單建立成功');
-            hideLoading();
-
-            // 清除暫存資料
-            sessionStorage.removeItem('pending3DPayment');
-            sessionStorage.removeItem('ticketOrderData');
-
-            setPaymentStatus(STATUS.SUCCESS);
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-          } catch (error: any) {
-            console.error('[3D 驗證] Step 3 失敗: 後端 API 失敗', error);
-            hideLoading();
-            console.error('Payment failed:', error);
-
-            // 清除暫存資料
-            sessionStorage.removeItem('pending3DPayment');
-
-            setPaymentStatus(STATUS.ERROR);
             window.scrollTo({ top: 0, behavior: 'smooth' });
           }
+        } catch (error: any) {
+          console.error('付款處理失敗', error);
+          hideLoading();
+          setWarnMessage('交易失敗：' + error.message);
+          setIsWarnDialogOpen(true);
+          setPaymentStatus(STATUS.ERROR);
+          window.scrollTo({ top: 0, behavior: 'smooth' });
         }
-      );
-    });
+      });
+    } catch (error: any) {
+      console.error('建立訂單失敗', error);
+      hideLoading();
+      setWarnMessage('建立訂單失敗，請重試');
+      setIsWarnDialogOpen(true);
+      setPaymentStatus(STATUS.ERROR);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
   };
 
   // Computed values
