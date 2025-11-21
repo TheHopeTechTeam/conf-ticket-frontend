@@ -40,7 +40,7 @@ export const Payment: React.FC = () => {
   const { showLoading, hideLoading } = useLoading();
   const [isWarnDialogOpen, setIsWarnDialogOpen] = useState(false);
   const [warnMessage, setWarnMessage] = useState('');
-  const [orderId, setOrderId] = useState<string>('');
+
   // 千分位格式化函數
   const formatNumber = (num: number): string => {
     return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
@@ -257,9 +257,8 @@ export const Payment: React.FC = () => {
         return;
       }
 
-      // 儲存 orderId (供 UI 使用)
+      // 取得 orderId
       const createdOrderId = orderResponse.orderId;
-      setOrderId(createdOrderId);
       console.log('訂單建立成功，orderId:', createdOrderId);
 
       // 取得 Prime
