@@ -94,7 +94,7 @@ export const ticketApi = {
 // Tappay 相關 API
 export const paymentApi = {
   postPayment: async (data: any) => {
-    return await httpClient.post('/v1/payment/create', data);
+    return await httpClient.post('/v1/payments/create', data);
   },
 };
 
