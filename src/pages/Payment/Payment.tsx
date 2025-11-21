@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useLocation, useNavigate } from 'react-router-dom';
 import CreditCard from '../../components/common/CreditCard/CreditCard';
@@ -40,6 +40,7 @@ export const Payment: React.FC = () => {
   const { showLoading, hideLoading } = useLoading();
   const [isWarnDialogOpen, setIsWarnDialogOpen] = useState(false);
   const [warnMessage, setWarnMessage] = useState('');
+  const hasProcessed3DCallback = useRef(false);
 
   // 千分位格式化函數
   const formatNumber = (num: number): string => {
@@ -137,12 +138,18 @@ export const Payment: React.FC = () => {
   // 處理 3D 驗證回傳
   useEffect(() => {
     const handleThreeDSecureCallback = async () => {
+      // 防止重複執行
+      if (hasProcessed3DCallback.current) {
+        return;
+      }
+
       const urlParams = new URLSearchParams(window.location.search);
       const orderNumber = urlParams.get('order_number');
       const status = urlParams.get('status');
 
       // 如果 URL 中有 order_number 和 status，表示是從 3D 驗證頁面返回
       if (orderNumber && status !== null) {
+        hasProcessed3DCallback.current = true;
         showLoading('確認付款結果...');
 
         try {
