@@ -234,7 +234,7 @@ export const Payment: React.FC = () => {
       console.log('開始建立訂單');
 
       // 先建立訂單
-      const response = await apiService.orders.postOrderCreate({
+      const orderResponse = await apiService.orders.postOrderCreate({
         memberId: user.id,
         items: paymentData.tickets.map(ticket => ({
           ticketTypeId: ticket.id,
@@ -249,7 +249,7 @@ export const Payment: React.FC = () => {
       });
 
       // 確認有 orderId
-      if (!response.orderId) {
+      if (!orderResponse.orderId) {
         hideLoading();
         setWarnMessage('建立訂單失敗，請重試');
         setIsWarnDialogOpen(true);
@@ -257,9 +257,10 @@ export const Payment: React.FC = () => {
         return;
       }
 
-      // 儲存 orderId
-      setOrderId(response.orderId);
-      console.log('訂單建立成功，orderId:', response.orderId);
+      // 儲存 orderId (供 UI 使用)
+      const createdOrderId = orderResponse.orderId;
+      setOrderId(createdOrderId);
+      console.log('訂單建立成功，orderId:', createdOrderId);
 
       // 取得 Prime
       showLoading('處理付款中...');
@@ -279,9 +280,9 @@ export const Payment: React.FC = () => {
           console.log('開始處理付款，prime:', result.card.prime);
 
           // 呼叫付款 API
-          const response = await apiService.payment.postPayment({
+          const paymentResponse = await apiService.payment.postPayment({
             prime: result.card.prime,
-            orderId: orderId,
+            orderId: createdOrderId,
             payer: {
               name: cardholderName,
               email: user.email,
@@ -290,10 +291,10 @@ export const Payment: React.FC = () => {
           });
 
           // 檢查是否有 redirectUrl
-          if (response.redirectUrl) {
+          if (paymentResponse.redirectUrl) {
             // 有 redirectUrl，導向到 3D 驗證頁面
-            console.log('導向 3D 驗證頁面:', response.redirectUrl);
-            window.location.href = response.redirectUrl;
+            console.log('導向 3D 驗證頁面:', paymentResponse.redirectUrl);
+            window.location.href = paymentResponse.redirectUrl;
             return;
           } else {
             // 沒有 redirectUrl，表示付款失敗
