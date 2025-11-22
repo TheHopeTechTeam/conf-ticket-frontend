@@ -230,6 +230,7 @@ export const usePaymentMethods = (
     try {
       showLoading('啟動 Apple Pay...');
       console.log('開始 Apple Pay 流程');
+      console.log(import.meta.env.VITE_APPLE_MERCHANT_ID);
 
       // 直接啟動 Apple Pay（必須在用戶手勢中同步執行）
       window.TPDirect.paymentRequestApi.getPrime(async (result: any) => {
