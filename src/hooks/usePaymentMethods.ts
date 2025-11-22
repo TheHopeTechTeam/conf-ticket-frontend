@@ -67,7 +67,6 @@ export const usePaymentMethods = (
 
     try {
       showLoading('啟動 Google Pay...');
-      console.log('開始 Google Pay 流程');
 
       // 直接啟動 Google Pay（必須在用戶手勢中同步執行）
       window.TPDirect.googlePay.getPrime(async function (err: any, prime: any) {
@@ -81,7 +80,6 @@ export const usePaymentMethods = (
         }
 
         try {
-          console.log('Google Pay 驗證成功，prime:', prime);
           showLoading('建立訂單中...');
 
           // Google Pay 成功後才建立訂單
@@ -99,8 +97,6 @@ export const usePaymentMethods = (
             })),
           });
 
-          console.log('訂單建立成功:', orderResponse);
-
           if (!orderResponse.orderId) {
             hideLoading();
             setWarnMessage('建立訂單失敗，請重試');
@@ -113,7 +109,7 @@ export const usePaymentMethods = (
           showLoading('處理付款中...');
 
           // 呼叫付款 API
-          const paymentResponse = await apiService.payment.postPayment({
+          await apiService.payment.postPayment({
             prime: prime,
             orderId: createdOrderId,
             payer: {
@@ -123,19 +119,10 @@ export const usePaymentMethods = (
             },
           });
 
-          // 檢查是否有 redirectUrl
-          if (paymentResponse.redirectUrl) {
-            // 有 redirectUrl，導向到 3D 驗證頁面
-            console.log('導向 3D 驗證頁面:', paymentResponse.redirectUrl);
-            window.location.href = paymentResponse.redirectUrl;
-            return;
-          } else {
-            // 沒有 redirectUrl，表示付款成功
-            console.log('Google Pay 付款成功');
-            hideLoading();
-            setPaymentStatus(STATUS.SUCCESS);
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-          }
+          // Google Pay 付款成功，直接跳轉到成功頁面
+          hideLoading();
+          setPaymentStatus(STATUS.SUCCESS);
+          window.scrollTo({ top: 0, behavior: 'smooth' });
         } catch (error: any) {
           console.error('Google Pay 付款處理失敗', error);
           hideLoading();
@@ -229,9 +216,6 @@ export const usePaymentMethods = (
 
     try {
       showLoading('啟動 Apple Pay...');
-      console.log('開始 Apple Pay 流程');
-      console.log(import.meta.env.VITE_APPLE_MERCHANT_ID);
-
       // 直接啟動 Apple Pay（必須在用戶手勢中同步執行）
       window.TPDirect.paymentRequestApi.getPrime(async (result: any) => {
         if (result.status !== 0) {
@@ -260,7 +244,6 @@ export const usePaymentMethods = (
         }
 
         try {
-          console.log('Apple Pay 驗證成功，prime:', result.prime);
           showLoading('建立訂單中...');
 
           // Apple Pay 成功後才建立訂單
@@ -278,8 +261,6 @@ export const usePaymentMethods = (
             })),
           });
 
-          console.log('訂單建立成功:', orderResponse);
-
           if (!orderResponse.orderId) {
             hideLoading();
             setWarnMessage('建立訂單失敗，請重試');
@@ -292,7 +273,7 @@ export const usePaymentMethods = (
           showLoading('處理付款中...');
 
           // 呼叫付款 API
-          const paymentResponse = await apiService.payment.postPayment({
+          await apiService.payment.postPayment({
             prime: result.prime,
             orderId: createdOrderId,
             payer: {
@@ -302,19 +283,10 @@ export const usePaymentMethods = (
             },
           });
 
-          // 檢查是否有 redirectUrl
-          if (paymentResponse.redirectUrl) {
-            // 有 redirectUrl，導向到 3D 驗證頁面
-            console.log('導向 3D 驗證頁面:', paymentResponse.redirectUrl);
-            window.location.href = paymentResponse.redirectUrl;
-            return;
-          } else {
-            // 沒有 redirectUrl，表示付款成功
-            console.log('Apple Pay 付款成功');
-            hideLoading();
-            setPaymentStatus(STATUS.SUCCESS);
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-          }
+          // Apple Pay 付款成功，直接跳轉到成功頁面
+          hideLoading();
+          setPaymentStatus(STATUS.SUCCESS);
+          window.scrollTo({ top: 0, behavior: 'smooth' });
         } catch (error: any) {
           console.error('Apple Pay 付款處理失敗', error);
           hideLoading();
