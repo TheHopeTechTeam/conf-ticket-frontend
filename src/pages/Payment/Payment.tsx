@@ -177,10 +177,6 @@ export const Payment: React.FC = () => {
               try {
                 const orderResponse =
                   await apiService.orders.getOrdersByOrderId(orderNumber);
-                console.log(
-                  `輪詢第 ${pollCount + 1} 次，訂單狀態:`,
-                  orderResponse.status
-                );
 
                 if (orderResponse.status === 'completed') {
                   // 訂單完成
@@ -269,7 +265,6 @@ export const Payment: React.FC = () => {
 
     try {
       showLoading('建立訂單中...');
-      console.log('開始建立訂單');
 
       // 先建立訂單
       const orderResponse = await apiService.orders.postOrderCreate({
@@ -297,12 +292,10 @@ export const Payment: React.FC = () => {
 
       // 取得 orderId
       const createdOrderId = orderResponse.orderId;
-      console.log('訂單建立成功，orderId:', createdOrderId);
 
       // 取得 Prime
       showLoading('處理付款中...');
       TPDirect.card.getPrime(async (result: any) => {
-        console.log('getPrime result', result);
 
         if (result.status !== 0) {
           console.error('getPrime failed', result);
@@ -314,7 +307,6 @@ export const Payment: React.FC = () => {
         }
 
         try {
-          console.log('開始處理付款，prime:', result.card.prime);
 
           // 呼叫付款 API
           const paymentResponse = await apiService.payment.postPayment({
@@ -330,7 +322,6 @@ export const Payment: React.FC = () => {
           // 檢查是否有 redirectUrl
           if (paymentResponse.redirectUrl) {
             // 有 redirectUrl，導向到 3D 驗證頁面
-            console.log('導向 3D 驗證頁面:', paymentResponse.redirectUrl);
             window.location.href = paymentResponse.redirectUrl;
             return;
           } else {
