@@ -154,36 +154,67 @@ export const Payment: React.FC = () => {
 
         try {
           if (status === '0') {
-            // 3D 驗證成功，使用 order_number 確認訂單
-            const orderResponse =
-              await apiService.orders.getOrdersByOrderId(orderNumber);
-            console.log('3D 驗證訂單回應:', orderResponse);
+            // 3D 驗證成功，輪詢訂單狀態
+            let isCancelled = false;
+            let pollCount = 0;
+            const maxPolls = 5;
+            const pollInterval = 1000; // 1 秒
 
-            // 檢查訂單狀態是否為 completed
-            if (orderResponse.status === 'completed') {
-              hideLoading();
+            const pollOrder = async () => {
+              if (isCancelled || pollCount >= maxPolls) {
+                // 超過最大輪詢次數仍未完成
+                if (pollCount >= maxPolls) {
+                  hideLoading();
+                  setWarnMessage('訂單處理超時，請稍後至「我的票券」確認');
+                  setIsWarnDialogOpen(true);
+                  setPaymentStatus(STATUS.ERROR);
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                  window.history.replaceState({}, '', window.location.pathname);
+                }
+                return;
+              }
 
-              // 清除暫存資料
-              sessionStorage.removeItem('ticketOrderData');
+              try {
+                const orderResponse =
+                  await apiService.orders.getOrdersByOrderId(orderNumber);
+                console.log(
+                  `輪詢第 ${pollCount + 1} 次，訂單狀態:`,
+                  orderResponse.status
+                );
 
-              setPaymentStatus(STATUS.SUCCESS);
-              window.scrollTo({ top: 0, behavior: 'smooth' });
+                if (orderResponse.status === 'completed') {
+                  // 訂單完成
+                  hideLoading();
+                  sessionStorage.removeItem('ticketOrderData');
+                  setPaymentStatus(STATUS.SUCCESS);
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                  window.history.replaceState({}, '', window.location.pathname);
+                } else if (orderResponse.status === 'failed') {
+                  // 訂單失敗
+                  hideLoading();
+                  setWarnMessage('訂單處理失敗，請重新購買');
+                  setIsWarnDialogOpen(true);
+                  setPaymentStatus(STATUS.ERROR);
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                  window.history.replaceState({}, '', window.location.pathname);
+                } else {
+                  // 訂單仍在處理中，繼續輪詢
+                  pollCount++;
+                  if (pollCount < maxPolls) {
+                    setTimeout(pollOrder, pollInterval);
+                  }
+                }
+              } catch (error) {
+                console.error('輪詢訂單失敗', error);
+                hideLoading();
+                setWarnMessage('付款確認失敗，請聯繫客服');
+                setIsWarnDialogOpen(true);
+                setPaymentStatus(STATUS.ERROR);
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }
+            };
 
-              // 清除 URL 參數
-              window.history.replaceState({}, '', window.location.pathname);
-            } else {
-              // 訂單狀態不是 completed
-              hideLoading();
-              setWarnMessage(
-                `訂單狀態異常：${orderResponse.status || '未知狀態'}`
-              );
-              setIsWarnDialogOpen(true);
-              setPaymentStatus(STATUS.ERROR);
-              window.scrollTo({ top: 0, behavior: 'smooth' });
-
-              // 清除 URL 參數
-              window.history.replaceState({}, '', window.location.pathname);
-            }
+            pollOrder();
           } else {
             // 3D 驗證失敗
             hideLoading();
