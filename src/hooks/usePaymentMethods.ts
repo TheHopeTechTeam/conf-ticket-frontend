@@ -203,13 +203,6 @@ export const usePaymentMethods = (
       return;
     }
 
-    if (!result.canMakePaymentWithActiveCard) {
-      updatePaymentReady({ isApplePayReady: false });
-      setWarnMessage('此裝置沒有支援的卡片可以付款');
-      setIsWarnDialogOpen(true);
-      return;
-    }
-
     updatePaymentReady({ isApplePayReady: true });
   }, [paymentData, updatePaymentReady, setWarnMessage, setIsWarnDialogOpen]);
 
