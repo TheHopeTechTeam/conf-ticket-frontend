@@ -113,7 +113,7 @@ export const usePaymentMethods = (
           showLoading('處理付款中...');
 
           // 呼叫付款 API
-          await apiService.payment.postPayment({
+          const paymentResponse = await apiService.payment.postPayment({
             prime: prime,
             orderId: createdOrderId,
             payer: {
@@ -123,11 +123,19 @@ export const usePaymentMethods = (
             },
           });
 
-          // Google Pay 付款成功，直接跳轉到成功頁面
-          console.log('Google Pay 付款成功');
-          hideLoading();
-          setPaymentStatus(STATUS.SUCCESS);
-          window.scrollTo({ top: 0, behavior: 'smooth' });
+          // 檢查是否有 redirectUrl
+          if (paymentResponse.redirectUrl) {
+            // 有 redirectUrl，導向到 3D 驗證頁面
+            console.log('導向 3D 驗證頁面:', paymentResponse.redirectUrl);
+            window.location.href = paymentResponse.redirectUrl;
+            return;
+          } else {
+            // 沒有 redirectUrl，表示付款成功
+            console.log('Google Pay 付款成功');
+            hideLoading();
+            setPaymentStatus(STATUS.SUCCESS);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }
         } catch (error: any) {
           console.error('Google Pay 付款處理失敗', error);
           hideLoading();
@@ -283,7 +291,7 @@ export const usePaymentMethods = (
           showLoading('處理付款中...');
 
           // 呼叫付款 API
-          await apiService.payment.postPayment({
+          const paymentResponse = await apiService.payment.postPayment({
             prime: result.prime,
             orderId: createdOrderId,
             payer: {
@@ -293,11 +301,19 @@ export const usePaymentMethods = (
             },
           });
 
-          // Apple Pay 付款成功，直接跳轉到成功頁面
-          console.log('Apple Pay 付款成功');
-          hideLoading();
-          setPaymentStatus(STATUS.SUCCESS);
-          window.scrollTo({ top: 0, behavior: 'smooth' });
+          // 檢查是否有 redirectUrl
+          if (paymentResponse.redirectUrl) {
+            // 有 redirectUrl，導向到 3D 驗證頁面
+            console.log('導向 3D 驗證頁面:', paymentResponse.redirectUrl);
+            window.location.href = paymentResponse.redirectUrl;
+            return;
+          } else {
+            // 沒有 redirectUrl，表示付款成功
+            console.log('Apple Pay 付款成功');
+            hideLoading();
+            setPaymentStatus(STATUS.SUCCESS);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }
         } catch (error: any) {
           console.error('Apple Pay 付款處理失敗', error);
           hideLoading();
