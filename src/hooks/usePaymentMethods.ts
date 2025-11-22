@@ -219,40 +219,10 @@ export const usePaymentMethods = (
     }
 
     try {
-      showLoading('建立訂單中...');
-      console.log('開始建立訂單');
+      showLoading('啟動 Apple Pay...');
+      console.log('開始 Apple Pay 流程');
 
-      // 先建立訂單
-      const orderResponse = await apiService.orders.postOrderCreate({
-        memberId: user.id,
-        items: paymentData.tickets.map(ticket => ({
-          ticketTypeId: ticket.id,
-          quantity: ticket.selectedQuantity * (ticket.bundleSize || 1),
-          members: (paymentData.groupPassFormData[ticket.id] || []).map(
-            member => ({
-              ...member,
-              role: member.role,
-            })
-          ),
-        })),
-      });
-
-      console.log('Apple Pay API 回應:', orderResponse);
-      
-      // 確認有 orderId
-      if (!orderResponse.orderId) {
-        hideLoading();
-        setWarnMessage('建立訂單失敗，請重試');
-        setIsWarnDialogOpen(true);
-        setPaymentStatus(STATUS.ERROR);
-        return;
-      }
-
-      const createdOrderId = orderResponse.orderId;
-      console.log('訂單建立成功，orderId:', createdOrderId);
-
-      // 處理 Apple Pay 付款
-      showLoading('處理付款中...');
+      // 直接啟動 Apple Pay（必須在用戶手勢中同步執行）
       window.TPDirect.paymentRequestApi.getPrime(async (result: any) => {
         if (result.status !== 0) {
           // 更詳細的錯誤資訊
@@ -280,7 +250,36 @@ export const usePaymentMethods = (
         }
 
         try {
-          console.log('開始處理 Apple Pay 付款，prime:', result.prime);
+          console.log('Apple Pay 驗證成功，prime:', result.prime);
+          showLoading('建立訂單中...');
+
+          // Apple Pay 成功後才建立訂單
+          const orderResponse = await apiService.orders.postOrderCreate({
+            memberId: user.id,
+            items: paymentData.tickets.map(ticket => ({
+              ticketTypeId: ticket.id,
+              quantity: ticket.selectedQuantity * (ticket.bundleSize || 1),
+              members: (paymentData.groupPassFormData[ticket.id] || []).map(
+                member => ({
+                  ...member,
+                  role: member.role,
+                })
+              ),
+            })),
+          });
+
+          console.log('訂單建立成功:', orderResponse);
+
+          if (!orderResponse.orderId) {
+            hideLoading();
+            setWarnMessage('建立訂單失敗，請重試');
+            setIsWarnDialogOpen(true);
+            setPaymentStatus(STATUS.ERROR);
+            return;
+          }
+
+          const createdOrderId = orderResponse.orderId;
+          showLoading('處理付款中...');
 
           // 呼叫付款 API
           await apiService.payment.postPayment({
