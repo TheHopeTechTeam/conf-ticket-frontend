@@ -237,6 +237,8 @@ export const usePaymentMethods = (
         })),
       });
 
+      console.log('Apple Pay API 回應:', orderResponse);
+      
       // 確認有 orderId
       if (!orderResponse.orderId) {
         hideLoading();
