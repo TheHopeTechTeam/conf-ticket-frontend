@@ -109,7 +109,7 @@ export const usePaymentMethods = (
           showLoading('處理付款中...');
 
           // 呼叫付款 API
-          await apiService.payment.postPayment({
+          const paymentResponse = await apiService.payment.postPayment({
             prime: prime,
             orderId: createdOrderId,
             payer: {
@@ -119,10 +119,17 @@ export const usePaymentMethods = (
             },
           });
 
-          // Google Pay 付款成功，直接跳轉到成功頁面
-          hideLoading();
-          setPaymentStatus(STATUS.SUCCESS);
-          window.scrollTo({ top: 0, behavior: 'smooth' });
+          // 檢查是否有 redirectUrl
+          if (paymentResponse.redirectUrl) {
+            // 有 redirectUrl，導向到 3D 驗證頁面
+            window.location.href = paymentResponse.redirectUrl;
+            return;
+          } else {
+            // 沒有 redirectUrl，表示付款成功（或失敗需要透過其他方式判斷）
+            hideLoading();
+            setPaymentStatus(STATUS.SUCCESS);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }
         } catch (error: any) {
           console.error('Google Pay 付款處理失敗', error);
           hideLoading();
@@ -140,7 +147,16 @@ export const usePaymentMethods = (
       setPaymentStatus(STATUS.ERROR);
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
-  }, [paymentData, user, navigate, showLoading, hideLoading, setWarnMessage, setIsWarnDialogOpen, setPaymentStatus]);
+  }, [
+    paymentData,
+    user,
+    navigate,
+    showLoading,
+    hideLoading,
+    setWarnMessage,
+    setIsWarnDialogOpen,
+    setPaymentStatus,
+  ]);
 
   const checkApplePayAvailability = useCallback(async () => {
     if (!paymentData) return;
@@ -304,7 +320,17 @@ export const usePaymentMethods = (
       setPaymentStatus(STATUS.ERROR);
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
-  }, [paymentData, user, navigate, showLoading, hideLoading, setWarnMessage, setIsWarnDialogOpen, setPaymentStatus, setErrorDetails]);
+  }, [
+    paymentData,
+    user,
+    navigate,
+    showLoading,
+    hideLoading,
+    setWarnMessage,
+    setIsWarnDialogOpen,
+    setPaymentStatus,
+    setErrorDetails,
+  ]);
 
   return {
     setupGooglePay,
