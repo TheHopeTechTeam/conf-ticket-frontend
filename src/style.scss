@@ -5,3 +5,13 @@
 @use './common/scss/_button.scss';
 @use './common/scss/_text.scss';
 @use './common/scss/_space.scss';
+
+// 防止翻譯相關樣式
+.notranslate {
+  /* Google 翻譯會忽略這個 class 的內容 */
+}
+
+// 針對特定貨幣符號的防翻譯處理
+.currency {
+  /* 貨幣符號專用，防止被翻譯 */
+}

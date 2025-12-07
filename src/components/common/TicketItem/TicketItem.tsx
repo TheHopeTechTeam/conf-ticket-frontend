@@ -71,7 +71,7 @@ export const TicketItem: React.FC<TicketItemProps> = ({
                   <span
                     className={`${mode === MODE.EDIT ? 'edit-title' : 'record-title'} ${!ticket.available ? 'sold-out-title' : ''}`}
                   >
-                    ${formatNumber(ticket.price * (ticket.bundleSize || 1))}
+                    NT${formatNumber(ticket.price * (ticket.bundleSize || 1))}
                   </span>
                 </div>
                 {!ticket.available && (
@@ -155,7 +155,7 @@ export const TicketItem: React.FC<TicketItemProps> = ({
             ) : (
               <p>
                 {quantity}
-                {getTicketUnit()}，小計$
+                {getTicketUnit()}，小計NT$
                 {formatNumber(
                   quantity * ticket.price * (ticket.bundleSize || 1)
                 )}

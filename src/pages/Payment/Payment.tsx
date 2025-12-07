@@ -421,7 +421,7 @@ export const Payment: React.FC = () => {
             <div className="order-summary">
               <p className="order-summary-title">
                 總計
-                {paymentData?.summary.totalAmount &&
+                NT${paymentData?.summary.totalAmount &&
                   formatNumber(paymentData.summary.totalAmount)}
                 元
               </p>
