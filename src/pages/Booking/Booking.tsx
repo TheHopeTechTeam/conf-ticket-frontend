@@ -324,6 +324,7 @@ export const Booking: React.FC = () => {
           }
 
           return (
+
             <TicketItem
               mode={MODE.EDIT}
               key={ticket.id}
