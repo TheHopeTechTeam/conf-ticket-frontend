@@ -24,6 +24,7 @@ import { ROUTES } from '../../constants/routes';
 import { useAuthContext } from '../../contexts/AuthContext';
 import { useLoading } from '../../contexts/LoadingContext';
 import './Payment.scss';
+import { TICKET_STATUS } from '../../constants/tickets';
 
 const isCreditCardPaymentSupported = true;
 const messageCreditCardPaymentUnavailable =
@@ -178,7 +179,7 @@ export const Payment: React.FC = () => {
                 const orderResponse =
                   await apiService.orders.getOrdersByOrderId(orderNumber);
 
-                if (orderResponse.status === 'completed') {
+                if (orderResponse.status === TICKET_STATUS.COMPLETED) {
                   // 訂單完成
                   hideLoading();
                   sessionStorage.removeItem('ticketOrderData');

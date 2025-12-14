@@ -7,12 +7,13 @@ export interface TicketFeature {
 // 票券狀態常數
 export const TICKET_STATUS = {
   PURCHASED: 'purchased',
-  COLLECTED: 'collected',
+  COLLECTED: 'collected', 
   REFUNDED: 'refunded',
+  COMPLETED: 'completed',
 } as const;
 
-export type TicketStatusType =
-  (typeof TICKET_STATUS)[keyof typeof TICKET_STATUS];
+// UI 顯示的票券狀態類型（排除 API 專用的狀態）
+export type TicketStatusType = 'purchased' | 'collected' | 'refunded';
 
 // 票券狀態提醒內容
 export const TICKET_ALERT_MESSAGES = {

@@ -41,14 +41,14 @@ export const Tickets = () => {
         case TICKET_STATUS.PURCHASED:
           // 已購買：票券所屬訂單完成且票券未取票
           return (
-            ticket.order?.status !== 'refunded' &&
-            ((ticket.order?.status === 'completed' && !ticket.isRedeemed) ||
+            ticket.order?.status !== TICKET_STATUS.REFUNDED &&
+            ((ticket.order?.status === TICKET_STATUS.COMPLETED && !ticket.isRedeemed) ||
               ticket.isRedeemed)
           );
 
         case TICKET_STATUS.REFUNDED:
           // 退款記錄：票券所屬訂單退款
-          return ticket.order?.status === 'refunded';
+          return ticket.order?.status === TICKET_STATUS.REFUNDED;
 
         default:
           return false;
@@ -109,7 +109,7 @@ export const Tickets = () => {
           );
           const purchasedTickets = allTickets.filter(
             (ticket: any) =>
-              ticket.order?.status === 'completed' && !ticket.isRedeemed
+              ticket.order?.status === TICKET_STATUS.COMPLETED && !ticket.isRedeemed
           );
 
           if (purchasedTickets.length > 0) {
@@ -259,7 +259,7 @@ export const Tickets = () => {
                     const ticketsByStatus = {
                       undistributed: ticketGroup.filter(
                         (ticket: any) =>
-                          ticket.order?.status === 'completed' &&
+                          ticket.order?.status === TICKET_STATUS.COMPLETED &&
                           !ticket.isRedeemed
                       ),
                       distributedNotCollected: ticketGroup.filter(
@@ -306,18 +306,18 @@ export const Tickets = () => {
               activeStatus === TICKET_STATUS.COLLECTED)
           );
         })() && (
-          <div className="tickets-btn-container">
-            {(activeStatus === TICKET_STATUS.PURCHASED ||
-              activeStatus === TICKET_STATUS.COLLECTED) && (
-              <button
-                className="btn send-btn m-b-16"
-                onClick={() => navigate(ROUTES.BOOKING)}
-              >
-                前往購票
-              </button>
-            )}
-          </div>
-        )}
+            <div className="tickets-btn-container">
+              {(activeStatus === TICKET_STATUS.PURCHASED ||
+                activeStatus === TICKET_STATUS.COLLECTED) && (
+                  <button
+                    className="btn send-btn m-b-16"
+                    onClick={() => navigate(ROUTES.BOOKING)}
+                  >
+                    前往購票
+                  </button>
+                )}
+            </div>
+          )}
         <button
           className="btn cancel-btn"
           onClick={() => navigate(ROUTES.HOME)}
