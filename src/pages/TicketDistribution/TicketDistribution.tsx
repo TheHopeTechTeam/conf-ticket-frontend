@@ -215,19 +215,42 @@ export const TicketDistribution: React.FC<TicketDistributionProps> = ({
     );
 
     try {
-      // 準備 patchTicketsSplit 的資料
+      // 準備 patchTicketsSplit 的資料，並過濾掉已分票且已取票的票券
+      const validTickets = selectedRecipients.map(recipient => {
+        // 找到該 recipient 在原始 recipients 陣列中的索引
+        const originalIndex = recipients.findIndex(
+          r => r.id === recipient.id
+        );
+        const ticket = currentTicketInfo.tickets?.[originalIndex];
+
+        return {
+          recipient,
+          originalIndex,
+          ticket,
+          ticketId: currentTicketInfo.ticketIds?.[originalIndex] || '',
+        };
+      }).filter(({ ticket }) => {
+        // 過濾條件：排除已分票且已取票的票券
+        const hasConsented = Boolean(ticket?.user?.consentedAt);
+        const isRedeemed = Boolean(ticket?.isRedeemed);
+
+        // 排除：已分票且已取票 (isRedeemed = true 且 consentedAt 有值)
+        // 允許：未分票 或 已分票但未取票 (isRedeemed = true 但 consentedAt 沒值)
+        return !(isRedeemed && hasConsented);
+      });
+
+      // 檢查是否有有效的票券可以分票
+      if (validTickets.length === 0) {
+        setTicketDistributionDialogOpen(false);
+        return;
+      }
+
       const splitData = {
-        memberId: user.id, // 需要從 currentTicketInfo 或其他地方取得
-        tickets: selectedRecipients.map(recipient => {
-          // 找到該 recipient 在原始 recipients 陣列中的索引
-          const originalIndex = recipients.findIndex(
-            r => r.id === recipient.id
-          );
-          return {
-            ticketId: currentTicketInfo.ticketIds?.[originalIndex] || '', // 從 ticketIds 取得對應的 ticketId
-            email: recipient.email,
-          };
-        }),
+        memberId: user.id,
+        tickets: validTickets.map(({ recipient, ticketId }) => ({
+          ticketId,
+          email: recipient.email,
+        })),
       };
 
       // 調用分票 API
@@ -400,9 +423,8 @@ export const TicketDistribution: React.FC<TicketDistributionProps> = ({
 
           <div className="distribution-footer">
             <button
-              className={`btn send-btn ${
-                !hasValidEmail || !hasSelectedRecipients ? 'disabled' : ''
-              }`}
+              className={`btn send-btn ${!hasValidEmail || !hasSelectedRecipients ? 'disabled' : ''
+                }`}
               type="button"
               disabled={!hasValidEmail || !hasSelectedRecipients}
               onClick={handleTicketDistributionConfirm}
