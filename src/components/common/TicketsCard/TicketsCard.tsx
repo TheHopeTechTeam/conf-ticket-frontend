@@ -163,12 +163,15 @@ export const TicketsCard: React.FC<TicketProps> = ({
             onClick={() => {
               if (user.distributedAndCollected.length === quantity) return;
 
-              // 將三種狀態的 tickets 合併成一個陣列，保持順序：未分出 > 已分出未取票 > 已分出已取票
-              const allTickets = [
-                ...user.distributedAndCollected,
-                ...user.distributedNotCollected,
-                ...user.undistributed,
-              ];
+              // 從訂單中直接取得票券，保持原始順序，避免索引錯亂
+              // 注意：這裡應該直接從 ticketIds 對應的原始票券資料取得，而不是重新組合
+              const orderTickets = ticketIds?.map(ticketId => {
+                // 從所有狀態的票券中找到對應的票券
+                return [...user.undistributed, ...user.distributedNotCollected, ...user.distributedAndCollected]
+                  .find(ticket => ticket.id === ticketId);
+              }).filter(Boolean) || [];
+              
+              const allTickets = orderTickets;
 
               // 設置 sessionStorage 標記,允許訪問分票頁面
               sessionStorage.setItem('canAccessTicketDistribution', 'true');
