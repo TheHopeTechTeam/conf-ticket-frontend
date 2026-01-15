@@ -1,13 +1,17 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { apiService } from '../../api';
 import { GroupPassForm } from '../../components/common/GroupPassForm/GroupPassForm';
+import { SuccessOrError } from '../../components/common/SuccessOrError/SuccessOrError';
 import { TicketItem } from '../../components/common/TicketItem/TicketItem';
 import { MODE } from '../../constants/common';
 import { ROUTES } from '../../constants/routes';
 import { TicketInfo } from '../../constants/tickets';
+import { useAuthContext } from '../../contexts/AuthContext';
 import { useLoading } from '../../contexts/LoadingContext';
 import './Booking.scss';
+
+const DEFAULT_MIN_TICKETS = 12;
 interface TicketQuantities {
   [key: string]: number;
 }
@@ -31,14 +35,41 @@ interface TicketValidationState {
 export const Booking: React.FC = () => {
   const navigate = useNavigate();
   const { showLoading, hideLoading } = useLoading();
+  const { vip } = useAuthContext();
   const [ticketTypes, setTicketTypes] = useState<TicketInfo[]>([]);
+
+  // 檢查是否為優惠模式
+  const [searchParams] = useSearchParams();
+  const isDiscountMode = searchParams.get('discount') === 'true';
+
+  // 優惠模式權限檢查 (資安隱蔽機制：偽裝 404)
+  // 若非 VIP 嘗試訪問優惠路徑，直接渲染「找不到頁面」，不進行跳轉
+  // 目的：讓好奇的使用者以為該 URL 參數無效，避免路徑被窺探
+  if (isDiscountMode && !vip) {
+    return (
+      <SuccessOrError
+        type="error"
+        titlePrefix="頁面"
+        errorText="不存在"
+        message="抱歉，您訪問的頁面不存在或已移除。"
+        retryButtonText="返回首頁"
+        onRetryClick={() => navigate(ROUTES.HOME)}
+      />
+    );
+  }
 
   // 載入票券類型
   useEffect(() => {
     const loadTicketTypes = async () => {
       try {
         showLoading('載入票券類型中...');
-        const { docs } = await apiService.ticketsTypes.getTicketsTypes();
+
+        // 根據模式決定 API 參數（後端過濾，避免價格窺探）
+        const queryParams = isDiscountMode
+          ? { where: { 'meta.discounts': { exists: true } } }  // 優惠模式：只取有 discounts 的票券
+          : { discounts: 'none' };                              // 一般模式：只取沒有 discounts 的票券
+
+        const { docs } = await apiService.ticketsTypes.getTicketsTypes(queryParams);
 
         setTicketTypes(
           docs.map((ticket: TicketInfo) => ({
@@ -68,7 +99,7 @@ export const Booking: React.FC = () => {
     };
 
     loadTicketTypes();
-  }, []);
+  }, [isDiscountMode]);
 
   const [ticketQuantities, setTicketQuantities] = useState<TicketQuantities>(
     {}
@@ -237,10 +268,21 @@ export const Booking: React.FC = () => {
     });
   };
 
-  // 下一步按鈕禁用條件：
-  // 1. 沒有選擇任何票券
-  // 2. 有選擇需要會員資訊的票券但表單無效
-  const isNextButtonDisabled = getTotalQuantity() === 0 || !areAllFormsValid();
+  // 計算最低購買數量（優惠模式從票券 meta 取得，一般模式為 1）
+  const minTickets = useMemo(() => {
+    if (!isDiscountMode) return 1;
+
+    const minValues = ticketTypes
+      .map(ticket => ticket.meta?.discounts?.condition?.gte)
+      .filter((v): v is number => typeof v === 'number');
+
+    return minValues.length > 0 ? Math.max(...minValues) : DEFAULT_MIN_TICKETS;
+  }, [isDiscountMode, ticketTypes]);
+
+  // 下一步按鈕禁用條件
+  const totalQuantity = getTotalQuantity();
+  const shortage = Math.max(0, minTickets - totalQuantity);
+  const isNextButtonDisabled = totalQuantity < minTickets || !areAllFormsValid();
 
   // 計算口譯機票券的最大數量
   const getMaxQuantityForTicket = (ticket: TicketInfo) => {
@@ -264,11 +306,14 @@ export const Booking: React.FC = () => {
 
   // 檢查票券是否應該被 disabled（口譯機除外）
   const isTicketDisabled = (ticket: TicketInfo) => {
+    // 優惠模式：無單一票種限制，可混購多種
+    if (isDiscountMode) return false;
+
     if (ticket.meta?.isAddon) {
       return false;
     }
 
-    // 檢查是否已經選擇了其他非口譯機票券
+    // 一般模式：檢查是否已經選擇了其他非口譯機票券
     const hasOtherTicketSelected = ticketTypes.some(t => {
       // 跳過口譯機和當前票券本身
       if (t.meta?.isAddon || t.id === ticket.id) {
@@ -285,10 +330,19 @@ export const Booking: React.FC = () => {
   return (
     <div className="form-container booking-container">
       <div className="booking-title">
-        <h1>選擇票券類型與數量</h1>
-        <p className="booking-title-warn">
-          每筆訂單限購一種票券，一張票券僅可加購一台口譯機。
-        </p>
+        <h1>{isDiscountMode ? '教會優惠購票' : '選擇票券類型與數量'}</h1>
+        {isDiscountMode ? (
+          <>
+            <p className="booking-title-info">最少需購買 {minTickets} 張票券</p>
+            {totalQuantity > 0 && shortage > 0 && (
+              <p className="booking-title-warn">尚差 {shortage} 張才可結帳</p>
+            )}
+          </>
+        ) : (
+          <p className="booking-title-warn">
+            每筆訂單限購一種票券，一張票券僅可加購一台口譯機。
+          </p>
+        )}
       </div>
 
       <div className="booking-content">

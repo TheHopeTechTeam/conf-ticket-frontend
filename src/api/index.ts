@@ -51,10 +51,26 @@ export const membersApi = {
 
 // 票種相關 API
 export const ticketTypesApi = {
-  getTicketTypes: async () => {
-    return await httpClient.get(
-      '/v1/ticketTypes?page=1&limit=20&sort=-createdAt'
-    );
+  getTicketTypes: async (params?: { discounts?: string; where?: any }) => {
+    const baseUrl = '/v1/ticketTypes';
+
+    if (!params) {
+      return await httpClient.get(baseUrl);
+    }
+
+    // 處理 discounts=none 的情況（一般票券）
+    if (params.discounts === 'none') {
+      return await httpClient.get(`${baseUrl}?discounts=none`);
+    }
+
+    // 處理 where[meta.discounts][exists]=true 的情況（優惠票券）
+    if (params.where?.['meta.discounts']?.exists) {
+      return await httpClient.get(
+        `${baseUrl}?where[meta.discounts][exists]=true`
+      );
+    }
+
+    return await httpClient.get(baseUrl);
   },
 };
 
