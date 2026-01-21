@@ -1,7 +1,14 @@
 import { PostOrderCreateRequest, TicketSplitRequest } from '../types/payment';
+import {
+  mockMemberResponse,
+  mockRegularTicketTypesResponse,
+  mockDiscountTicketTypesResponse,
+  mockAllTicketTypesResponse,
+} from '../mocks';
 import { httpClient } from './service';
 
 const EMAIL_KEY = 'loginEmail';
+const IS_DEV = import.meta.env.DEV;
 
 export interface AuthRequest {
   email: string;
@@ -27,6 +34,12 @@ export const authApi = {
 // 會員相關 API
 export const membersApi = {
   getMember: async () => {
+    // 開發環境使用假資料
+    if (IS_DEV) {
+      console.log('[DEV] 使用 mock 會員資料，vip:', mockMemberResponse.docs[0].meta?.vip);
+      return mockMemberResponse;
+    }
+
     const emailParam = encodeURIComponent(
       localStorage.getItem(EMAIL_KEY) as string
     );
@@ -52,6 +65,20 @@ export const membersApi = {
 // 票種相關 API
 export const ticketTypesApi = {
   getTicketTypes: async (params?: { discounts?: string; where?: any }) => {
+    // 開發環境使用假資料
+    if (IS_DEV) {
+      if (params?.discounts === 'none') {
+        console.log('[DEV] 使用 mock 一般票券資料');
+        return mockRegularTicketTypesResponse;
+      }
+      if (params?.where?.['meta.discounts']?.exists) {
+        console.log('[DEV] 使用 mock 優惠票券資料');
+        return mockDiscountTicketTypesResponse;
+      }
+      console.log('[DEV] 使用 mock 全部票券資料');
+      return mockAllTicketTypesResponse;
+    }
+
     const baseUrl = '/v1/ticketTypes';
 
     if (!params) {

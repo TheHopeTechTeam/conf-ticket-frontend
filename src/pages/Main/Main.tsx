@@ -54,16 +54,16 @@ export const Main: React.FC = () => {
   // 根據 VIP 權限決定按鈕列表
   const MAIN_BUTTONS: MainButton[] = vip
     ? [
-        { label: '購買一般票券', route: ROUTES.BOOKING },
-        { label: '購買優惠票券', route: `${ROUTES.BOOKING}?discount=true` },
-        { label: '我的票券', route: ROUTES.TICKETS },
-        { label: '個人檔案', route: ROUTES.PROFILE },
-      ]
+      { label: '購買教會團體票券', route: `${ROUTES.BOOKING}?discount=true` },
+      { label: '購買一般票券', route: ROUTES.BOOKING },
+      { label: '我的票券', route: ROUTES.TICKETS },
+      { label: '個人檔案', route: ROUTES.PROFILE },
+    ]
     : [
-        { label: '購買票券', route: ROUTES.BOOKING },
-        { label: '我的票券', route: ROUTES.TICKETS },
-        { label: '個人檔案', route: ROUTES.PROFILE },
-      ];
+      { label: '購買票券', route: ROUTES.BOOKING },
+      { label: '我的票券', route: ROUTES.TICKETS },
+      { label: '個人檔案', route: ROUTES.PROFILE },
+    ];
 
   useEffect(() => {
     // Print recruit message only once upon initial frontend load */

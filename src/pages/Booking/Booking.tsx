@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { apiService } from '../../api';
+import { WarnDialog } from '../../components/common/Dialog/WarnDialog';
 import { GroupPassForm } from '../../components/common/GroupPassForm/GroupPassForm';
 import { SuccessOrError } from '../../components/common/SuccessOrError/SuccessOrError';
 import { TicketItem } from '../../components/common/TicketItem/TicketItem';
@@ -52,8 +53,7 @@ export const Booking: React.FC = () => {
         titlePrefix="頁面"
         errorText="不存在"
         message="抱歉，您訪問的頁面不存在或已移除。"
-        retryButtonText="返回首頁"
-        onRetryClick={() => navigate(ROUTES.HOME)}
+        hideButtons
       />
     );
   }
@@ -108,6 +108,7 @@ export const Booking: React.FC = () => {
   const [ticketFormData, setTicketFormData] = useState<TicketFormData>({});
   const [ticketValidationStates, setTicketValidationStates] =
     useState<TicketValidationState>({});
+  const [isWarnDialogOpen, setIsWarnDialogOpen] = useState(false);
 
   const handleQuantityChange = (ticketId: string, quantity: number) => {
     setTicketQuantities(prev => {
@@ -193,6 +194,14 @@ export const Booking: React.FC = () => {
     );
   };
 
+  // 計算非口譯機票券的總數量（用於優惠模式最低數量驗證）
+  const getNonAddonTotalQuantity = () => {
+    return ticketTypes.reduce((sum, ticket) => {
+      if (ticket.meta?.isAddon) return sum;
+      return sum + (ticketQuantities[ticket.id] || 0);
+    }, 0);
+  };
+
   const getSelectedTickets = () => {
     const selectedTickets = Object.entries(ticketQuantities)
       .filter(([, quantity]) => quantity > 0)
@@ -248,6 +257,12 @@ export const Booking: React.FC = () => {
   };
 
   const handleNextStep = () => {
+    // 優惠模式下，未滿最低票數則顯示提示 dialog
+    if (isDiscountMode && quantityForMinCheck < minTickets) {
+      setIsWarnDialogOpen(true);
+      return;
+    }
+
     const ticketInfo = getSelectedTickets();
 
     // 導航到付款頁面，直接傳遞票券資訊
@@ -281,8 +296,12 @@ export const Booking: React.FC = () => {
 
   // 下一步按鈕禁用條件
   const totalQuantity = getTotalQuantity();
-  const shortage = Math.max(0, minTickets - totalQuantity);
-  const isNextButtonDisabled = totalQuantity < minTickets || !areAllFormsValid();
+  // 優惠模式：最低數量驗證不包含口譯機
+  const quantityForMinCheck = isDiscountMode ? getNonAddonTotalQuantity() : totalQuantity;
+  // 優惠模式下，minTickets 不足時顯示 dialog 而非禁用按鈕
+  const isNextButtonDisabled = isDiscountMode
+    ? !areAllFormsValid()
+    : quantityForMinCheck < minTickets || !areAllFormsValid();
 
   // 計算口譯機票券的最大數量
   const getMaxQuantityForTicket = (ticket: TicketInfo) => {
@@ -330,14 +349,13 @@ export const Booking: React.FC = () => {
   return (
     <div className="form-container booking-container">
       <div className="booking-title">
-        <h1>{isDiscountMode ? '教會優惠購票' : '選擇票券類型與數量'}</h1>
+        <h1>選擇票券類型與數量</h1>
         {isDiscountMode ? (
-          <>
-            <p className="booking-title-info">最少需購買 {minTickets} 張票券</p>
-            {totalQuantity > 0 && shortage > 0 && (
-              <p className="booking-title-warn">尚差 {shortage} 張才可結帳</p>
-            )}
-          </>
+          <p className="booking-title-warn" style={{ textAlign: 'left', margin: '0 auto' }}>
+            ※教會團體票每筆需滿 {minTickets} 張，不包含租借口譯機。
+            <br />
+            ※若剩餘票數不足，請來信至 conference@thehope.co
+          </p>
         ) : (
           <p className="booking-title-warn">
             每筆訂單限購一種票券，一張票券僅可加購一台口譯機。
@@ -406,6 +424,13 @@ export const Booking: React.FC = () => {
           返回票券系統
         </button>
       </div>
+
+      <WarnDialog
+        isOpen={isWarnDialogOpen}
+        onClose={() => setIsWarnDialogOpen(false)}
+        onConfirm={() => setIsWarnDialogOpen(false)}
+        message={`團體票需滿 ${minTickets} 張才可下單（不含租借口譯機）。`}
+      />
     </div>
   );
 };
