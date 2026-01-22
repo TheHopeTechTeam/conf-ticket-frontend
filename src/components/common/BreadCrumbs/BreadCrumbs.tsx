@@ -1,5 +1,6 @@
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { ROUTES } from '../../../constants/routes';
+import { useAuthContext } from '../../../contexts/AuthContext';
 import './BreadCrumbs.scss';
 
 interface BreadCrumbItem {
@@ -10,6 +11,11 @@ interface BreadCrumbItem {
 export const BreadCrumbs = () => {
     const navigate = useNavigate();
     const location = useLocation();
+    const [searchParams] = useSearchParams();
+    const { vip } = useAuthContext();
+    const isDiscountMode = vip && (searchParams.get('discount') === 'true' || location.state?.isDiscountMode);
+    const ticketLabel = isDiscountMode ? '購買教會團體票券' : '購買票券';
+    const bookingPath = isDiscountMode ? `${ROUTES.BOOKING}?discount=true` : ROUTES.BOOKING;
 
     const breadcrumbConfig: Record<string, BreadCrumbItem[]> = {
         [ROUTES.PROFILE]: [
@@ -18,7 +24,7 @@ export const BreadCrumbs = () => {
         ],
         [ROUTES.BOOKING]: [
             { label: '票券系統', path: ROUTES.HOME },
-            { label: '購買票券' }
+            { label: ticketLabel }
         ],
         [ROUTES.TICKETS]: [
             { label: '票券系統', path: ROUTES.HOME },
@@ -26,7 +32,7 @@ export const BreadCrumbs = () => {
         ],
         [ROUTES.PAYMENT]: [
             { label: '票券系統', path: ROUTES.HOME },
-            { label: '購買票券', path: ROUTES.BOOKING },
+            { label: ticketLabel, path: bookingPath },
             { label: '確認與付款' }
         ],
         [ROUTES.REFUND]: [

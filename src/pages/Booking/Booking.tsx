@@ -267,7 +267,7 @@ export const Booking: React.FC = () => {
 
     // 導航到付款頁面，直接傳遞票券資訊
     navigate(ROUTES.PAYMENT, {
-      state: { ticketOrderData: ticketInfo },
+      state: { ticketOrderData: ticketInfo, isDiscountMode },
     });
   };
 
@@ -347,7 +347,7 @@ export const Booking: React.FC = () => {
   };
 
   return (
-    <div className="form-container booking-container">
+    <div className={`form-container booking-container ${isDiscountMode ? 'discount' : ''}`}>
       <div className="booking-title">
         <h1>選擇票券類型與數量</h1>
         {isDiscountMode ? (
