@@ -15,6 +15,7 @@ interface SuccessOrErrorProps {
   onSuccessClick?: () => void;
   onRetryClick?: () => void;
   onBackClick?: () => void;
+  hideButtons?: boolean;
 }
 
 export const SuccessOrError: React.FC<SuccessOrErrorProps> = ({
@@ -30,6 +31,7 @@ export const SuccessOrError: React.FC<SuccessOrErrorProps> = ({
   onSuccessClick,
   onRetryClick,
   onBackClick,
+  hideButtons = false,
 }) => {
   return (
     <div className="success-error-container">
@@ -66,19 +68,21 @@ export const SuccessOrError: React.FC<SuccessOrErrorProps> = ({
           />
         )}
       </div>
-      <div className="success-error-btn-container">
-        <button
-          className="btn send-btn"
-          onClick={type === STATUS.SUCCESS ? onSuccessClick : onRetryClick}
-        >
-          {type === STATUS.SUCCESS ? successButtonText : retryButtonText}
-        </button>
-        {type === STATUS.ERROR && (
-          <button className="btn cancel-btn" onClick={onBackClick}>
-            {backButtonText}
+      {!hideButtons && (
+        <div className="success-error-btn-container">
+          <button
+            className="btn send-btn"
+            onClick={type === STATUS.SUCCESS ? onSuccessClick : onRetryClick}
+          >
+            {type === STATUS.SUCCESS ? successButtonText : retryButtonText}
           </button>
-        )}
-      </div>
+          {type === STATUS.ERROR && (
+            <button className="btn cancel-btn" onClick={onBackClick}>
+              {backButtonText}
+            </button>
+          )}
+        </div>
+      )}
     </div>
   );
 };

@@ -6,6 +6,7 @@ interface AuthContextType {
     isAuthenticated: boolean;
     user: any | null;
     memberData: any | null;
+    vip: boolean;
     error: string | null;
     checkAuth: () => Promise<void>;
     logout: () => void;

@@ -9,6 +9,7 @@ interface AuthState {
   isAuthenticated: boolean;
   user: any | null;
   memberData: any | null; // 完整的 members API response
+  vip: boolean; // 是否有 VIP 權限（來源：member API 的 meta.vip）
   error: string | null;
 }
 
@@ -18,6 +19,7 @@ export const useAuth = () => {
     isAuthenticated: false,
     user: null,
     memberData: null,
+    vip: false,
     error: null,
   });
   const navigate = useNavigate();
@@ -46,6 +48,7 @@ export const useAuth = () => {
           isAuthenticated: true,
           user: null,
           memberData: null,
+          vip: false,
           error: null,
         });
         return;
@@ -77,6 +80,7 @@ export const useAuth = () => {
           isAuthenticated: true,
           user: response.docs[0],
           memberData: response, // 儲存完整的 API response
+          vip: response.docs[0].meta?.vip || false,
           error: null,
         });
       }
@@ -91,6 +95,7 @@ export const useAuth = () => {
         isAuthenticated: false,
         user: null,
         memberData: null,
+        vip: false,
         error: 'Authentication failed',
       });
       navigate(ROUTES.Introduction);
@@ -104,6 +109,7 @@ export const useAuth = () => {
       isAuthenticated: false,
       user: null,
       memberData: null,
+      vip: false,
       error: null,
     });
     navigate(ROUTES.Introduction);

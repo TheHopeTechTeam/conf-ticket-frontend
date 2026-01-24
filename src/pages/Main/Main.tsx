@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { NotificationMessage } from '../../components/common/Notification/Notification';
 import { RECRUIT_MESSAGES, STATUS } from '../../constants/common';
 import { ROUTES } from '../../constants/routes';
+import { useAuthContext } from '../../contexts/AuthContext';
 import './Main.scss';
 
 // 箭頭圖示組件
@@ -45,15 +46,24 @@ interface MainButton {
   route: string;
 }
 
-const MAIN_BUTTONS: MainButton[] = [
-  { label: '購買票券', route: ROUTES.BOOKING },
-  { label: '我的票券', route: ROUTES.TICKETS },
-  { label: '個人檔案', route: ROUTES.PROFILE },
-];
-
 export const Main: React.FC = () => {
   const [showNotification, setShowNotification] = useState(false);
   const navigate = useNavigate();
+  const { vip } = useAuthContext();
+
+  // 根據 VIP 權限決定按鈕列表
+  const MAIN_BUTTONS: MainButton[] = vip
+    ? [
+      { label: '購買教會團體票券', route: `${ROUTES.BOOKING}?discount=true` },
+      { label: '購買一般票券', route: ROUTES.BOOKING },
+      { label: '我的票券', route: ROUTES.TICKETS },
+      { label: '個人檔案', route: ROUTES.PROFILE },
+    ]
+    : [
+      { label: '購買票券', route: ROUTES.BOOKING },
+      { label: '我的票券', route: ROUTES.TICKETS },
+      { label: '個人檔案', route: ROUTES.PROFILE },
+    ];
 
   useEffect(() => {
     // Print recruit message only once upon initial frontend load */
