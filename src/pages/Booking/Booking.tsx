@@ -66,7 +66,7 @@ export const Booking: React.FC = () => {
 
         // 根據模式決定 API 參數（後端過濾，避免價格窺探）
         const queryParams = isDiscountMode
-          ? { where: { 'meta.discounts': { exists: true } } }  // 優惠模式：只取有 discounts 的票券
+          ? { where: { 'meta.discounts': { exists: true } } }  // 優惠模式：取優惠票券 + 口譯機
           : { discounts: 'none' };                              // 一般模式：只取沒有 discounts 的票券
 
         const { docs } = await apiService.ticketsTypes.getTicketsTypes(queryParams);

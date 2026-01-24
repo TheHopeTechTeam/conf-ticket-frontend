@@ -90,10 +90,10 @@ export const ticketTypesApi = {
       return await httpClient.get(`${baseUrl}?discounts=none`);
     }
 
-    // 處理 where[meta.discounts][exists]=true 的情況（優惠票券）
+    // 處理優惠票券 + 口譯機的情況
     if (params.where?.['meta.discounts']?.exists) {
       return await httpClient.get(
-        `${baseUrl}?where[meta.discounts][exists]=true`
+        `${baseUrl}?where[or][0][meta.discounts][exists]=true&where[or][1][meta.isAddon][exists]=true`
       );
     }
 
