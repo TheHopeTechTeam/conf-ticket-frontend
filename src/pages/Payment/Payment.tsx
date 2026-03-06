@@ -470,7 +470,7 @@ export const Payment: React.FC = () => {
             )}
             <button
               className="btn cancel-btn"
-              onClick={() => navigate(ROUTES.BOOKING)}
+              onClick={() => navigate(-1)}
             >
               返回修改
             </button>
