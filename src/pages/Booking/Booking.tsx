@@ -72,7 +72,7 @@ export const Booking: React.FC = () => {
         const { docs } = await apiService.ticketsTypes.getTicketsTypes(queryParams);
 
         setTicketTypes(
-          docs.map((ticket: TicketInfo) => ({
+          docs.filter((ticket: TicketInfo) => !ticket.meta?.isPublic).map((ticket: TicketInfo) => ({
             id: ticket.id,
             name: ticket.name,
             price: ticket.price,
