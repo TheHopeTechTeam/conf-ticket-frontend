@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '../../../constants/routes';
 import { TICKET_STATUS, TicketStatusType } from '../../../constants/tickets';
 import { TicketStatusDialog } from '../Dialog/TicketStatusDialog';
+import { CheckInQRCodeDialog } from '../Dialog/CheckInQRCodeDialog';
 import './TicketsCard.scss';
 
 interface TicketsByStatus {
@@ -29,6 +30,11 @@ interface TicketProps {
     knownField?: string;
     [key: string]: any;
   };
+  ticketUserName?: string;
+  ticketUserEmail?: string;
+  ticketId?: string;
+  hasInterpreter?: boolean;
+  interpreterTicketId?: string;
 }
 
 export const TicketsCard: React.FC<TicketProps> = ({
@@ -45,9 +51,15 @@ export const TicketsCard: React.FC<TicketProps> = ({
   hasDistributedTicket = false,
   bundleSize = 1,
   ticketMeta,
+  ticketUserName = '',
+  ticketUserEmail = '',
+  ticketId = '',
+  hasInterpreter = false,
+  interpreterTicketId,
 }) => {
   const navigate = useNavigate();
   const [isStatusDialogOpen, setIsStatusDialogOpen] = useState(false);
+  const [isCheckInQRCodeDialogOpen, setIsCheckInQRCodeDialogOpen] = useState(false);
 
   // 格式化日期函數
   const formatRefundDate = (dateString?: string) => {
@@ -211,7 +223,7 @@ export const TicketsCard: React.FC<TicketProps> = ({
                   cy="9"
                   r="8.25"
                   stroke="#A5A9AB"
-                  stroke-width="1.5"
+                  strokeWidth="1.5"
                 />
               </svg>
             ) : (
@@ -231,7 +243,7 @@ export const TicketsCard: React.FC<TicketProps> = ({
                   cy="9"
                   r="8.25"
                   stroke="white"
-                  stroke-width="1.5"
+                  strokeWidth="1.5"
                 />
               </svg>
             )}
@@ -281,7 +293,7 @@ export const TicketsCard: React.FC<TicketProps> = ({
                 stroke={
                   !canRefund() || hasDistributedTicket ? '#C5CCD1' : 'white'
                 }
-                stroke-width="1.5"
+                strokeWidth="1.5"
               />
             </svg>
           </div>
@@ -290,6 +302,35 @@ export const TicketsCard: React.FC<TicketProps> = ({
       {status === TICKET_STATUS.REFUNDED && (
         <div className="ticket-card-refund">
           <p className="refund-text">{formatRefundDate(updatedAt)}</p>
+        </div>
+      )}
+      {status === TICKET_STATUS.COLLECTED && !ticketMeta?.isAddon && (
+        <div className="ticket-card-btns">
+          <div
+            className="distribution"
+            onClick={() => setIsCheckInQRCodeDialogOpen(true)}
+          >
+            <p className="text">前往報到</p>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="18"
+              height="18"
+              viewBox="0 0 18 18"
+              fill="none"
+            >
+              <path
+                d="M6.71993 5.90195L7.67168 4.9502L11.7217 9.0002L7.67168 13.0502L6.71993 12.0984L9.81143 9.0002L6.71993 5.90195Z"
+                fill="white"
+              />
+              <circle
+                cx="9"
+                cy="9"
+                r="8.25"
+                stroke="white"
+                strokeWidth="1.5"
+              />
+            </svg>
+          </div>
         </div>
       )}
       <details className="ticket-card-details">
@@ -351,6 +392,16 @@ export const TicketsCard: React.FC<TicketProps> = ({
             status: 'active' as const,
           })) || []
         }
+      />
+
+      <CheckInQRCodeDialog
+        isOpen={isCheckInQRCodeDialogOpen}
+        onClose={() => setIsCheckInQRCodeDialogOpen(false)}
+        name={ticketUserName}
+        email={ticketUserEmail}
+        ticketId={ticketId}
+        hasInterpreter={hasInterpreter}
+        interpreterTicketId={interpreterTicketId}
       />
     </div>
   );

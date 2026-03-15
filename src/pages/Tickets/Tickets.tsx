@@ -255,6 +255,36 @@ export const Tickets = () => {
                       (ticket: any) => ticket.isRedeemed
                     );
 
+                    // 檢查該訂單是否有已取票的口譯機
+                    const currentUserId = firstTicket.user?.id || firstTicket.owner?.id;
+
+                    // 根據不同狀態使用不同的資料來源
+                    let hasInterpreter = false;
+                    let interpreterTicketId: string | undefined;
+
+                    if (activeStatus === TICKET_STATUS.COLLECTED) {
+                      // 已取票：從 collectedTickets 中檢查
+                      const interpreterTicket = collectedTickets.find((ticket: any) => {
+                        const ticketUserId = ticket.user?.id || ticket.owner?.id;
+                        const ticketOrderId = ticket.order?.id;
+                        return ticket.type?.meta?.isAddon === true &&
+                          ticketUserId === currentUserId &&
+                          ticketOrderId === order?.id;
+                      });
+                      hasInterpreter = !!interpreterTicket;
+                      interpreterTicketId = interpreterTicket?.id;
+                    } else {
+                      // 已購買：從 order.tickets 中檢查
+                      const interpreterTicket = order?.tickets?.find((ticket: any) => {
+                        const ticketUserId = ticket.user?.id || ticket.owner?.id;
+                        return ticket.isRedeemed &&
+                          ticket.type?.meta?.isAddon === true &&
+                          ticketUserId === currentUserId;
+                      });
+                      hasInterpreter = !!interpreterTicket;
+                      interpreterTicketId = interpreterTicket?.id;
+                    }
+
                     // 分類票券狀態
                     const ticketsByStatus = {
                       undistributed: ticketGroup.filter(
@@ -289,6 +319,11 @@ export const Tickets = () => {
                         user={ticketsByStatus}
                         hasDistributedTicket={hasDistributedTicket}
                         bundleSize={bundleSize}
+                        ticketUserName={firstTicket.owner?.name || firstTicket.user?.name || ''}
+                        ticketUserEmail={firstTicket.owner?.email || firstTicket.user?.email || ''}
+                        ticketId={firstTicket.id || ''}
+                        hasInterpreter={hasInterpreter}
+                        interpreterTicketId={interpreterTicketId}
                       />
                     );
                   }

@@ -13,3 +13,15 @@ export {
   mockDiscountTicketTypesResponse,
   mockAllTicketTypesResponse,
 } from './ticketTypes';
+
+export {
+  mockOrder1,
+  mockOrder2,
+  mockOrdersResponse,
+} from './orders';
+
+export {
+  mockRedeemedTicket1,
+  mockRedeemedInterpreter,
+  mockRedeemedTicketsResponse,
+} from './tickets';
