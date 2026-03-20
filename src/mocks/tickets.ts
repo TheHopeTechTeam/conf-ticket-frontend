@@ -38,7 +38,7 @@ const mockMember = {
   createdAt: '2026-03-01T00:00:00.000Z',
 };
 
-// 已取票的票券 1 - 早鳥票
+// 已取票的票券 1 - 早鳥票（isPublic: false，測試「前往報到」不顯示）
 export const mockRedeemedTicket1: Ticket = {
   id: 'ticket-001',
   order: {
@@ -88,7 +88,10 @@ export const mockRedeemedTicket1: Ticket = {
           caption: '限量早鳥優惠',
           description: [
             { id: 'desc-1', bulletpoint: '含特會全程參與資格' },
-            { id: 'desc-2', bulletpoint: '2026.04.30(四) 18:00 - 2026.05.02(六) 21:30' },
+            {
+              id: 'desc-2',
+              bulletpoint: '2026.04.30(四) 18:00 - 2026.05.02(六) 21:30',
+            },
             { id: 'desc-3', bulletpoint: '台北國際會議中心' },
           ],
           meta: {},
@@ -166,10 +169,13 @@ export const mockRedeemedTicket1: Ticket = {
     caption: '限量早鳥優惠',
     description: [
       { id: 'desc-1', bulletpoint: '含特會全程參與資格' },
-      { id: 'desc-2', bulletpoint: '2026.04.30(四) 18:00 - 2026.05.02(六) 21:30' },
+      {
+        id: 'desc-2',
+        bulletpoint: '2026.04.30(四) 18:00 - 2026.05.02(六) 21:30',
+      },
       { id: 'desc-3', bulletpoint: '台北國際會議中心' },
     ],
-    meta: {},
+    meta: { isPublic: true },
     updatedBy: null,
     deletedAt: null,
     deletedBy: null,
@@ -239,7 +245,10 @@ export const mockRedeemedInterpreter: Ticket = {
           caption: '限量早鳥優惠',
           description: [
             { id: 'desc-1', bulletpoint: '含特會全程參與資格' },
-            { id: 'desc-2', bulletpoint: '2026.04.30(四) 18:00 - 2026.05.02(六) 21:30' },
+            {
+              id: 'desc-2',
+              bulletpoint: '2026.04.30(四) 18:00 - 2026.05.02(六) 21:30',
+            },
             { id: 'desc-3', bulletpoint: '台北國際會議中心' },
           ],
           meta: {},

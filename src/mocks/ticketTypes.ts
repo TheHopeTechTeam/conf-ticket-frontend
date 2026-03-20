@@ -56,6 +56,24 @@ export const mockRegularTickets = [
     createdAt: '2024-01-01T00:00:00.000Z',
     meta: {},
   },
+  {
+    id: 'regular-public-false',
+    name: '內部票（不公開）',
+    price: 0,
+    image: null,
+    caption: '內部使用，不對外顯示',
+    description: [{ text: '內部人員專用' }],
+    isMemberInfoRequired: false,
+    bundleSize: 1,
+    available: 50,
+    maxTickets: 10,
+    updatedBy: { id: 'admin', name: 'Admin' },
+    deletedAt: null,
+    deletedBy: null,
+    updatedAt: '2024-01-01T00:00:00.000Z',
+    createdAt: '2024-01-01T00:00:00.000Z',
+    meta: { isPublic: false },
+  },
 ];
 
 // 教會優惠票券（有 meta.discounts）
