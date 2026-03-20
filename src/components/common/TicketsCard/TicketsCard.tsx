@@ -35,6 +35,7 @@ interface TicketProps {
   ticketId?: string;
   hasInterpreter?: boolean;
   interpreterTicketId?: string;
+  isTester?: boolean;
 }
 
 export const TicketsCard: React.FC<TicketProps> = ({
@@ -56,6 +57,7 @@ export const TicketsCard: React.FC<TicketProps> = ({
   ticketId = '',
   hasInterpreter = false,
   interpreterTicketId,
+  isTester = false,
 }) => {
   const navigate = useNavigate();
   const [isStatusDialogOpen, setIsStatusDialogOpen] = useState(false);
@@ -304,7 +306,7 @@ export const TicketsCard: React.FC<TicketProps> = ({
           <p className="refund-text">{formatRefundDate(updatedAt)}</p>
         </div>
       )}
-      {status === TICKET_STATUS.COLLECTED && !ticketMeta?.isAddon && ticketMeta?.isPublic !== false && (
+      {status === TICKET_STATUS.COLLECTED && !ticketMeta?.isAddon && ticketMeta?.isPublic !== false && isTester && (
         <div className="ticket-card-btns">
           <div
             className="distribution"

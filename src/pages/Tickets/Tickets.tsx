@@ -324,6 +324,7 @@ export const Tickets = () => {
                         ticketId={firstTicket.id || ''}
                         hasInterpreter={hasInterpreter}
                         interpreterTicketId={interpreterTicketId}
+                        isTester={user?.meta?.isTester}
                       />
                     );
                   }
