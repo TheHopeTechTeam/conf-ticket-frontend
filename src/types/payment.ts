@@ -59,6 +59,8 @@ export interface TicketType {
   id: string;
   name: string;
   price: number;
+  bundleSize: number;
+  maxTickets: number;
   image: number;
   caption?: string;
   description: Array<{
@@ -66,11 +68,17 @@ export interface TicketType {
     bulletpoint: string;
   }>;
   isMemberInfoRequired?: boolean;
-  updatedBy?: string;
+  meta?: {
+    isAddon?: boolean;
+    [key: string]: any;
+  };
+  updatedBy?: string | null;
   deletedAt?: string | null;
   deletedBy?: string | null;
   updatedAt: string;
   createdAt: string;
+  available?: number;
+  sold?: number;
 }
 
 // 訂單項目介面
@@ -105,12 +113,12 @@ export interface Ticket {
   id: string;
   order: {
     id: string;
-    member: string;
+    member: string | any; // 可以是 string 或完整 member 物件
     status: string;
     total: number;
     tapPayTradeId?: string | null;
-    items: string[];
-    tickets: string[];
+    items: string[] | any[]; // 可以是 string[] 或完整 item 物件陣列
+    tickets: any[]; // 完整 ticket 物件陣列（避免循環引用使用 any）
     updatedBy?: string | null;
     deletedAt?: string | null;
     deletedBy?: string | null;
@@ -127,8 +135,12 @@ export interface Ticket {
     role: string;
     location: string;
     consentedAt: string;
-    loginTokenIssuedAt: number;
+    authNonce?: string;
+    authNonceIssuedAt?: string;
+    loginTokenIssuedAt?: number;
     orders: any[];
+    dietaryRequirement?: any;
+    meta?: any;
     updatedBy?: any;
     deletedAt?: string | null;
     deletedBy?: string | null;

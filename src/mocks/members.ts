@@ -15,6 +15,7 @@ export const mockMemberResponse = {
       updatedAt: '2024-01-01T00:00:00.000Z',
       meta: {
         vip: false, // VIP 權限，設為 true 可測試優惠票券流程
+        isTester: true, // 測試權限
       },
     },
   ],

@@ -136,8 +136,8 @@ const Dialog: React.FC<DialogProps> = ({
                 fill="none"
               >
                 <path
-                  fill-rule="evenodd"
-                  clip-rule="evenodd"
+                  fillRule="evenodd"
+                  clipRule="evenodd"
                   d="M26.0015 7.84174L24.1597 6L16.0015 14.1712L7.84321 6L6.00146 7.84174L14.1727 16L6.00146 24.1583L7.84321 26L16.0015 17.8288L24.1597 26L26.0015 24.1583L17.8303 16L26.0015 7.84174Z"
                   fill="black"
                 />

@@ -4,6 +4,8 @@ import {
   mockRegularTicketTypesResponse,
   mockDiscountTicketTypesResponse,
   mockAllTicketTypesResponse,
+  mockOrdersResponse,
+  mockRedeemedTicketsResponse,
 } from '../mocks';
 import { httpClient } from './service';
 
@@ -36,7 +38,10 @@ export const membersApi = {
   getMember: async () => {
     // 開發環境使用假資料
     if (IS_DEV) {
-      console.log('[DEV] 使用 mock 會員資料，vip:', mockMemberResponse.docs[0].meta?.vip);
+      console.log(
+        '[DEV] 使用 mock 會員資料，vip:',
+        mockMemberResponse.docs[0].meta?.vip
+      );
       return mockMemberResponse;
     }
 
@@ -104,12 +109,25 @@ export const ticketTypesApi = {
 // 訂單相關 API
 export const ordersApi = {
   getOrdersByMember: async (memberId: string) => {
+    // 開發環境可以選擇使用假資料
+    if (IS_DEV) {
+      console.log('[DEV] 使用 mock 訂單資料，會員 ID:', memberId);
+      return mockOrdersResponse;
+    }
+
     return await httpClient.get(
       `/v1/orders?page=1&limit=100&sort=-createdAt&where[member][equals]=${memberId}`
     );
   },
 
   getOrdersByOrderId: async (orderId: string) => {
+    // 開發環境可以選擇使用假資料
+    if (IS_DEV) {
+      console.log('[DEV] 使用 mock 單一訂單資料，訂單 ID:', orderId);
+      const order = mockOrdersResponse.docs.find(o => o.id === orderId);
+      return order || mockOrdersResponse.docs[0];
+    }
+
     return await httpClient.get(`/v1/orders/${orderId}`);
   },
 
@@ -128,6 +146,12 @@ export const ticketApi = {
     return await httpClient.post('/v1/tickets/split', data);
   },
   getTickets: async (id: string) => {
+    // 開發環境可以選擇使用假資料
+    if (IS_DEV) {
+      console.log('[DEV] 使用 mock 已取票資料，使用者 ID:', id);
+      return mockRedeemedTicketsResponse;
+    }
+
     return await httpClient.get(
       `/v1/tickets?where[and][0][user][equals]=${id}&where[and][1][isRedeemed][equals]=true`
     );

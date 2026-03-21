@@ -1,0 +1,86 @@
+.checkin-qrcode-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+
+  .qrcode-download-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    background: #ffffff;
+    border-radius: 8px;
+  }
+
+  .interpreter-alert-container {
+    display: flex;
+    padding: 10px 8px 16px 8px;
+    flex-direction: column;
+    gap: 6px;
+    border-radius: 4px;
+    background: #fffaeb;
+    width: 100%;
+
+    .interpreter-alert-title {
+      display: flex;
+
+      img {
+        width: 20px;
+        height: 20px;
+      }
+
+      p {
+        color: #000;
+        font-size: 14px;
+        font-weight: 600;
+        margin: 0;
+      }
+    }
+
+    .interpreter-alert-content {
+      color: #000;
+      font-size: 14px;
+      line-height: 20px;
+      padding-left: 20px;
+
+      p {
+        margin: 0;
+      }
+    }
+  }
+
+  .qrcode-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: white;
+    border-radius: 8px;
+  }
+
+  .qrcode-hint {
+    margin: 0;
+    color: #666;
+    font-size: 14px;
+    text-align: center;
+  }
+
+  .qrcode-download-btn {
+    padding: 10px 24px;
+    background: #ffcc32;
+    color: #000;
+    border: none;
+    border-radius: 44px;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition:
+      background 0.2s,
+      color 0.2s;
+
+    &:hover {
+      background: #e1b225;
+      color: #fff;
+    }
+  }
+}
