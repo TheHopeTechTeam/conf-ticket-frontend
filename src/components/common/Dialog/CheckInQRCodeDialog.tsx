@@ -10,8 +10,9 @@ interface CheckInQRCodeDialogProps {
   name: string;
   email: string;
   ticketId: string;
-  hasInterpreter?: boolean;
-  interpreterTicketId?: string;
+  ticketName?: string;
+  phoneLastThree?: string;
+  isAddon?: boolean;
 }
 
 export const CheckInQRCodeDialog: React.FC<CheckInQRCodeDialogProps> = ({
@@ -20,8 +21,9 @@ export const CheckInQRCodeDialog: React.FC<CheckInQRCodeDialogProps> = ({
   name,
   email,
   ticketId,
-  hasInterpreter = false,
-  interpreterTicketId,
+  ticketName = '',
+  phoneLastThree = '',
+  isAddon = false,
 }) => {
   const [isMobile, setIsMobile] = useState(false);
 
@@ -37,10 +39,9 @@ export const CheckInQRCodeDialog: React.FC<CheckInQRCodeDialogProps> = ({
   }, []);
 
   // 組合 QR code 內容（純文字格式）
-  const qrCodeContent =
-    hasInterpreter && interpreterTicketId
-      ? `name: ${name}, email: ${email}, ticket id: ${ticketId.replace(/-/g, '')}, translator ticket id: ${interpreterTicketId.replace(/-/g, '')}`
-      : `name: ${name}, email: ${email}, ticket id: ${ticketId.replace(/-/g, '')}`;
+  const qrCodeContent = isAddon
+    ? `name: ${name}, email: ${email}, translator ticket id: ${ticketId}`
+    : `name: ${name}, email: ${email}, ticket id: ${ticketId}`;
 
   const handleDownload = async () => {
     const container = document.getElementById('qrcode-download-container');
@@ -113,17 +114,12 @@ export const CheckInQRCodeDialog: React.FC<CheckInQRCodeDialogProps> = ({
           id="qrcode-download-container"
           className="qrcode-download-container"
         >
-          {hasInterpreter && (
-            <div className="interpreter-alert-container">
-              <div className="interpreter-alert-title">
-                <img src="/images/ticket-alert-dot.svg" alt="" />
-                <p>貼心提醒</p>
-              </div>
-              <div className="interpreter-alert-content">
-                <p>您已加購口譯機。</p>
-              </div>
-            </div>
-          )}
+          <div className="qrcode-info">
+            <p className="qrcode-info-ticket-name">{ticketName}</p>
+            <p className="qrcode-info-user">
+              {name}・手機末三碼 {phoneLastThree}
+            </p>
+          </div>
 
           <div className="qrcode-wrapper">
             <QRCodeCanvas
