@@ -50,6 +50,23 @@
     }
   }
 
+  .qrcode-info {
+    text-align: center;
+
+    .qrcode-info-ticket-name {
+      margin: 0;
+      font-size: 18px;
+      font-weight: 600;
+      color: #000;
+    }
+
+    .qrcode-info-user {
+      margin: 4px 0 0;
+      font-size: 14px;
+      color: #666;
+    }
+  }
+
   .qrcode-wrapper {
     display: flex;
     justify-content: center;

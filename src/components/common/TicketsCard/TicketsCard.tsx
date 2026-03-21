@@ -33,8 +33,7 @@ interface TicketProps {
   ticketUserName?: string;
   ticketUserEmail?: string;
   ticketId?: string;
-  hasInterpreter?: boolean;
-  interpreterTicketId?: string;
+  ticketUserPhone?: string;
   isTester?: boolean;
 }
 
@@ -55,8 +54,7 @@ export const TicketsCard: React.FC<TicketProps> = ({
   ticketUserName = '',
   ticketUserEmail = '',
   ticketId = '',
-  hasInterpreter = false,
-  interpreterTicketId,
+  ticketUserPhone = '',
   isTester = false,
 }) => {
   const navigate = useNavigate();
@@ -306,7 +304,7 @@ export const TicketsCard: React.FC<TicketProps> = ({
           <p className="refund-text">{formatRefundDate(updatedAt)}</p>
         </div>
       )}
-      {status === TICKET_STATUS.COLLECTED && !ticketMeta?.isAddon && ticketMeta?.isPublic !== false && isTester && (
+      {status === TICKET_STATUS.COLLECTED && ticketMeta?.isPublic !== false && isTester && (
         <div className="ticket-card-btns">
           <div
             className="distribution"
@@ -402,8 +400,9 @@ export const TicketsCard: React.FC<TicketProps> = ({
         name={ticketUserName}
         email={ticketUserEmail}
         ticketId={ticketId}
-        hasInterpreter={hasInterpreter}
-        interpreterTicketId={interpreterTicketId}
+        ticketName={title}
+        phoneLastThree={ticketUserPhone?.slice(-3)}
+        isAddon={ticketMeta?.isAddon}
       />
     </div>
   );
