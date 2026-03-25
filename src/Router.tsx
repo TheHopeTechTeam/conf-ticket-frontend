@@ -17,6 +17,7 @@ import { Refund } from './pages/Refund/Refund';
 import { TicketDistribution } from './pages/TicketDistribution/TicketDistribution';
 import { Tickets } from './pages/Tickets/Tickets';
 import { ScrollToTop } from './components/common/ScrollToTop/ScrollToTop';
+import { MetaPixelPageTracker } from './components/common/MetaPixelPageTracker/MetaPixelPageTracker';
 import { Introduction } from './pages/Introduction/Introduction';
 
 const ExternalRedirect = ({ url }: { url: string }) => {
@@ -30,6 +31,7 @@ const AppRouter = () => {
       <LoadingProvider>
         <Router>
           <ScrollToTop />
+          <MetaPixelPageTracker />
           <Routes>
             {/* 根路徑 - 導向外部網站 */}
             <Route
