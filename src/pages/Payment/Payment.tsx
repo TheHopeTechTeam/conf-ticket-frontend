@@ -353,6 +353,23 @@ export const Payment: React.FC = () => {
     }
   };
 
+  // Meta Pixel: 購買成功時觸發 Purchase 事件
+  useEffect(() => {
+    if (paymentStatus === STATUS.SUCCESS && paymentData && typeof fbq === 'function') {
+      const ticketNames = paymentData.tickets
+        .map(ticket => ticket.name)
+        .join(', ');
+
+      fbq('track', 'Purchase', {
+        value: paymentData.summary.totalAmount,
+        currency: 'TWD',
+        content_name: ticketNames,
+        num_items: paymentData.summary.totalQuantity,
+        content_type: 'product',
+      });
+    }
+  }, [paymentStatus, paymentData]);
+
   // Computed values
   const { groupPassTicket: _groupPassTicket } = useMemo(() => {
     if (!paymentData) return { groupPassTicket: null, groupPassQuantity: 0 };
