@@ -164,6 +164,19 @@ export const Booking: React.FC = () => {
     []
   );
 
+  // 收集所有票種的 email（用於跨票種重複檢查）
+  const allEmails = useMemo(() => {
+    const emails: { ticketId: string; index: number; email: string }[] = [];
+    Object.entries(ticketFormData).forEach(([ticketId, forms]) => {
+      forms.forEach((form, index) => {
+        if (form?.email?.trim()) {
+          emails.push({ ticketId, index, email: form.email.toLowerCase() });
+        }
+      });
+    });
+    return emails;
+  }, [ticketFormData]);
+
   // 為每個票券創建穩定的回調函數
   const ticketHandlers = useMemo(() => {
     const handlers: {
@@ -389,6 +402,9 @@ export const Booking: React.FC = () => {
                       ticketHandlers[ticket.id].onValidationChange
                     }
                     ticketName={ticket.name}
+                    externalEmails={allEmails
+                      .filter(e => e.ticketId !== ticket.id)
+                      .map(e => e.email)}
                   />
                 )}
               </div>
