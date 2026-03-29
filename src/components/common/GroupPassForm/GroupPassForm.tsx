@@ -15,6 +15,7 @@ interface GroupPassFormProps {
   onValidationChange?: (isValid: boolean) => void;
   formData?: GroupPassFormData[];
   ticketName?: string;
+  externalEmails?: string[];
 }
 
 interface FormData {
@@ -28,6 +29,7 @@ export const GroupPassForm: React.FC<GroupPassFormProps> = ({
   onValidationChange,
   formData,
   ticketName,
+  externalEmails = [],
 }) => {
   const {
     register,
@@ -148,6 +150,13 @@ export const GroupPassForm: React.FC<GroupPassFormProps> = ({
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); // 只在組件初始化時執行一次
+
+  // externalEmails 變化時重新觸發驗證
+  const externalEmailsKey = JSON.stringify(externalEmails);
+  useEffect(() => {
+    trigger();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [externalEmailsKey]);
 
   // 監控表單有效性變化
   useEffect(() => {
@@ -298,6 +307,19 @@ export const GroupPassForm: React.FC<GroupPassFormProps> = ({
                         pattern: {
                           value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
                           message: '輸入格式錯誤',
+                        },
+                        validate: (value) => {
+                          if (!value?.trim()) return true;
+                          const email = value.toLowerCase();
+                          // 同票種內重複檢查
+                          const currentUsers = getValues('users');
+                          const isDuplicateInSameTicket = currentUsers.some(
+                            (user, i) => i !== index && user.email?.toLowerCase() === email
+                          );
+                          if (isDuplicateInSameTicket) return '此電子郵件已被其他與會者使用';
+                          // 跨票種重複檢查
+                          if (externalEmails.includes(email)) return '此電子郵件已在其他票種中使用';
+                          return true;
                         },
                       })}
                       onBlur={() => handleBlur(index, 'email')}
