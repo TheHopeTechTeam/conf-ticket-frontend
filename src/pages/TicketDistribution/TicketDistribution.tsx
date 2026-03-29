@@ -55,21 +55,19 @@ export const TicketDistribution: React.FC<TicketDistributionProps> = ({
     Array.from({ length: currentTicketInfo?.ticketCount || 0 }, (_, index) => {
       const ticket = currentTicketInfo?.tickets?.[index];
       const userEmail = ticket?.user?.email || '';
-      const hasConsented = Boolean(ticket?.user?.consentedAt);
       const isRedeemed = Boolean(ticket?.isRedeemed);
-
-      // distributedAndCollected: 已分出已取票 (有 consentedAt 且 isRedeemed = true) -> disabled
-      // distributedNotCollected: 已分出未取票 (無 consentedAt 且 isRedeemed = true) -> 預帶但不 disabled
-      // undistributed: 未分出 (isRedeemed = false) -> 不預帶
-      const shouldDisable = hasConsented && isRedeemed;
       const shouldAutoFill = Boolean(userEmail);
 
+      // 已分出 (isRedeemed: true) -> disabled（不可勾選、不進 payload）
+      // 未分出但有預帶 email -> readOnly（可勾選、進 payload，但不可改 email）
+      // 未分出無 email -> 可編輯
       return {
         id: `recipient-${index + 1}`,
         email: userEmail,
         isSelected: shouldAutoFill,
         isEmailValid: shouldAutoFill,
-        isDisabled: shouldDisable,
+        isDisabled: isRedeemed,
+        isReadOnly: shouldAutoFill && !isRedeemed,
       };
     })
   );
@@ -386,7 +384,9 @@ export const TicketDistribution: React.FC<TicketDistributionProps> = ({
                         if (hasConsented && isRedeemed) {
                           return '（已分出已取票）';
                         } else if (isRedeemed && !hasConsented) {
-                          return '（已分出未取票，可重新分票）';
+                          return '（已分出未取票）';
+                        } else if (!isRedeemed) {
+                          return '（未分出）';
                         }
                         return '';
                       })()}
@@ -401,6 +401,7 @@ export const TicketDistribution: React.FC<TicketDistributionProps> = ({
                         handleEmailChange(recipient.id, e.target.value)
                       }
                       disabled={recipient.isDisabled}
+                      readOnly={recipient.isReadOnly}
                       aria-label={`取票者${index + 1}的電子郵件`}
                     />
                     {hasError && (

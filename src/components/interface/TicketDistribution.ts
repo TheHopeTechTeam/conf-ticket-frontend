@@ -26,6 +26,7 @@ export interface RecipientInfo {
   isSelected: boolean;
   isEmailValid: boolean;
   isDisabled: boolean;
+  isReadOnly?: boolean;
 }
 
 export interface DistributionFormData {
