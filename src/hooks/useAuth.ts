@@ -70,7 +70,7 @@ export const useAuth = () => {
         hideLoading();
 
         // 檢查是否有 name，如果沒有則導向 PROFILE 頁面
-        if (!response.docs[0].name && currentPath !== ROUTES.PROFILE) {
+        if (!response.docs[0].consentedAt && currentPath !== ROUTES.PROFILE) {
           navigate(ROUTES.PROFILE);
         }
 
