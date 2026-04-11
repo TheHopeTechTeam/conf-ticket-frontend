@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { apiService } from '../../api';
 import { TicketsCard } from '../../components/common/TicketsCard/TicketsCard';
 import { ROUTES } from '../../constants/routes';
@@ -14,6 +14,7 @@ import './Tickets.scss';
 
 export const Tickets = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { user } = useAuthContext(); // 取得用戶資料和完整的 API response
   const [activeStatus, setActiveStatus] = useState<TicketStatusType>(
     TICKET_STATUS.COLLECTED
@@ -39,12 +40,8 @@ export const Tickets = () => {
     return allTickets.filter(ticket => {
       switch (status) {
         case TICKET_STATUS.PURCHASED:
-          // 已購買：票券所屬訂單完成且票券未取票
-          return (
-            ticket.order?.status !== TICKET_STATUS.REFUNDED &&
-            ((ticket.order?.status === TICKET_STATUS.COMPLETED && !ticket.isRedeemed) ||
-              ticket.isRedeemed)
-          );
+          // 待取票：抓完整 group（含已分票），group-level 再過濾有未分票的 group
+          return ticket.order?.status === TICKET_STATUS.COMPLETED;
 
         case TICKET_STATUS.REFUNDED:
           // 退款記錄：票券所屬訂單退款
@@ -112,7 +109,10 @@ export const Tickets = () => {
               ticket.order?.status === TICKET_STATUS.COMPLETED && !ticket.isRedeemed
           );
 
-          if (purchasedTickets.length > 0) {
+          const defaultTab = location.state?.defaultTab as TicketStatusType | undefined;
+          if (defaultTab) {
+            setActiveStatus(defaultTab);
+          } else if (purchasedTickets.length > 0) {
             setActiveStatus(TICKET_STATUS.PURCHASED);
           } else {
             setActiveStatus(TICKET_STATUS.COLLECTED);
@@ -138,8 +138,9 @@ export const Tickets = () => {
   const ticketStatuses = [
     {
       key: TICKET_STATUS.PURCHASED,
-      title: '已購買',
-      count: getFilteredTickets(allOrders, TICKET_STATUS.PURCHASED).length,
+      title: '待取票',
+      count: getFilteredTickets(allOrders, TICKET_STATUS.PURCHASED)
+        .filter((ticket: any) => !ticket.isRedeemed).length,
     },
     {
       key: TICKET_STATUS.COLLECTED,
@@ -161,7 +162,7 @@ export const Tickets = () => {
   const noTicketText = () => {
     switch (activeStatus) {
       case TICKET_STATUS.PURCHASED:
-        return '您尚未購買任何票券';
+        return '目前沒有待取票票券';
       case TICKET_STATUS.COLLECTED:
         return '您尚未持有任何票券';
       case TICKET_STATUS.REFUNDED:
@@ -218,7 +219,11 @@ export const Tickets = () => {
         <div className="tickets-content-container">
           {(() => {
             const filteredTickets = getFilteredTickets(allOrders, activeStatus);
-            const groupedTickets = groupTicketsByOrderAndType(filteredTickets);
+            const groupedTickets = activeStatus === TICKET_STATUS.PURCHASED
+              ? groupTicketsByOrderAndType(filteredTickets).filter(group =>
+                  group.some((ticket: any) => !ticket.isRedeemed)
+                )
+              : groupTicketsByOrderAndType(filteredTickets);
 
             return filteredTickets.length === 0 ? (
               <>

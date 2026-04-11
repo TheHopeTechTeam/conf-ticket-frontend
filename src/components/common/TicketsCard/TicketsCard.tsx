@@ -148,7 +148,11 @@ export const TicketsCard: React.FC<TicketProps> = ({
                     : '張數'}
               </p>
               <p className="number">
-                {status === TICKET_STATUS.COLLECTED ? 1 : quantity / bundleSize}
+                {status === TICKET_STATUS.COLLECTED
+                  ? 1
+                  : status === TICKET_STATUS.PURCHASED
+                    ? user.undistributed.length / bundleSize
+                    : quantity / bundleSize}
               </p>
             </div>
             <div
