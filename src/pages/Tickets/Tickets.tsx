@@ -289,8 +289,8 @@ export const Tickets = () => {
                         user={ticketsByStatus}
                         hasDistributedTicket={hasDistributedTicket}
                         bundleSize={bundleSize}
-                        ticketUserName={firstTicket.owner?.name || firstTicket.user?.name || ''}
-                        ticketUserEmail={firstTicket.owner?.email || firstTicket.user?.email || ''}
+                        ticketUserName={firstTicket.user?.name || firstTicket.owner?.name || ''}
+                        ticketUserEmail={firstTicket.user?.email || firstTicket.owner?.email || ''}
                         ticketId={firstTicket.id || ''}
                       />
                     );
