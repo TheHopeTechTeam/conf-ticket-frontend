@@ -292,8 +292,6 @@ export const Tickets = () => {
                         ticketUserName={firstTicket.owner?.name || firstTicket.user?.name || ''}
                         ticketUserEmail={firstTicket.owner?.email || firstTicket.user?.email || ''}
                         ticketId={firstTicket.id || ''}
-                        ticketUserPhone={firstTicket.owner?.tel || firstTicket.user?.tel || ''}
-                        isTester={user?.meta?.isTester}
                       />
                     );
                   }
