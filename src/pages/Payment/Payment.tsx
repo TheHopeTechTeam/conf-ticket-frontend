@@ -297,7 +297,6 @@ export const Payment: React.FC = () => {
       // 取得 Prime
       showLoading('處理付款中...');
       TPDirect.card.getPrime(async (result: any) => {
-
         if (result.status !== 0) {
           console.error('getPrime failed', result);
           hideLoading();
@@ -308,7 +307,6 @@ export const Payment: React.FC = () => {
         }
 
         try {
-
           // 呼叫付款 API
           const paymentResponse = await apiService.payment.postPayment({
             prime: result.card.prime,
@@ -355,7 +353,11 @@ export const Payment: React.FC = () => {
 
   // Meta Pixel: 購買成功時觸發 Purchase 事件
   useEffect(() => {
-    if (paymentStatus === STATUS.SUCCESS && paymentData && typeof fbq === 'function') {
+    if (
+      paymentStatus === STATUS.SUCCESS &&
+      paymentData &&
+      typeof fbq === 'function'
+    ) {
       const ticketNames = paymentData.tickets
         .map(ticket => ticket.name)
         .join(', ');
@@ -438,8 +440,8 @@ export const Payment: React.FC = () => {
 
             <div className="order-summary">
               <p className="order-summary-title">
-                總計
-                NT${paymentData?.summary.totalAmount &&
+                總計 NT$
+                {paymentData?.summary.totalAmount &&
                   formatNumber(paymentData.summary.totalAmount)}
                 元
               </p>
@@ -485,10 +487,7 @@ export const Payment: React.FC = () => {
                 />
               </div>
             )}
-            <button
-              className="btn cancel-btn"
-              onClick={() => navigate(-1)}
-            >
+            <button className="btn cancel-btn" onClick={() => navigate(-1)}>
               返回修改
             </button>
           </div>
@@ -498,11 +497,15 @@ export const Payment: React.FC = () => {
       {paymentStatus === STATUS.SUCCESS && (
         <SuccessOrError
           type={STATUS.SUCCESS}
-          message={`票券已購買成功，請前往我的票券查看。<br/>如需開立發票請寄信至${MAIL.CONTACT_EMAIL}。`}
+          message={`票券已購買成功，請立即前往取票。<br/>如需開立發票請寄信至${MAIL.CONTACT_EMAIL}。`}
           titlePrefix="購買"
           successText="成功"
-          successButtonText="前往我的票券"
-          onSuccessClick={() => navigate(ROUTES.TICKETS)}
+          successButtonText="前往取票"
+          onSuccessClick={() =>
+            navigate(ROUTES.TICKETS, {
+              state: { defaultTab: TICKET_STATUS.PURCHASED },
+            })
+          }
         />
       )}
       {paymentStatus === STATUS.ERROR && (
