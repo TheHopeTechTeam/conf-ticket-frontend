@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { QRCodeCanvas } from 'qrcode.react';
 import html2canvas from 'html2canvas';
 import Dialog from './Dialog';
+import { formatRegistrationId, toRegistrationId } from '../../../utils/registrationId';
 import './CheckInQRCodeDialog.scss';
 
 interface CheckInQRCodeDialogProps {
@@ -11,7 +12,6 @@ interface CheckInQRCodeDialogProps {
   email: string;
   ticketId: string;
   ticketName?: string;
-  phoneLastThree?: string;
   isAddon?: boolean;
 }
 
@@ -22,7 +22,6 @@ export const CheckInQRCodeDialog: React.FC<CheckInQRCodeDialogProps> = ({
   email,
   ticketId,
   ticketName = '',
-  phoneLastThree = '',
   isAddon = false,
 }) => {
   const [isMobile, setIsMobile] = useState(false);
@@ -117,7 +116,7 @@ export const CheckInQRCodeDialog: React.FC<CheckInQRCodeDialogProps> = ({
           <div className="qrcode-info">
             <p className="qrcode-info-ticket-name">{ticketName}</p>
             <p className="qrcode-info-user">
-              {name}・手機末三碼 {phoneLastThree}
+              {name}・報到序號 {formatRegistrationId(toRegistrationId(ticketId))}
             </p>
           </div>
 
