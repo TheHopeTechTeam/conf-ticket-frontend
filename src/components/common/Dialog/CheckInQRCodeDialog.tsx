@@ -46,21 +46,19 @@ export const CheckInQRCodeDialog: React.FC<CheckInQRCodeDialogProps> = ({
     const container = document.getElementById('qrcode-download-container');
     if (!container) return;
 
+    // iOS Safari：window.open 必須在 async 之前同步呼叫，否則被 popup blocker 擋
+    const newWindow = isMobile ? window.open() : null;
+
     try {
-      // 使用 html2canvas 將整個容器轉換為圖片
       const canvas = await html2canvas(container, {
         backgroundColor: '#ffffff',
-        scale: 2, // 提高清晰度
+        scale: 2,
         logging: false,
       });
 
-      // 將 canvas 轉換為圖片
-      const url = canvas.toDataURL('image/png');
-
-      // 針對不同平台使用不同下載方式
       if (isMobile) {
-        // iOS Safari 和部分行動瀏覽器：開啟新視窗讓使用者長按保存
-        const newWindow = window.open();
+        // iOS Safari：將圖片寫入預先開好的視窗，讓使用者長按保存
+        const url = canvas.toDataURL('image/png');
         if (newWindow) {
           newWindow.document.write(`
             <html>
@@ -76,27 +74,28 @@ export const CheckInQRCodeDialog: React.FC<CheckInQRCodeDialogProps> = ({
                     min-height: 100vh;
                     background: #f5f5f5;
                   }
-                  img {
-                    max-width: 100%;
-                    height: auto;
-                  }
+                  img { max-width: 100%; height: auto; }
                 </style>
               </head>
-              <body>
-                <img src="${url}" alt="QR Code">
-              </body>
+              <body><img src="${url}" alt="QR Code"></body>
             </html>
           `);
           newWindow.document.close();
         }
       } else {
-        // 桌面版：直接下載
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = `ticket-${ticketId}.png`;
-        link.click();
+        // 桌面版（含 macOS Safari）：用 Blob URL，Safari 不支援 data URL 的 download
+        canvas.toBlob(blob => {
+          if (!blob) return;
+          const blobUrl = URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.href = blobUrl;
+          link.download = `ticket-${ticketId}.png`;
+          link.click();
+          URL.revokeObjectURL(blobUrl);
+        }, 'image/png');
       }
     } catch (error) {
+      if (newWindow) newWindow.close();
       console.error('下載 QR Code 失敗:', error);
     }
   };
