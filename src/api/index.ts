@@ -84,7 +84,7 @@ export const ticketTypesApi = {
       return mockAllTicketTypesResponse;
     }
 
-    const baseUrl = '/v1/ticketTypes';
+    const baseUrl = '/v1/ticketTypes?limit=100';
 
     if (!params) {
       return await httpClient.get(baseUrl);
@@ -92,13 +92,13 @@ export const ticketTypesApi = {
 
     // 處理 discounts=none 的情況（一般票券）
     if (params.discounts === 'none') {
-      return await httpClient.get(`${baseUrl}?discounts=none`);
+      return await httpClient.get(`${baseUrl}&discounts=none`);
     }
 
     // 處理優惠票券 + 口譯機的情況
     if (params.where?.['meta.discounts']?.exists) {
       return await httpClient.get(
-        `${baseUrl}?where[or][0][meta.discounts][exists]=true&where[or][1][meta.isAddon][exists]=true`
+        `${baseUrl}&where[or][0][meta.discounts][exists]=true&where[or][1][meta.isAddon][exists]=true`
       );
     }
 
