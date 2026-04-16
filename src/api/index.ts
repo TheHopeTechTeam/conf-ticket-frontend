@@ -10,7 +10,7 @@ import {
 import { httpClient } from './service';
 
 const EMAIL_KEY = 'loginEmail';
-const IS_DEV = false;
+const IS_DEV = import.meta.env.DEV;
 
 export interface AuthRequest {
   email: string;
