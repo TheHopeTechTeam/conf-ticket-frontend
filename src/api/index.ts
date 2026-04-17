@@ -84,7 +84,7 @@ export const ticketTypesApi = {
       return mockAllTicketTypesResponse;
     }
 
-    const baseUrl = '/v1/ticketTypes?limit=100';
+    const baseUrl = '/v1/ticketTypes?limit=0';
 
     if (!params) {
       return await httpClient.get(baseUrl);
