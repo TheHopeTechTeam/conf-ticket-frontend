@@ -16,6 +16,7 @@ import { Option } from '../../components/interface/Option';
 import { STATUS } from '../../constants/common';
 import {
   CHURCH_OPTIONS,
+  DIETARY_OPTIONS,
   GENDER_OPTIONS,
   ValidChurchType,
 } from '../../constants/profile';
@@ -69,11 +70,12 @@ export const Profile: React.FC = () => {
       setFields(prev => ({
         ...prev,
         fullName: user.name,
-        tel: '+' + user.tel,
+        tel: user.tel?.startsWith('+') ? user.tel : '+' + user.tel,
         gender: user.gender,
         churchIdentity: user.role,
         church: isValidChurch ? user.location : ValidChurchType.OTHER,
         churchName: isValidChurch ? '' : user.location,
+        dietaryRequirement: user.dietaryRequirement || '',
       }));
       setPrivacyPolicyChecked(Boolean(user.consentedAt));
       setUserTermsChecked(Boolean(user.consentedAt));
@@ -89,6 +91,7 @@ export const Profile: React.FC = () => {
     gender: '',
     church: '',
     churchIdentity: '',
+    dietaryRequirement: '',
   });
 
   const [errors, setErrors] = useState({
@@ -98,6 +101,7 @@ export const Profile: React.FC = () => {
     gender: '',
     church: '',
     churchIdentity: '',
+    dietaryRequirement: '',
   });
 
   const handleUserTermsConfirm = () => {
@@ -153,6 +157,7 @@ export const Profile: React.FC = () => {
       gender: validateField(fields.gender, 'gender'),
       church: validateField(fields.church, 'church'),
       churchIdentity: validateField(fields.churchIdentity, 'churchIdentity'),
+      dietaryRequirement: validateField(fields.dietaryRequirement, 'dietaryRequirement'),
     };
 
     setErrors(newErrors);
@@ -177,6 +182,7 @@ export const Profile: React.FC = () => {
             fields.church === ValidChurchType.OTHER
               ? fields.churchName
               : fields.church,
+          dietaryRequirement: fields.dietaryRequirement,
         });
         hideLoading();
         // 儲存個人檔案成功後導向 Home
@@ -202,6 +208,7 @@ export const Profile: React.FC = () => {
         gender: '請選擇性別',
         church: '請選擇所屬教會',
         churchIdentity: '請選擇所屬教會身份',
+        dietaryRequirement: '請選擇飲食需求',
       };
       return errorMessages[fieldName];
     }
@@ -385,6 +392,21 @@ export const Profile: React.FC = () => {
             />
             {errors.churchIdentity && (
               <p className="invaild-text">{errors.churchIdentity}</p>
+            )}
+          </div>
+          <div className="form-item">
+            <div className="form-label">
+              <label htmlFor="dietary-requirement">飲食需求</label>
+              <p className="invaild-text">必填</p>
+            </div>
+            <Select
+              options={DIETARY_OPTIONS}
+              value={fields.dietaryRequirement}
+              onChange={handleSelectChange('dietaryRequirement')}
+              placeholder="請選擇"
+            />
+            {errors.dietaryRequirement && (
+              <p className="invaild-text">{errors.dietaryRequirement}</p>
             )}
           </div>
         </div>

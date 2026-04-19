@@ -16,3 +16,8 @@ export const CHURCH_OPTIONS = [
   { id: 'online', label: 'The Hope 線上分部' },
   { id: 'other', label: '其他' },
 ];
+
+export const DIETARY_OPTIONS = [
+  { id: '葷食', label: '葷食' },
+  { id: '素食', label: '素食' },
+];
