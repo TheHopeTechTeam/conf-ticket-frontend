@@ -24,6 +24,7 @@ export interface MemberUpdateRequest {
   role: string;
   location: string;
   consentedAt: string;
+  dietaryRequirement: string;
 }
 
 // 認證相關 API

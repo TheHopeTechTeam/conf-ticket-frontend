@@ -69,8 +69,13 @@ export const useAuth = () => {
       if (response && response.docs && response.docs.length > 0) {
         hideLoading();
 
-        // 檢查是否有 name，如果沒有則導向 PROFILE 頁面
-        if (!response.docs[0].consentedAt && currentPath !== ROUTES.PROFILE) {
+        // 檢查必填資料是否完整：條款同意、基本資料、飲食需求
+        const member = response.docs[0];
+        const needsProfileUpdate =
+          !member.consentedAt ||
+          !member.name ||
+          !member.dietaryRequirement;
+        if (needsProfileUpdate && currentPath !== ROUTES.PROFILE) {
           navigate(ROUTES.PROFILE);
         }
 

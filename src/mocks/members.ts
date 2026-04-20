@@ -8,9 +8,10 @@ export const mockMemberResponse = {
       name: '測試用戶',
       gender: 'male',
       tel: '+886912345678',
-      role: 'member',
+      role: 'minister',
       location: 'The Hope 台北',
       consentedAt: '2024-01-01T00:00:00.000Z',
+      dietaryRequirement: '',
       createdAt: '2024-01-01T00:00:00.000Z',
       updatedAt: '2024-01-01T00:00:00.000Z',
       meta: {
