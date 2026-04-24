@@ -22,6 +22,17 @@
     }
   }
 
+  .form-hint-container {
+    margin-top: 6px;
+  }
+
+  .form-hint {
+    color: #777f82;
+    font-size: 12px;
+    display: flex;
+    gap: 4px;
+  }
+
   .profile-form {
     display: flex;
     flex-direction: column;

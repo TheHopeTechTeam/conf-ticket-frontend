@@ -221,7 +221,7 @@ export const Tickets = () => {
             const filteredTickets = getFilteredTickets(allOrders, activeStatus);
             const groupedTickets = activeStatus === TICKET_STATUS.PURCHASED
               ? groupTicketsByOrderAndType(filteredTickets).filter(group =>
-                  group.some((ticket: any) => !ticket.isRedeemed)
+                  group.some((ticket: any) => !(ticket.isRedeemed && ticket.user?.consentedAt))
                 )
               : groupTicketsByOrderAndType(filteredTickets);
 
