@@ -5,4 +5,4 @@
 /.well-known/* 200
 
 # Preserve all path structure and querystrings in requesting /api/*
-/api/* http://thehope.app/:splat 200
+/api/* http://172.236.143.202/:splat 200

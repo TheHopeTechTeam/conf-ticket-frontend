@@ -25,7 +25,7 @@ export const useTapPay = (
     }
 
     try {
-      window.TPDirect.setupSDK(config.appId, config.appKey, 'production');
+      window.TPDirect.setupSDK(11327, 'app_whdEWBH8e8Lzy4N6BysVRRMILYORF6UxXbiOFsICkz0J9j1C0JUlCHv1tVJC', 'sandbox');
 
       // Setup payment methods
       window.TPDirect.paymentRequestApi.checkAvailability();
