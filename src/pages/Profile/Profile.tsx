@@ -408,6 +408,10 @@ export const Profile: React.FC = () => {
             {errors.dietaryRequirement && (
               <p className="invaild-text">{errors.dietaryRequirement}</p>
             )}
+            <div className="form-hint-container">
+              <p className="form-hint"><span>•</span><span>此資訊僅供對應票券之餐點統計與餐點提供使用</span></p>
+              <p className="form-hint"><span>•</span><span>此資訊僅供含餐之票券統計使用，一般票種不含餐點</span></p>
+            </div>
           </div>
         </div>
         <div className="profile-checkbox-button">
