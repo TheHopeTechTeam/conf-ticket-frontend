@@ -8,15 +8,16 @@ export const Introduction: React.FC = () => {
   return (
     <div className="form-container introduction-container">
       <img
-        src="/images/intro-banner.webp"
+        src="/images/intro-banner-2027.jpg"
         alt=""
         className="introduction-image"
       />
       <div className="introduction-content">
         <div className="introduction-title">
           <h1>
-            The Hope Conference
-            <br /> 2026《PRESENCE》
+            The Hope 特會 2027
+            <br />
+            《Holy Spirit, You are Welcome Here》
             <br /> 購票網站
           </h1>
         </div>

@@ -25,7 +25,7 @@ export const Header = () => {
     <>
       <p
         className="cursor-pointer"
-        onClick={() => (window.location.href = EXTRA_ROUTES.CONF2026)}
+        onClick={() => (window.location.href = EXTRA_ROUTES.CONF2027)}
       >
         The Hope 特會
       </p>

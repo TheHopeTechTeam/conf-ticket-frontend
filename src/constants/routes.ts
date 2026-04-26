@@ -17,7 +17,7 @@ export const EXTRA_ROUTES = {
   FACEBOOK: 'https://www.facebook.com/insideTheHope',
   INSTAGRAM: 'https://www.instagram.com/thehope.co/',
   YOUTUBE: 'https://www.youtube.com/c/TheHopeTV',
-  CONF2026: 'https://conf26.thehope.co/',
+  CONF2027: 'https://thehope.co/conf27',
 } as const;
 
 // 路由類型

@@ -69,7 +69,7 @@ export const TicketsCard: React.FC<TicketProps> = ({
 
   // 檢查是否可以退票（活動開始前十天不能退票）
   const canRefund = () => {
-    const eventStartDate = new Date('2026-05-01');
+    const eventStartDate = new Date('2027-04-29');
     const today = new Date();
     const tenDaysBeforeEvent = new Date(eventStartDate);
     tenDaysBeforeEvent.setDate(eventStartDate.getDate() - 10);
@@ -117,9 +117,9 @@ export const TicketsCard: React.FC<TicketProps> = ({
         <div className="ticket-card-info">
           <div className="ticket-card-info-time">
             <div className="ticket-card-info-start">
-              <p className="year">2026</p>
+              <p className="year">2027</p>
               <div className="ticket-card-info-date">
-                <p className="date">04.30</p>
+                <p className="date">04.29</p>
                 <div className="ticket-card-info-day">
                   <p>四</p>
                   <p>18:00</p>
@@ -128,9 +128,9 @@ export const TicketsCard: React.FC<TicketProps> = ({
             </div>
             <div className="ticket-card-info-line"></div>
             <div className="ticket-card-info-start">
-              <p className="year">2026</p>
+              <p className="year">2027</p>
               <div className="ticket-card-info-date">
-                <p className="date">05.02</p>
+                <p className="date">05.01</p>
                 <div className="ticket-card-info-day">
                   <p>六</p>
                   <p>21:30</p>
@@ -199,7 +199,7 @@ export const TicketsCard: React.FC<TicketProps> = ({
                     user: user,
                     ticketIds: ticketIds,
                     tickets: allTickets,
-                    useDate: '2026.04.30-2026.05.02',
+                    useDate: '2027.04.29-2027.05.01',
                   },
                 },
               });
@@ -265,7 +265,7 @@ export const TicketsCard: React.FC<TicketProps> = ({
                       status: status,
                       user: user,
                       ticketIds: ticketIds,
-                      useDate: '2026.04.30-2026.05.02',
+                      useDate: '2027.04.29-2027.05.01',
                     },
                   },
                 });
