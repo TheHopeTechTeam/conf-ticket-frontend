@@ -8,7 +8,7 @@ export const Introduction: React.FC = () => {
   return (
     <div className="form-container introduction-container">
       <img
-        src="/images/intro-banner-2027.jpg"
+        src="/images/intro-banner-2027.png"
         alt=""
         className="introduction-image"
       />
