@@ -304,7 +304,7 @@ export const TicketsCard: React.FC<TicketProps> = ({
           <p className="refund-text">{formatRefundDate(updatedAt)}</p>
         </div>
       )}
-      {status === TICKET_STATUS.COLLECTED && ticketMeta?.isPublic !== false && (
+      {status === TICKET_STATUS.COLLECTED && ticketMeta?.isPublic !== false && !ticketMeta?.hideQRCode && (
         <div className="ticket-card-btns">
           <div
             className="distribution"
