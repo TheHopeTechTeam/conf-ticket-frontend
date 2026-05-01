@@ -119,6 +119,7 @@ export const Login: React.FC = () => {
       }
 
       // 一般流程：切換到 OTP 輸入階段
+      localStorage.setItem(EMAIL_KEY, email);
       setIsEmailSubmitted(true);
       resetTimer();
     } catch (error: any) {
