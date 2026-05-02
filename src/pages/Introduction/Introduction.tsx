@@ -8,26 +8,21 @@ export const Introduction: React.FC = () => {
   return (
     <div className="form-container introduction-container">
       <img
-        src="/images/intro-banner.webp"
+        src="/images/intro-banner-2027.jpg"
         alt=""
         className="introduction-image"
       />
       <div className="introduction-content">
         <div className="introduction-title">
           <h1>
-            The Hope Conference
-            <br /> 2026《PRESENCE》
+            The Hope 特會 2027
+            <br />
+            《Holy Spirit, You are Welcome Here》
             <br /> 購票網站
           </h1>
         </div>
         <p className="introduction-text">
-          在這為期三天的特會裡，你將會看見
-          <br />
-          無論我們來自哪裡，都能一起來到神的面前。
-          <br />
-          當我們對神夠坦誠，卸下逞強或質疑，
-          <br />
-          我們將一同見證美麗又令人敬畏的風景。
+          「Holy Spirit, You are Welcome Here」不只是一句口號，更是靈魂深處的呼求。在為期三天的特會中，我們不滿足於瞬間的感動，而是渴望看見「超自然的工作」轉化為「門徒生活的日常」。我們受邀放下過去的認知侷限或屬靈失望，以敬畏且全然敞開的心，重新建立與聖靈的親密連結。
         </p>
         <p className="introduction-text-second">
           為確保您有良好的特會體驗，接下來幾分鐘，需要先註冊此購票系統，來完成特會購票流程，以利特會當下報到使用。

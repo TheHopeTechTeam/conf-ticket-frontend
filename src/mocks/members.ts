@@ -11,7 +11,7 @@ export const mockMemberResponse = {
       role: 'minister',
       location: 'The Hope 台北',
       consentedAt: '2024-01-01T00:00:00.000Z',
-      dietaryRequirement: '',
+      dietaryRequirement: '葷食',
       createdAt: '2024-01-01T00:00:00.000Z',
       updatedAt: '2024-01-01T00:00:00.000Z',
       meta: {
