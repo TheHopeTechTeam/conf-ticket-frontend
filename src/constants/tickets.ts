@@ -7,7 +7,7 @@ export interface TicketFeature {
 // 票券狀態常數
 export const TICKET_STATUS = {
   PURCHASED: 'purchased',
-  COLLECTED: 'collected', 
+  COLLECTED: 'collected',
   REFUNDED: 'refunded',
   COMPLETED: 'completed',
 } as const;
@@ -72,6 +72,25 @@ export interface TicketInfo {
     [key: string]: any;
   };
 }
+
+export const CONF_EVENT_DATES: Record<
+  string,
+  {
+    start: { year: string; date: string; day: string; time: string };
+    end: { year: string; date: string; day: string; time: string };
+  }
+> = {
+  '2026': {
+    start: { year: '2026', date: '04.30', day: '四', time: '18:00' },
+    end: { year: '2026', date: '05.02', day: '六', time: '21:30' },
+  },
+  '2027': {
+    start: { year: '2027', date: '04.29', day: '四', time: '18:00' },
+    end: { year: '2027', date: '05.01', day: '六', time: '21:30' },
+  },
+};
+
+export const DEFAULT_EVENT = '2027';
 
 export interface TicketTypesResponse {
   docs: TicketInfo[];

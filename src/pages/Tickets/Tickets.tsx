@@ -106,10 +106,13 @@ export const Tickets = () => {
           );
           const purchasedTickets = allTickets.filter(
             (ticket: any) =>
-              ticket.order?.status === TICKET_STATUS.COMPLETED && !ticket.isRedeemed
+              ticket.order?.status === TICKET_STATUS.COMPLETED &&
+              !ticket.isRedeemed
           );
 
-          const defaultTab = location.state?.defaultTab as TicketStatusType | undefined;
+          const defaultTab = location.state?.defaultTab as
+            | TicketStatusType
+            | undefined;
           if (defaultTab) {
             setActiveStatus(defaultTab);
           } else if (purchasedTickets.length > 0) {
@@ -139,8 +142,9 @@ export const Tickets = () => {
     {
       key: TICKET_STATUS.PURCHASED,
       title: '待取票',
-      count: getFilteredTickets(allOrders, TICKET_STATUS.PURCHASED)
-        .filter((ticket: any) => !ticket.isRedeemed).length,
+      count: getFilteredTickets(allOrders, TICKET_STATUS.PURCHASED).filter(
+        (ticket: any) => !ticket.isRedeemed
+      ).length,
     },
     {
       key: TICKET_STATUS.COLLECTED,
@@ -219,11 +223,15 @@ export const Tickets = () => {
         <div className="tickets-content-container">
           {(() => {
             const filteredTickets = getFilteredTickets(allOrders, activeStatus);
-            const groupedTickets = activeStatus === TICKET_STATUS.PURCHASED
-              ? groupTicketsByOrderAndType(filteredTickets).filter(group =>
-                  group.some((ticket: any) => !(ticket.isRedeemed && ticket.user?.consentedAt))
-                )
-              : groupTicketsByOrderAndType(filteredTickets);
+            const groupedTickets =
+              activeStatus === TICKET_STATUS.PURCHASED
+                ? groupTicketsByOrderAndType(filteredTickets).filter(group =>
+                    group.some(
+                      (ticket: any) =>
+                        !(ticket.isRedeemed && ticket.user?.consentedAt)
+                    )
+                  )
+                : groupTicketsByOrderAndType(filteredTickets);
 
             return filteredTickets.length === 0 ? (
               <>
@@ -250,11 +258,11 @@ export const Tickets = () => {
                         (desc: any) => desc.bulletpoint
                       ) || [];
 
-                    // 從 ticketTypesMap 取得票券類型資料
+                    // 從 ticketTypesMap 取得票券圖片（orders API 的 image 只有 ID）
                     const ticketTypeData = ticketTypesMap.get(ticketType?.id);
                     const ticketImageUrl =
                       ticketTypeData?.image?.url || '/images/ticket-sample.png';
-                    const bundleSize = ticketTypeData?.bundleSize || 1;
+                    const bundleSize = ticketType?.bundleSize || 1;
 
                     const hasDistributedTicket = order?.tickets?.some(
                       (ticket: any) => ticket.isRedeemed
@@ -294,8 +302,16 @@ export const Tickets = () => {
                         user={ticketsByStatus}
                         hasDistributedTicket={hasDistributedTicket}
                         bundleSize={bundleSize}
-                        ticketUserName={firstTicket.user?.name || firstTicket.owner?.name || ''}
-                        ticketUserEmail={firstTicket.user?.email || firstTicket.owner?.email || ''}
+                        ticketUserName={
+                          firstTicket.user?.name ||
+                          firstTicket.owner?.name ||
+                          ''
+                        }
+                        ticketUserEmail={
+                          firstTicket.user?.email ||
+                          firstTicket.owner?.email ||
+                          ''
+                        }
                         ticketId={firstTicket.id || ''}
                       />
                     );
@@ -314,18 +330,18 @@ export const Tickets = () => {
               activeStatus === TICKET_STATUS.COLLECTED)
           );
         })() && (
-            <div className="tickets-btn-container">
-              {(activeStatus === TICKET_STATUS.PURCHASED ||
-                activeStatus === TICKET_STATUS.COLLECTED) && (
-                  <button
-                    className="btn send-btn m-b-16"
-                    onClick={() => navigate(ROUTES.BOOKING)}
-                  >
-                    前往購票
-                  </button>
-                )}
-            </div>
-          )}
+          <div className="tickets-btn-container">
+            {(activeStatus === TICKET_STATUS.PURCHASED ||
+              activeStatus === TICKET_STATUS.COLLECTED) && (
+              <button
+                className="btn send-btn m-b-16"
+                onClick={() => navigate(ROUTES.BOOKING)}
+              >
+                前往購票
+              </button>
+            )}
+          </div>
+        )}
         <button
           className="btn cancel-btn"
           onClick={() => navigate(ROUTES.HOME)}
