@@ -1,7 +1,12 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '../../../constants/routes';
-import { TICKET_STATUS, TicketStatusType } from '../../../constants/tickets';
+import {
+  TICKET_STATUS,
+  TicketStatusType,
+  CONF_EVENT_DATES,
+  DEFAULT_EVENT,
+} from '../../../constants/tickets';
 import { TicketStatusDialog } from '../Dialog/TicketStatusDialog';
 import { CheckInQRCodeDialog } from '../Dialog/CheckInQRCodeDialog';
 import './TicketsCard.scss';
@@ -55,7 +60,12 @@ export const TicketsCard: React.FC<TicketProps> = ({
 }) => {
   const navigate = useNavigate();
   const [isStatusDialogOpen, setIsStatusDialogOpen] = useState(false);
-  const [isCheckInQRCodeDialogOpen, setIsCheckInQRCodeDialogOpen] = useState(false);
+  const [isCheckInQRCodeDialogOpen, setIsCheckInQRCodeDialogOpen] =
+    useState(false);
+
+  const eventKey = ticketMeta?.event || DEFAULT_EVENT;
+  const eventDates =
+    CONF_EVENT_DATES[eventKey] || CONF_EVENT_DATES[DEFAULT_EVENT];
 
   // 格式化日期函數
   const formatRefundDate = (dateString?: string) => {
@@ -69,7 +79,8 @@ export const TicketsCard: React.FC<TicketProps> = ({
 
   // 檢查是否可以退票（活動開始前十天不能退票）
   const canRefund = () => {
-    const eventStartDate = new Date('2027-04-29');
+    const { year, date } = eventDates.start;
+    const eventStartDate = new Date(`${year}-${date.replace('.', '-')}`);
     const today = new Date();
     const tenDaysBeforeEvent = new Date(eventStartDate);
     tenDaysBeforeEvent.setDate(eventStartDate.getDate() - 10);
@@ -117,23 +128,23 @@ export const TicketsCard: React.FC<TicketProps> = ({
         <div className="ticket-card-info">
           <div className="ticket-card-info-time">
             <div className="ticket-card-info-start">
-              <p className="year">2027</p>
+              <p className="year">{eventDates.start.year}</p>
               <div className="ticket-card-info-date">
-                <p className="date">04.29</p>
+                <p className="date">{eventDates.start.date}</p>
                 <div className="ticket-card-info-day">
-                  <p>四</p>
-                  <p>18:00</p>
+                  <p>{eventDates.start.day}</p>
+                  <p>{eventDates.start.time}</p>
                 </div>
               </div>
             </div>
             <div className="ticket-card-info-line"></div>
             <div className="ticket-card-info-start">
-              <p className="year">2027</p>
+              <p className="year">{eventDates.end.year}</p>
               <div className="ticket-card-info-date">
-                <p className="date">05.01</p>
+                <p className="date">{eventDates.end.date}</p>
                 <div className="ticket-card-info-day">
-                  <p>六</p>
-                  <p>21:30</p>
+                  <p>{eventDates.end.day}</p>
+                  <p>{eventDates.end.time}</p>
                 </div>
               </div>
             </div>
@@ -177,12 +188,18 @@ export const TicketsCard: React.FC<TicketProps> = ({
 
               // 從訂單中直接取得票券，保持原始順序，避免索引錯亂
               // 注意：這裡應該直接從 ticketIds 對應的原始票券資料取得，而不是重新組合
-              const orderTickets = ticketIds?.map(ticketId => {
-                // 從所有狀態的票券中找到對應的票券
-                return [...user.undistributed, ...user.distributedNotCollected, ...user.distributedAndCollected]
-                  .find(ticket => ticket.id === ticketId);
-              }).filter(Boolean) || [];
-              
+              const orderTickets =
+                ticketIds
+                  ?.map(ticketId => {
+                    // 從所有狀態的票券中找到對應的票券
+                    return [
+                      ...user.undistributed,
+                      ...user.distributedNotCollected,
+                      ...user.distributedAndCollected,
+                    ].find(ticket => ticket.id === ticketId);
+                  })
+                  .filter(Boolean) || [];
+
               const allTickets = orderTickets;
 
               // 設置 sessionStorage 標記,允許訪問分票頁面
@@ -199,7 +216,7 @@ export const TicketsCard: React.FC<TicketProps> = ({
                     user: user,
                     ticketIds: ticketIds,
                     tickets: allTickets,
-                    useDate: '2027.04.29-2027.05.01',
+                    useDate: `${eventDates.start.year}.${eventDates.start.date}-${eventDates.end.year}.${eventDates.end.date}`,
                   },
                 },
               });
@@ -265,7 +282,7 @@ export const TicketsCard: React.FC<TicketProps> = ({
                       status: status,
                       user: user,
                       ticketIds: ticketIds,
-                      useDate: '2027.04.29-2027.05.01',
+                      useDate: `${eventDates.start.year}.${eventDates.start.date}-${eventDates.end.year}.${eventDates.end.date}`,
                     },
                   },
                 });
@@ -304,35 +321,37 @@ export const TicketsCard: React.FC<TicketProps> = ({
           <p className="refund-text">{formatRefundDate(updatedAt)}</p>
         </div>
       )}
-      {status === TICKET_STATUS.COLLECTED && ticketMeta?.isPublic !== false && !ticketMeta?.hideQRCode && (
-        <div className="ticket-card-btns">
-          <div
-            className="distribution"
-            onClick={() => setIsCheckInQRCodeDialogOpen(true)}
-          >
-            <p className="text">前往報到</p>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="18"
-              height="18"
-              viewBox="0 0 18 18"
-              fill="none"
+      {status === TICKET_STATUS.COLLECTED &&
+        ticketMeta?.isPublic !== false &&
+        !ticketMeta?.hideQRCode && (
+          <div className="ticket-card-btns">
+            <div
+              className="distribution"
+              onClick={() => setIsCheckInQRCodeDialogOpen(true)}
             >
-              <path
-                d="M6.71993 5.90195L7.67168 4.9502L11.7217 9.0002L7.67168 13.0502L6.71993 12.0984L9.81143 9.0002L6.71993 5.90195Z"
-                fill="white"
-              />
-              <circle
-                cx="9"
-                cy="9"
-                r="8.25"
-                stroke="white"
-                strokeWidth="1.5"
-              />
-            </svg>
+              <p className="text">前往報到</p>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="18"
+                height="18"
+                viewBox="0 0 18 18"
+                fill="none"
+              >
+                <path
+                  d="M6.71993 5.90195L7.67168 4.9502L11.7217 9.0002L7.67168 13.0502L6.71993 12.0984L9.81143 9.0002L6.71993 5.90195Z"
+                  fill="white"
+                />
+                <circle
+                  cx="9"
+                  cy="9"
+                  r="8.25"
+                  stroke="white"
+                  strokeWidth="1.5"
+                />
+              </svg>
+            </div>
           </div>
-        </div>
-      )}
+        )}
       <details className="ticket-card-details">
         <summary>
           <span className="title">票券詳情</span>
