@@ -12,6 +12,7 @@ interface PayButtonProps {
   isGooglePayReady: boolean;
   setupGooglePay: () => void;
   setupApplePay: () => void;
+  noticeDisabled?: boolean;
 }
 
 const PayButton: React.FC<PayButtonProps> = ({
@@ -20,6 +21,7 @@ const PayButton: React.FC<PayButtonProps> = ({
   isGooglePayReady,
   setupGooglePay,
   setupApplePay,
+  noticeDisabled = false,
 }) => {
   const renderPaymentButton = () => {
     switch (paymentType) {
@@ -27,9 +29,9 @@ const PayButton: React.FC<PayButtonProps> = ({
         return (
           <button
             type="button"
-            className="pay-button apple-pay-button"
-            onClick={isApplePayReady ? setupApplePay : undefined}
-            disabled={!isApplePayReady}
+            className={`pay-button apple-pay-button${noticeDisabled ? ' notice-disabled' : ''}`}
+            onClick={isApplePayReady && !noticeDisabled ? setupApplePay : undefined}
+            disabled={!isApplePayReady || noticeDisabled}
           />
         );
 
@@ -37,9 +39,9 @@ const PayButton: React.FC<PayButtonProps> = ({
         return (
           <button
             type="button"
-            className="pay-button google-pay-button"
-            onClick={isGooglePayReady ? setupGooglePay : undefined}
-            disabled={!isGooglePayReady}
+            className={`pay-button google-pay-button${noticeDisabled ? ' notice-disabled' : ''}`}
+            onClick={isGooglePayReady && !noticeDisabled ? setupGooglePay : undefined}
+            disabled={!isGooglePayReady || noticeDisabled}
           />
         );
 
