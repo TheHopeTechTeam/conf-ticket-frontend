@@ -41,6 +41,7 @@ export const Payment: React.FC = () => {
   const { showLoading, hideLoading } = useLoading();
   const [isWarnDialogOpen, setIsWarnDialogOpen] = useState(false);
   const [warnMessage, setWarnMessage] = useState('');
+  const [isNoticeChecked, setIsNoticeChecked] = useState(false);
   const hasProcessed3DCallback = useRef(false);
 
   // 千分位格式化函數
@@ -386,6 +387,19 @@ export const Payment: React.FC = () => {
     };
   }, [paymentData]);
 
+  const red = (text: string) => (
+    <span style={{ color: '#EE1B0A', fontWeight: 600 }}>{text}</span>
+  );
+
+  const getAlertContent = () => (
+    <ol>
+      <li>退票期限：最遲須於活動前 {red('10 天')}辦理，並酌收 {red('10%')} 手續費。</li>
+      <li>退票限制：僅限{red('整筆訂單')}退票，恕不接受單張或部分退票。</li>
+      <li>分票注意：團體/雙人票一旦在系統完成{red('「分票」')}，即無法辦理退票。</li>
+      <li>刷退時效：因銀行作業限制，退票須於購票日起 {red('180 天內')} 完成辦理。</li>
+    </ol>
+  );
+
   return (
     <>
       <WarnDialog
@@ -466,13 +480,47 @@ export const Payment: React.FC = () => {
               ))}
           </div>
 
+          <div className="payment-notice-container">
+            <div className="payment-notice-title">
+              <img src="/images/ticket-alert-dot.svg" alt="" />
+              <p>付款前請確認重要權益</p>
+            </div>
+            <div className="payment-notice-content">{getAlertContent()}</div>
+          </div>
+
+          <div className="payment-notice-checkbox-container">
+            <input
+              type="checkbox"
+              id="notice-agree"
+              className="payment-notice-checkbox-input"
+              checked={isNoticeChecked}
+              onChange={e => setIsNoticeChecked(e.target.checked)}
+            />
+            <label htmlFor="notice-agree" className="payment-notice-checkbox-label">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                <g clipPath="url(#clip0_notice)">
+                  <path
+                    d="M19 3H5C3.89 3 3 3.9 3 5V19C3 20.1 3.89 21 5 21H19C20.11 21 21 20.1 21 19V5C21 3.9 20.11 3 19 3ZM10 17L5 12L6.41 10.59L10 14.17L17.59 6.58L19 8L10 17Z"
+                    fill={isNoticeChecked ? '#3C5464' : '#C5CCD1'}
+                  />
+                </g>
+                <defs>
+                  <clipPath id="clip0_notice">
+                    <rect width="24" height="24" fill="white" />
+                  </clipPath>
+                </defs>
+              </svg>
+              我已閱讀並同意以上購票須知
+            </label>
+          </div>
+
           {/* 按鈕區 */}
           <div className="payment-buttons">
             {paymentType === PAYMENT_TYPES.CREDIT_CARD ? (
               <button
                 className="btn send-btn"
                 onClick={handleCreditCardPayment}
-                disabled={!isCreditCardPaymentSupported}
+                disabled={!isCreditCardPaymentSupported || !isNoticeChecked}
               >
                 前往付款
               </button>
@@ -484,6 +532,7 @@ export const Payment: React.FC = () => {
                   setupApplePay={setupApplePay}
                   isApplePayReady={paymentReady.isApplePayReady}
                   isGooglePayReady={paymentReady.isGooglePayReady}
+                  noticeDisabled={!isNoticeChecked}
                 />
               </div>
             )}

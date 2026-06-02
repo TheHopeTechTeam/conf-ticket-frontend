@@ -118,7 +118,7 @@ export const UserTermsDialog: React.FC<UserTermsDialogProps> = ({
           </li>
           <li>
             <span className="number">2.</span>
-            票券採實名制，禁止截圖或非官方方式轉發，僅可依官方公告方式以系統進行分票、取票。
+            票券採實名制，禁止截圖或非官方方式轉發，僅可依官方公告方式於系統進行分票、取票。針對團體票或雙人套票，一經完成「分票」作業後，該筆票券即無法受理退票。
           </li>
           <li>
             <span className="number">3.</span>
@@ -156,6 +156,11 @@ export const UserTermsDialog: React.FC<UserTermsDialogProps> = ({
           </li>
           <li>
             <span className="number">3.</span>
+            因銀行端刷退作業流程限制，所有退票申請必須於原購票日起算之 180
+            天內完成辦理，逾期恕不受理。
+          </li>
+          <li>
+            <span className="number">4.</span>
             若活動取消或延期，平台將提供全額退票，且免收手續費。
           </li>
         </ul>
