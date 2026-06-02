@@ -21,3 +21,8 @@
 .google-pay-button {
   background-image: url('/images/google-pay-icon.webp');
 }
+
+.notice-disabled {
+  background-color: #c5ccd1 !important;
+  cursor: not-allowed;
+}
