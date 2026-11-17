@@ -1,8 +1,10 @@
 name: Deploy to Cloudflare
 
 on:
-  # 正式站不自動部署（Cloudflare 端也已暫停自動部署），只允許手動觸發
-  workflow_dispatch:
+  push:
+    branches:
+      - master
+  workflow_dispatch: # 允許手動觸發
 
 jobs:
   build-and-deploy:
