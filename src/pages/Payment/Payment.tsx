@@ -14,6 +14,11 @@ import { CreditCardStatus, PaymentData } from '../../types/payment';
 // Custom hooks
 import { SuccessOrError } from '../../components/common/SuccessOrError/SuccessOrError';
 import { usePaymentMethods } from '../../hooks/usePaymentMethods';
+import {
+  ORDER_STATUS_TIMEOUT_MS,
+  PaymentResultStatus,
+  usePaymentResult,
+} from '../../hooks/usePaymentResult';
 import { usePaymentState } from '../../hooks/usePaymentState';
 import { useTapPay } from '../../hooks/useTapPay';
 
@@ -30,19 +35,44 @@ const isCreditCardPaymentSupported = true;
 const messageCreditCardPaymentUnavailable =
   '信用卡功能修復中，請先使用 Apple Pay 或 Google Pay 購票，謝謝！';
 
+/**
+ * 3DS 回傳後輪詢訂單的間隔（逐步拉長，合計約 20 秒、8 次）。
+ * webhook 更新訂單需經過 TapPay Record API + 寫訂單 + 同步寄信，可能超過 5 秒。
+ */
+const POLL_DELAYS_MS = [1000, 1000, 2000, 2000, 3000, 3000, 4000, 4000];
+
+const cleanUrl = () =>
+  window.history.replaceState({}, '', window.location.pathname);
+
 export const Payment: React.FC = () => {
   const { user } = useAuthContext();
   const navigate = useNavigate();
   const location = useLocation();
   const [paymentData, setPaymentData] = useState<PaymentData | null>(null);
-  const [paymentStatus, setPaymentStatus] = useState<
-    'form' | 'success' | 'error'
-  >(STATUS.FORM);
+  const [paymentStatus, setPaymentStatus] = useState<PaymentResultStatus>(
+    STATUS.FORM
+  );
   const { showLoading, hideLoading } = useLoading();
   const [isWarnDialogOpen, setIsWarnDialogOpen] = useState(false);
   const [warnMessage, setWarnMessage] = useState('');
   const [isNoticeChecked, setIsNoticeChecked] = useState(false);
   const hasProcessed3DCallback = useRef(false);
+  const isMountedRef = useRef(true);
+
+  useEffect(() => {
+    isMountedRef.current = true;
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
+
+  const paymentResult = usePaymentResult(
+    setPaymentStatus,
+    setWarnMessage,
+    setIsWarnDialogOpen
+  );
+  const { finishWithSuccess, finishWithError, finishWithPending } =
+    paymentResult;
 
   // 千分位格式化函數
   const formatNumber = (num: number): string => {
@@ -71,7 +101,7 @@ export const Payment: React.FC = () => {
   } = usePaymentMethods(
     paymentData!,
     updatePaymentReady,
-    setPaymentStatus,
+    paymentResult,
     user,
     navigate,
     setWarnMessage,
@@ -150,97 +180,76 @@ export const Payment: React.FC = () => {
       const status = urlParams.get('status');
 
       // 如果 URL 中有 order_number 和 status，表示是從 3D 驗證頁面返回
-      if (orderNumber && status !== null) {
-        hasProcessed3DCallback.current = true;
-        showLoading('確認付款結果...');
+      if (!orderNumber || status === null) return;
+
+      hasProcessed3DCallback.current = true;
+
+      if (status !== '0') {
+        // 3D 驗證失敗
+        finishWithError('3D 驗證失敗，請重新嘗試');
+        cleanUrl();
+        return;
+      }
+
+      // 3D 驗證成功，輪詢訂單狀態直到 completed / failed 或達上限
+      showLoading('確認付款結果...');
+      let attempt = 0;
+
+      const pollOrder = async () => {
+        // 離開頁面就停止輪詢（不在 effect cleanup 清 timer，避免 effect 重跑時中斷輪詢）
+        if (!isMountedRef.current) {
+          hideLoading();
+          return;
+        }
 
         try {
-          if (status === '0') {
-            // 3D 驗證成功，輪詢訂單狀態
-            let isCancelled = false;
-            let pollCount = 0;
-            const maxPolls = 5;
-            const pollInterval = 1000; // 1 秒
+          const order = await apiService.orders.getOrdersByOrderId(
+            orderNumber,
+            // silent：查詢失敗會繼續輪詢，不跳錯誤框以免使用者誤以為付款失敗
+            { timeoutMs: ORDER_STATUS_TIMEOUT_MS, silent: true }
+          );
 
-            const pollOrder = async () => {
-              if (isCancelled || pollCount >= maxPolls) {
-                // 超過最大輪詢次數仍未完成
-                if (pollCount >= maxPolls) {
-                  hideLoading();
-                  setWarnMessage('訂單處理超時，請稍後至「我的票券」確認');
-                  setIsWarnDialogOpen(true);
-                  setPaymentStatus(STATUS.ERROR);
-                  window.scrollTo({ top: 0, behavior: 'smooth' });
-                  window.history.replaceState({}, '', window.location.pathname);
-                }
-                return;
-              }
-
-              try {
-                const orderResponse =
-                  await apiService.orders.getOrdersByOrderId(orderNumber);
-
-                if (orderResponse.status === TICKET_STATUS.COMPLETED) {
-                  // 訂單完成
-                  hideLoading();
-                  sessionStorage.removeItem('ticketOrderData');
-                  setPaymentStatus(STATUS.SUCCESS);
-                  window.scrollTo({ top: 0, behavior: 'smooth' });
-                  window.history.replaceState({}, '', window.location.pathname);
-                } else if (orderResponse.status === 'failed') {
-                  // 訂單失敗
-                  hideLoading();
-                  setWarnMessage('訂單處理失敗，請重新購買');
-                  setIsWarnDialogOpen(true);
-                  setPaymentStatus(STATUS.ERROR);
-                  window.scrollTo({ top: 0, behavior: 'smooth' });
-                  window.history.replaceState({}, '', window.location.pathname);
-                } else {
-                  // 訂單仍在處理中，繼續輪詢
-                  pollCount++;
-                  if (pollCount < maxPolls) {
-                    setTimeout(pollOrder, pollInterval);
-                  }
-                }
-              } catch (error) {
-                console.error('輪詢訂單失敗', error);
-                hideLoading();
-                setWarnMessage('付款確認失敗，請聯繫客服');
-                setIsWarnDialogOpen(true);
-                setPaymentStatus(STATUS.ERROR);
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-              }
-            };
-
-            pollOrder();
-          } else {
-            // 3D 驗證失敗
-            hideLoading();
-            setWarnMessage('3D 驗證失敗，請重新嘗試');
-            setIsWarnDialogOpen(true);
-            setPaymentStatus(STATUS.ERROR);
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-
-            // 清除 URL 參數
-            window.history.replaceState({}, '', window.location.pathname);
+          if (order?.status === TICKET_STATUS.COMPLETED) {
+            finishWithSuccess();
+            cleanUrl();
+            return;
           }
+          if (order?.status === 'failed') {
+            finishWithError('付款失敗，請重新購買');
+            cleanUrl();
+            return;
+          }
+          // 其他（pending 等）→ 繼續輪詢
         } catch (error) {
-          console.error('3D 驗證後訂單確認失敗', error);
-          hideLoading();
-          setWarnMessage('付款確認失敗，請聯繫客服');
-          setIsWarnDialogOpen(true);
-          setPaymentStatus(STATUS.ERROR);
-          window.scrollTo({ top: 0, behavior: 'smooth' });
+          // 查詢本身失敗（網路／逾時）不代表付款失敗，繼續輪詢
+          console.error('輪詢訂單失敗', error);
         }
-      }
+
+        attempt++;
+        if (attempt >= POLL_DELAYS_MS.length) {
+          // 達上限仍無結果：結果確認中（不可判定為失敗，避免使用者重複付款）
+          finishWithPending();
+          cleanUrl();
+          return;
+        }
+        setTimeout(pollOrder, POLL_DELAYS_MS[attempt]);
+      };
+
+      setTimeout(pollOrder, POLL_DELAYS_MS[0]);
     };
 
     handleThreeDSecureCallback();
-  }, [navigate, showLoading, hideLoading]);
+  }, [
+    showLoading,
+    hideLoading,
+    finishWithSuccess,
+    finishWithError,
+    finishWithPending,
+  ]);
 
   const handleCreditCardPayment = async () => {
     if (!paymentData || !user) {
-      setPaymentStatus(STATUS.ERROR);
+      finishWithError('付款資料遺失，請重新選購票券');
       return;
     }
 
@@ -265,91 +274,26 @@ export const Payment: React.FC = () => {
       return;
     }
 
-    try {
-      showLoading('建立訂單中...');
+    // 先建立訂單（失敗時 createOrder 已顯示失敗畫面）
+    const createdOrderId = await paymentResult.createOrder(paymentData, user.id);
+    if (!createdOrderId) return;
 
-      // 先建立訂單
-      const orderResponse = await apiService.orders.postOrderCreate({
-        memberId: user.id,
-        items: paymentData.tickets.map(ticket => ({
-          ticketTypeId: ticket.id,
-          quantity: ticket.selectedQuantity * (ticket.bundleSize || 1),
-          members: (paymentData.groupPassFormData[ticket.id] || []).map(
-            member => ({
-              ...member,
-              role: member.role,
-            })
-          ),
-        })),
-      });
-
-      // 確認有 orderId
-      if (!orderResponse.orderId) {
-        hideLoading();
-        setWarnMessage('建立訂單失敗，請重試');
-        setIsWarnDialogOpen(true);
-        setPaymentStatus(STATUS.ERROR);
+    // 取得 Prime（callback 內的錯誤由 pay 自行處理）
+    showLoading('處理付款中...');
+    TPDirect.card.getPrime(async (result: any) => {
+      if (result.status !== 0) {
+        console.error('getPrime failed', result);
+        finishWithError('取得付款資訊失敗，請重新檢查信用卡資訊');
         return;
       }
 
-      // 取得 orderId
-      const createdOrderId = orderResponse.orderId;
-
-      // 取得 Prime
-      showLoading('處理付款中...');
-      TPDirect.card.getPrime(async (result: any) => {
-        if (result.status !== 0) {
-          console.error('getPrime failed', result);
-          hideLoading();
-          setWarnMessage('取得付款資訊失敗，請重新檢查信用卡資訊');
-          setIsWarnDialogOpen(true);
-          setPaymentStatus(STATUS.ERROR);
-          return;
-        }
-
-        try {
-          // 呼叫付款 API
-          const paymentResponse = await apiService.payment.postPayment({
-            prime: result.card.prime,
-            orderId: createdOrderId,
-            payer: {
-              name: cardholderName,
-              email: user.email,
-              tel: user.tel,
-            },
-          });
-
-          // 檢查是否有 redirectUrl
-          if (paymentResponse.redirectUrl) {
-            // 有 redirectUrl，導向到 3D 驗證頁面
-            window.location.href = paymentResponse.redirectUrl;
-            return;
-          } else {
-            // 沒有 redirectUrl，表示付款失敗
-            console.error('付款失敗：未取得 3D 驗證頁面');
-            hideLoading();
-            setWarnMessage('付款處理異常，請重試或聯繫客服');
-            setIsWarnDialogOpen(true);
-            setPaymentStatus(STATUS.ERROR);
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-          }
-        } catch (error: any) {
-          console.error('付款處理失敗', error);
-          hideLoading();
-          setWarnMessage('交易失敗：' + error.message);
-          setIsWarnDialogOpen(true);
-          setPaymentStatus(STATUS.ERROR);
-          window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
+      // 依回應判斷同步成功（200，無 redirectUrl）或 3DS 導轉（202）
+      await paymentResult.pay(createdOrderId, result.card.prime, {
+        name: cardholderName,
+        email: user.email,
+        tel: user.tel,
       });
-    } catch (error: any) {
-      console.error('建立訂單失敗', error);
-      hideLoading();
-      setWarnMessage('建立訂單失敗，請重試');
-      setIsWarnDialogOpen(true);
-      setPaymentStatus(STATUS.ERROR);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
+    });
   };
 
   // Meta Pixel: 購買成功時觸發 Purchase 事件
@@ -566,6 +510,23 @@ export const Payment: React.FC = () => {
           retryButtonText="前往購買票券"
           backButtonText="返回票券系統"
           onRetryClick={() => setPaymentStatus(STATUS.FORM)}
+          onBackClick={() => navigate(ROUTES.HOME)}
+        />
+      )}
+      {/* 結果不明：不提供重新付款，避免重複扣款 */}
+      {paymentStatus === STATUS.PENDING && (
+        <SuccessOrError
+          type={STATUS.PENDING}
+          message={`請稍候幾分鐘後至「我的票券」查看。<br/>若 10 分鐘後仍未看到票券，<strong>請勿重複付款</strong>，並來信 ${MAIL.CONTACT_EMAIL} 聯繫客服。`}
+          titlePrefix="付款結果"
+          pendingText="確認中"
+          successButtonText="前往我的票券"
+          backButtonText="返回票券系統"
+          onSuccessClick={() =>
+            navigate(ROUTES.TICKETS, {
+              state: { defaultTab: TICKET_STATUS.PURCHASED },
+            })
+          }
           onBackClick={() => navigate(ROUTES.HOME)}
         />
       )}

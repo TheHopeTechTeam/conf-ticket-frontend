@@ -1,10 +1,9 @@
 import { useCallback } from 'react';
-import { apiService } from '../api';
-import { STATUS } from '../constants/common';
 import { SUPPORTED_NETWORKS } from '../constants/payment';
 import { ROUTES } from '../constants/routes';
 import { useLoading } from '../contexts/LoadingContext';
 import { PaymentData, PaymentReadyState } from '../types/payment';
+import { usePaymentResult } from './usePaymentResult';
 
 declare global {
   interface Window {
@@ -15,14 +14,15 @@ declare global {
 export const usePaymentMethods = (
   paymentData: PaymentData,
   updatePaymentReady: (updates: Partial<PaymentReadyState>) => void,
-  setPaymentStatus: (status: 'form' | 'success' | 'error') => void,
+  paymentResult: ReturnType<typeof usePaymentResult>,
   user: any,
   navigate: (route: string) => void,
   setWarnMessage: (message: string) => void,
   setIsWarnDialogOpen: (isOpen: boolean) => void,
   setErrorDetails?: (details: string) => void
 ) => {
-  const { showLoading, hideLoading } = useLoading();
+  const { showLoading } = useLoading();
+  const { finishWithError, createOrder, pay } = paymentResult;
 
   const checkGooglePayAvailability = useCallback(() => {
     if (!paymentData) return;
@@ -55,7 +55,7 @@ export const usePaymentMethods = (
 
   const setupGooglePay = useCallback(async () => {
     if (!paymentData || !user) {
-      setPaymentStatus(STATUS.ERROR);
+      finishWithError('付款資料遺失，請重新選購票券');
       return;
     }
 
@@ -72,91 +72,25 @@ export const usePaymentMethods = (
       window.TPDirect.googlePay.getPrime(async function (err: any, prime: any) {
         if (err) {
           console.error('Google Pay getPrime error:', err);
-          hideLoading();
-          setWarnMessage('Google Pay 付款失敗，請重試或選擇其他付款方式');
-          setIsWarnDialogOpen(true);
-          setPaymentStatus(STATUS.ERROR);
+          finishWithError('Google Pay 付款失敗，請重試或選擇其他付款方式');
           return;
         }
 
-        try {
-          showLoading('建立訂單中...');
+        // Google Pay 成功後才建立訂單
+        const orderId = await createOrder(paymentData, user.id);
+        if (!orderId) return;
 
-          // Google Pay 成功後才建立訂單
-          const orderResponse = await apiService.orders.postOrderCreate({
-            memberId: user.id,
-            items: paymentData.tickets.map(ticket => ({
-              ticketTypeId: ticket.id,
-              quantity: ticket.selectedQuantity * (ticket.bundleSize || 1),
-              members: (paymentData.groupPassFormData[ticket.id] || []).map(
-                member => ({
-                  ...member,
-                  role: member.role,
-                })
-              ),
-            })),
-          });
-
-          if (!orderResponse.orderId) {
-            hideLoading();
-            setWarnMessage('建立訂單失敗，請重試');
-            setIsWarnDialogOpen(true);
-            setPaymentStatus(STATUS.ERROR);
-            return;
-          }
-
-          const createdOrderId = orderResponse.orderId;
-          showLoading('處理付款中...');
-
-          // 呼叫付款 API
-          const paymentResponse = await apiService.payment.postPayment({
-            prime: prime,
-            orderId: createdOrderId,
-            payer: {
-              name: user.name,
-              email: user.email,
-              tel: user.tel,
-            },
-          });
-
-          // 檢查是否有 redirectUrl
-          if (paymentResponse.redirectUrl) {
-            // 有 redirectUrl，導向到 3D 驗證頁面
-            window.location.href = paymentResponse.redirectUrl;
-            return;
-          } else {
-            // 沒有 redirectUrl，表示付款成功（或失敗需要透過其他方式判斷）
-            hideLoading();
-            setPaymentStatus(STATUS.SUCCESS);
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-          }
-        } catch (error: any) {
-          console.error('Google Pay 付款處理失敗', error);
-          hideLoading();
-          setWarnMessage('Google Pay 交易失敗：' + error.message);
-          setIsWarnDialogOpen(true);
-          setPaymentStatus(STATUS.ERROR);
-          window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
+        await pay(orderId, prime, {
+          name: user.name,
+          email: user.email,
+          tel: user.tel,
+        });
       });
     } catch (error: any) {
-      console.error('建立訂單失敗', error);
-      hideLoading();
-      setWarnMessage('建立訂單失敗，請重試');
-      setIsWarnDialogOpen(true);
-      setPaymentStatus(STATUS.ERROR);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      console.error('啟動 Google Pay 失敗', error);
+      finishWithError('Google Pay 付款失敗，請重試或選擇其他付款方式');
     }
-  }, [
-    paymentData,
-    user,
-    navigate,
-    showLoading,
-    hideLoading,
-    setWarnMessage,
-    setIsWarnDialogOpen,
-    setPaymentStatus,
-  ]);
+  }, [paymentData, user, navigate, showLoading, finishWithError, createOrder, pay]);
 
   const checkApplePayAvailability = useCallback(async () => {
     if (!paymentData) return;
@@ -220,7 +154,7 @@ export const usePaymentMethods = (
 
   const setupApplePay = useCallback(async () => {
     if (!paymentData || !user) {
-      setPaymentStatus(STATUS.ERROR);
+      finishWithError('付款資料遺失，請重新選購票券');
       return;
     }
 
@@ -240,8 +174,6 @@ export const usePaymentMethods = (
           console.error('Error status:', result.status);
           console.error('Error message:', result.msg);
 
-          hideLoading();
-
           // 設定詳細錯誤資訊
           const errorDetails = `Apple Pay Error:\nStatus: ${result.status}\nMessage: ${result.msg}\nMerchant ID: ${import.meta.env.VITE_APPLE_MERCHANT_ID}`;
           if (setErrorDetails) {
@@ -249,86 +181,37 @@ export const usePaymentMethods = (
           }
 
           // 根據不同錯誤給出不同提示
-          if (result.status === 403) {
-            setWarnMessage('Apple Pay 服務暫時無法使用，請嘗試其他付款方式');
-          } else {
-            setWarnMessage('Apple Pay 付款失敗，請重試或選擇其他付款方式');
-          }
-          setIsWarnDialogOpen(true);
-          setPaymentStatus(STATUS.ERROR);
+          finishWithError(
+            result.status === 403
+              ? 'Apple Pay 服務暫時無法使用，請嘗試其他付款方式'
+              : 'Apple Pay 付款失敗，請重試或選擇其他付款方式'
+          );
           return;
         }
 
-        try {
-          showLoading('建立訂單中...');
+        // Apple Pay 成功後才建立訂單
+        const orderId = await createOrder(paymentData, user.id);
+        if (!orderId) return;
 
-          // Apple Pay 成功後才建立訂單
-          const orderResponse = await apiService.orders.postOrderCreate({
-            memberId: user.id,
-            items: paymentData.tickets.map(ticket => ({
-              ticketTypeId: ticket.id,
-              quantity: ticket.selectedQuantity * (ticket.bundleSize || 1),
-              members: (paymentData.groupPassFormData[ticket.id] || []).map(
-                member => ({
-                  ...member,
-                  role: member.role,
-                })
-              ),
-            })),
-          });
-
-          if (!orderResponse.orderId) {
-            hideLoading();
-            setWarnMessage('建立訂單失敗，請重試');
-            setIsWarnDialogOpen(true);
-            setPaymentStatus(STATUS.ERROR);
-            return;
-          }
-
-          const createdOrderId = orderResponse.orderId;
-          showLoading('處理付款中...');
-
-          // 呼叫付款 API
-          await apiService.payment.postPayment({
-            prime: result.prime,
-            orderId: createdOrderId,
-            payer: {
-              name: user.name,
-              email: user.email,
-              tel: user.tel,
-            },
-          });
-
-          // Apple Pay 付款成功，直接跳轉到成功頁面
-          hideLoading();
-          setPaymentStatus(STATUS.SUCCESS);
-          window.scrollTo({ top: 0, behavior: 'smooth' });
-        } catch (error: any) {
-          console.error('Apple Pay 付款處理失敗', error);
-          hideLoading();
-          setWarnMessage('Apple Pay 交易失敗：' + error.message);
-          setIsWarnDialogOpen(true);
-          setPaymentStatus(STATUS.ERROR);
-          window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
+        // 依回應判斷同步成功或 3DS 導轉（202 不可直接顯示成功）
+        await pay(orderId, result.prime, {
+          name: user.name,
+          email: user.email,
+          tel: user.tel,
+        });
       });
     } catch (error: any) {
-      console.error('建立訂單失敗', error);
-      hideLoading();
-      setWarnMessage('建立訂單失敗，請重試');
-      setIsWarnDialogOpen(true);
-      setPaymentStatus(STATUS.ERROR);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      console.error('啟動 Apple Pay 失敗', error);
+      finishWithError('Apple Pay 付款失敗，請重試或選擇其他付款方式');
     }
   }, [
     paymentData,
     user,
     navigate,
     showLoading,
-    hideLoading,
-    setWarnMessage,
-    setIsWarnDialogOpen,
-    setPaymentStatus,
+    finishWithError,
+    createOrder,
+    pay,
     setErrorDetails,
   ]);
 

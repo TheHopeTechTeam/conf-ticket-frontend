@@ -3,12 +3,14 @@ import './SuccessOrError.scss';
 import { STATUS } from '../../../constants/common';
 
 interface SuccessOrErrorProps {
-  type?: 'success' | 'error';
+  /** pending：結果不明（例如付款結果確認中），顯示警示圖示，主要按鈕用 success 系列 props，並顯示返回按鈕 */
+  type?: 'success' | 'error' | 'pending';
   message?: string;
   useList?: boolean;
   titlePrefix?: string;
   successText?: string;
   errorText?: string;
+  pendingText?: string;
   successButtonText?: string;
   retryButtonText?: string;
   backButtonText?: string;
@@ -18,6 +20,12 @@ interface SuccessOrErrorProps {
   hideButtons?: boolean;
 }
 
+const ICONS = {
+  [STATUS.SUCCESS]: '/images/success.svg',
+  [STATUS.ERROR]: '/images/error.svg',
+  [STATUS.PENDING]: '/images/warn.svg',
+} as const;
+
 export const SuccessOrError: React.FC<SuccessOrErrorProps> = ({
   type = STATUS.SUCCESS,
   message = '',
@@ -25,6 +33,7 @@ export const SuccessOrError: React.FC<SuccessOrErrorProps> = ({
   titlePrefix = '退票',
   successText = '成功',
   errorText = '失敗',
+  pendingText = '確認中',
   successButtonText = '返回票券系統',
   retryButtonText = '再試一次',
   backButtonText = '返回票券系統',
@@ -33,17 +42,21 @@ export const SuccessOrError: React.FC<SuccessOrErrorProps> = ({
   onBackClick,
   hideButtons = false,
 }) => {
+  const isError = type === STATUS.ERROR;
+  const titleText =
+    type === STATUS.SUCCESS
+      ? successText
+      : type === STATUS.PENDING
+        ? pendingText
+        : errorText;
+
   return (
     <div className="success-error-container">
       <div className="success-error-content-container">
-        <img
-          src={`${type === STATUS.SUCCESS ? '/images/success.svg' : '/images/error.svg'}`}
-          alt=""
-          className="success-error-icon"
-        />
+        <img src={ICONS[type]} alt="" className="success-error-icon" />
         <h1 className="success-error-title">
           {titlePrefix}
-          {type === STATUS.SUCCESS ? successText : errorText}
+          {titleText}
         </h1>
         {useList ? (
           <ul
@@ -72,11 +85,11 @@ export const SuccessOrError: React.FC<SuccessOrErrorProps> = ({
         <div className="success-error-btn-container">
           <button
             className="btn send-btn"
-            onClick={type === STATUS.SUCCESS ? onSuccessClick : onRetryClick}
+            onClick={isError ? onRetryClick : onSuccessClick}
           >
-            {type === STATUS.SUCCESS ? successButtonText : retryButtonText}
+            {isError ? retryButtonText : successButtonText}
           </button>
-          {type === STATUS.ERROR && (
+          {type !== STATUS.SUCCESS && (
             <button className="btn cancel-btn" onClick={onBackClick}>
               {backButtonText}
             </button>
