@@ -25,6 +25,8 @@ jobs:
         with:
           # Node 20 已 EOL；只指定大版本，自動取得 22.x 最新安全修補
           node-version: '22'
+          # 不用 runner 快取的舊版（曾用到 22.23.4），一律下載 22.x 最新修補版
+          check-latest: true
 
       # 固定版本與本機開發一致；未指定版本會裝到 pnpm 11，
       # 它會把未核准的 build script（esbuild 等）視為錯誤而中止安裝
