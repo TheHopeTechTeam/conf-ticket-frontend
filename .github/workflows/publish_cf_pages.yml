@@ -25,8 +25,10 @@ jobs:
         with:
           node-version: '20'
 
+      # 固定版本與本機開發一致；未指定版本會裝到 pnpm 11，
+      # 它會把未核准的 build script（esbuild 等）視為錯誤而中止安裝
       - name: Install pnpm
-        run: npm install -g pnpm
+        run: npm install -g pnpm@10.9.0
 
       - name: Install dependencies
         run: pnpm install
