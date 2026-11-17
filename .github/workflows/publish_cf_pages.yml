@@ -23,10 +23,13 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '20'
+          # Node 20 已 EOL；只指定大版本，自動取得 22.x 最新安全修補
+          node-version: '22'
 
+      # 固定版本與本機開發一致；未指定版本會裝到 pnpm 11，
+      # 它會把未核准的 build script（esbuild 等）視為錯誤而中止安裝
       - name: Install pnpm
-        run: npm install -g pnpm
+        run: npm install -g pnpm@10.9.0
 
       - name: Install dependencies
         run: pnpm install
