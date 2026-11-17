@@ -7,10 +7,15 @@ import {
   mockOrdersResponse,
   mockRedeemedTicketsResponse,
 } from '../mocks';
-import { httpClient } from './service';
+import { httpClient, RequestConfig } from './service';
 
 const EMAIL_KEY = 'loginEmail';
 const IS_DEV = import.meta.env.DEV;
+/** 本機以 mock server 測試付款流程時，訂單查詢改打 mock server（見 vite.config.ts） */
+const USE_MOCK_SERVER = import.meta.env.VITE_USE_MOCK_SERVER === 'true';
+
+/** 付款 API 成功時本身就需 6–7 秒（TapPay + 同步寄信），逾時拉長；逾時代表結果不明 */
+export const PAYMENT_TIMEOUT_MS = 30_000;
 
 export interface AuthRequest {
   email: string;
@@ -121,15 +126,15 @@ export const ordersApi = {
     );
   },
 
-  getOrdersByOrderId: async (orderId: string) => {
+  getOrdersByOrderId: async (orderId: string, config?: RequestConfig) => {
     // 開發環境可以選擇使用假資料
-    if (IS_DEV) {
+    if (IS_DEV && !USE_MOCK_SERVER) {
       console.log('[DEV] 使用 mock 單一訂單資料，訂單 ID:', orderId);
       const order = mockOrdersResponse.docs.find(o => o.id === orderId);
       return order || mockOrdersResponse.docs[0];
     }
 
-    return await httpClient.get(`/v1/orders/${orderId}`);
+    return await httpClient.get(`/v1/orders/${orderId}`, undefined, config);
   },
 
   createOrder: async (data: PostOrderCreateRequest) => {
@@ -162,7 +167,9 @@ export const ticketApi = {
 // Tappay 相關 API
 export const paymentApi = {
   postPayment: async (data: any) => {
-    return await httpClient.post('/v1/payments/create', data);
+    return await httpClient.post('/v1/payments/create', data, {
+      timeoutMs: PAYMENT_TIMEOUT_MS,
+    });
   },
 };
 

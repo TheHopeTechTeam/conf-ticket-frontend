@@ -9,6 +9,7 @@ export const STATUS = {
   WARNING: 'warning',
   INFO: 'info',
   FORM: 'form',
+  PENDING: 'pending',
 } as const;
 
 export const MAIL = {
