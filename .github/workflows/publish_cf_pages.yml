@@ -34,11 +34,10 @@ jobs:
       - name: Build project with Vite
         run: pnpm run build
 
+      # cloudflare/pages-action 已停止維護且無法解析，改用官方 wrangler-action
       - name: Deploy to Cloudflare Pages
-        uses: cloudflare/pages-action@v1
+        uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          projectName: conf-ticket-frontend
-          directory: dist
-          wranglerVersion: '3'
+          command: pages deploy dist --project-name=conf-ticket-frontend --branch=master
