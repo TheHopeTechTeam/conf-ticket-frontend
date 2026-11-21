@@ -67,7 +67,7 @@ app.post('/v1/payments', (req, res) => {
 // 用 POST /__scenario 切換，例如 {"payment":"202","orderSequence":["pending","completed"]}
 const defaultScenario = () => ({
   create: 'ok', // ok | error | hang
-  payment: '200', // 200 | 202 | 500 | 500-charged | 422 | slow | hang
+  payment: '200', // 200 | 202 | 500 | 500-charged | 500-charged-legacy | 422 | slow | hang
   slowMs: 20000, // payment=slow 時延遲多久才回 200
   // GET /v1/orders/:id 依序回傳的狀態；最後一個會一直重複
   // 可用值：pending | completed | failed | error(回 500) | hang(不回應)
@@ -118,7 +118,13 @@ app.post('/v1/payments/create', async (req, res) => {
         .status(500)
         .json({ message: '金流服務交易未成功，請稍候再試。若持續發生請聯繫客服。' });
     case '500-charged':
-      // TapPay 已扣款、但 BE 寫入付款紀錄失敗（BE 訊息與正式環境相同）
+      // TapPay 回成功、但 BE 寫入付款紀錄失敗（conf-ticket-backend#319 之後的回應）
+      return res.status(500).json({
+        message: '已進入付款流程但伺服器發生未預期錯誤。請聯繫客服。',
+        code: 'ERROR_PAYMENT_PAYMENT_RECORD_CREATION_FAILURE',
+      });
+    case '500-charged-legacy':
+      // 同上，但為 #319 之前的舊版 BE 回應（沒有 code，只能比對訊息）
       return res
         .status(500)
         .json({ message: '已進入付款流程但伺服器發生未預期錯誤。請聯繫客服。' });
