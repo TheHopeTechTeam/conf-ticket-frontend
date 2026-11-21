@@ -29,19 +29,30 @@ export const isHttpError = (error: unknown): boolean =>
   typeof (error as { status?: unknown } | null)?.status === 'number';
 
 /**
- * BE 在 TapPay 已扣款成功、但寫入付款紀錄失敗時回 500
- * （conf-ticket-backend: payments/create/route.ts，訊息為 ERROR_PAYMENT_PAYMENT_RECORD_CREATION_FAILURE）。
- * 與 TapPay 失敗（未扣款）同為 500，目前只能用訊息文字區分。
- * TODO: BE 錯誤回應加上 code 欄位後，改為判斷 code。
+ * BE 在 TapPay 回傳成功、但寫入付款紀錄失敗時回 500，並帶此 code
+ * （conf-ticket-backend#319；同步付款可能已扣款，3DS 則可能尚待驗證）。
+ * 與 TapPay 失敗（未扣款）同為 500，需以 code 區分。
  */
-const CHARGED_ERROR_MESSAGE_KEYWORD = '已進入付款流程';
+export const PAYMENT_RECORD_CREATION_FAILURE_CODE =
+  'ERROR_PAYMENT_PAYMENT_RECORD_CREATION_FAILURE';
 
-/** 付款 API 的錯誤是否代表「可能已扣款」（不可讓使用者重試） */
+/**
+ * 相容舊版 BE（尚未回傳 code）：比對訊息文字。
+ * TODO: conf-ticket-backend#319 上線且穩定後移除，只保留 code 判斷。
+ */
+const LEGACY_CHARGED_ERROR_MESSAGE_KEYWORD = '已進入付款流程';
+
+/** 付款 API 的錯誤是否代表「付款結果不明、可能已扣款」（不可讓使用者重試） */
 export const isPossiblyChargedError = (error: unknown): boolean => {
-  const message = (error as { response?: { message?: unknown } } | null)
-    ?.response?.message;
+  const response = (
+    error as { response?: { code?: unknown; message?: unknown } } | null
+  )?.response;
+
+  if (response?.code === PAYMENT_RECORD_CREATION_FAILURE_CODE) return true;
+
+  const message = response?.message;
   return (
     typeof message === 'string' &&
-    message.includes(CHARGED_ERROR_MESSAGE_KEYWORD)
+    message.includes(LEGACY_CHARGED_ERROR_MESSAGE_KEYWORD)
   );
 };
