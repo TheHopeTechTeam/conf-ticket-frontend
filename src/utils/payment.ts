@@ -29,9 +29,8 @@ export const isHttpError = (error: unknown): boolean =>
   typeof (error as { status?: unknown } | null)?.status === 'number';
 
 /**
- * BE 在 TapPay 回傳成功、但寫入付款紀錄失敗時回 500，並帶此 code
- * （conf-ticket-backend#319；同步付款可能已扣款，3DS 則可能尚待驗證）。
- * 與 TapPay 失敗（未扣款）同為 500，需以 code 區分。
+ * 寫入付款紀錄失敗或 TapPay 請求結果不明時，付款可能已完成。
+ * TapPay 明確拒絕付款則不使用這些 code。
  */
 export const PAYMENT_RECORD_CREATION_FAILURE_CODE =
   'ERROR_PAYMENT_PAYMENT_RECORD_CREATION_FAILURE';
@@ -48,7 +47,12 @@ export const isPossiblyChargedError = (error: unknown): boolean => {
     error as { response?: { code?: unknown; message?: unknown } } | null
   )?.response;
 
-  if (response?.code === PAYMENT_RECORD_CREATION_FAILURE_CODE) return true;
+  if (
+    response?.code === PAYMENT_RECORD_CREATION_FAILURE_CODE ||
+    response?.code === 'PAYMENT_OUTCOME_UNKNOWN'
+  ) {
+    return true;
+  }
 
   const message = response?.message;
   return (
