@@ -31,9 +31,11 @@ export const isHttpError = (error: unknown): boolean =>
 /**
  * 寫入付款紀錄失敗或 TapPay 請求結果不明時，付款可能已完成。
  * TapPay 明確拒絕付款則不使用這些 code。
+ * @see https://github.com/TheHopeTechTeam/conf-ticket-backend/blob/0811e56580103e9975fec4a55112ccffeaf0302f/src/app/api/v1/payments/create/route.ts
  */
 export const PAYMENT_RECORD_CREATION_FAILURE_CODE =
   'ERROR_PAYMENT_PAYMENT_RECORD_CREATION_FAILURE';
+const PAYMENT_OUTCOME_UNKNOWN_CODE = 'PAYMENT_OUTCOME_UNKNOWN';
 
 /** 付款 API 的錯誤是否代表「付款結果不明、可能已扣款」（不可讓使用者重試） */
 export const isPossiblyChargedError = (error: unknown): boolean => {
@@ -43,6 +45,6 @@ export const isPossiblyChargedError = (error: unknown): boolean => {
 
   return (
     response?.code === PAYMENT_RECORD_CREATION_FAILURE_CODE ||
-    response?.code === 'PAYMENT_OUTCOME_UNKNOWN'
+    response?.code === PAYMENT_OUTCOME_UNKNOWN_CODE
   );
 };
