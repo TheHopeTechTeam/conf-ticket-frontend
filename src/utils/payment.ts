@@ -35,28 +35,14 @@ export const isHttpError = (error: unknown): boolean =>
 export const PAYMENT_RECORD_CREATION_FAILURE_CODE =
   'ERROR_PAYMENT_PAYMENT_RECORD_CREATION_FAILURE';
 
-/**
- * 相容舊版 BE（尚未回傳 code）：比對訊息文字。
- * TODO: conf-ticket-backend#319 上線且穩定後移除，只保留 code 判斷。
- */
-const LEGACY_CHARGED_ERROR_MESSAGE_KEYWORD = '已進入付款流程';
-
 /** 付款 API 的錯誤是否代表「付款結果不明、可能已扣款」（不可讓使用者重試） */
 export const isPossiblyChargedError = (error: unknown): boolean => {
   const response = (
     error as { response?: { code?: unknown; message?: unknown } } | null
   )?.response;
 
-  if (
+  return (
     response?.code === PAYMENT_RECORD_CREATION_FAILURE_CODE ||
     response?.code === 'PAYMENT_OUTCOME_UNKNOWN'
-  ) {
-    return true;
-  }
-
-  const message = response?.message;
-  return (
-    typeof message === 'string' &&
-    message.includes(LEGACY_CHARGED_ERROR_MESSAGE_KEYWORD)
   );
 };
