@@ -10,7 +10,7 @@ test('uncertain payment outcomes do not permit retry', () => {
   );
   assert.equal(
     isPossiblyChargedError({
-      response: { message: '已進入付款流程，付款結果確認中，請勿重新付款。請聯繫客服。' },
+      response: { message: '已進入付款流程，付款結果確認中，請勿重新付款。若持續發生請聯繫客服。' },
     }),
     true,
   );
